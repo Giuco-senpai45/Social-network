@@ -1,0 +1,252 @@
+package ui;
+
+import domain.Friendship;
+import domain.Tuple;
+import domain.User;
+import domain.validators.ValidationException;
+import repository.Repository;
+import service.FriendshipService;
+import service.UserService;
+import service.serviceExceptions.AddException;
+import service.serviceExceptions.RemoveException;
+import service.serviceExceptions.UpdateException;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ * This is the User interface class
+ */
+public class UI {
+    /**
+     * Repository for user entities
+     */
+    private Repository<Long, User> repoUsers;
+    /**
+     * Repository for friendship entities
+     */
+    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+
+    /**
+     * User service
+     */
+    private UserService userService;
+    /**
+     * Friendship service
+     */
+    private FriendshipService friendsService;
+
+    /**
+     * Overloaded constructor
+     * @param repoUsers repository for user entities
+     * @param repoFriends repository for friendship entities
+     */
+    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends) {
+        this.repoUsers = repoUsers;
+        this.repoFriends = repoFriends;
+        userService = new UserService(repoUsers,repoFriends);
+        friendsService = new FriendshipService(repoFriends,repoUsers);
+    }
+
+    /**
+     * This is the ui function for adding a user
+     * @param input Scanner representing the scanner
+     */
+    public void addUserMenu(Scanner input){
+        System.out.println();
+        System.out.println("Firstname:");
+        String firstname = input.nextLine();
+        System.out.println("Lastname:");
+        String lastname = input.nextLine();
+        try{
+            userService.addUser(firstname,lastname);
+        }
+        catch (AddException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * This is the ui function for removing a user
+     * @param input Scanner representing the scanner
+     */
+    public void removeUserMenu(Scanner input){
+        System.out.println();
+        System.out.println("User's ID:");
+        Long id = input.nextLong();
+        try{
+            userService.removeUser(id);
+        }
+        catch (RemoveException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * This is the ui function for updating a user
+     * @param input Scanner representing the scanner
+     */
+    private void updateUserMenu(Scanner input){
+        System.out.println();
+        System.out.println("Id");
+        Long id = input.nextLong();
+        System.out.println("Firstname:");
+        input.nextLine();
+        String firstname = input.nextLine();
+        System.out.println("Lastname:");
+        String lastname = input.nextLine();
+        try{
+            userService.updateUser(id,firstname,lastname);
+        }
+        catch (UpdateException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * This is the ui function for adding a friendship
+     * @param input Scanner representing the scanner
+     */
+    private void addFriendMenu(Scanner input) {
+        System.out.println();
+        System.out.println("Friend1 id:");
+        Long id1 = input.nextLong();
+        System.out.println("Friend2 id:");
+        Long id2 = input.nextLong();
+        try {
+            friendsService.addFriendship(id1,id2);
+        }
+        catch (AddException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * This is the ui function for removing a friendship
+     * @param input Scanner representing the scanner
+     */
+    private void removeFriendMenu(Scanner input) {
+        System.out.println();
+        System.out.println("Friend1: ");
+        Long friend1 = input.nextLong();
+        System.out.println("Friend2: ");
+        Long friend2 = input.nextLong();
+        Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
+        try {
+            friendsService.removeFriendship(tuple);
+        }
+        catch (RemoveException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    /**
+     * This function shows the current users stored in the repo
+     */
+    private void showUsersList(){
+        System.out.println();
+        Iterable<User> iterable = userService.getUsers();
+        iterable.forEach(System.out::println);
+    }
+
+    /**
+     * This function shows the current friendships stored in the repo
+     */
+    private void showFriendshipsList(){
+        System.out.println();
+        Iterable<Friendship> iterable = friendsService.getFriendships();
+        iterable.forEach(System.out::println);
+    }
+
+    /**
+     * This function shows the number of connected components
+     */
+    private void connectedComponentsMenu(){
+        System.out.println();
+        int componentCount = friendsService.findConnectedComponents();
+        System.out.println("The number of connected components is " + componentCount);
+    }
+
+    /**
+     * This function shows the most sociable community
+     */
+    private void sociableCommMenu(){
+        System.out.println();
+        ArrayList<Integer> components = friendsService.mostSociableCommunity();
+        System.out.println("The most sociable community is:");
+        components.forEach(x -> System.out.print(x + " "));
+        System.out.println();
+    }
+
+    /**
+     * This function shows the menu
+     */
+    private void showMenu(){
+        System.out.println("############## M E N U ##############");
+        System.out.println("1.Add User");
+        System.out.println("2.Remove User");
+        System.out.println("3.Update User");
+        System.out.println("4.Add Friendship");
+        System.out.println("5.Remove Friendship");
+        System.out.println("6.The number of connected components");
+        System.out.println("7.The longest path in the network");
+        System.out.println("8.Show users");
+        System.out.println("9.Show friendships");
+        System.out.println("x.Exit application");
+    }
+
+
+
+    /**
+     * This function runs the menu
+     */
+    public void run(){
+        Scanner input = new Scanner(System.in);
+        showMenu();
+        while (true){
+            switch (input.nextLine()){
+                case "1":
+                    addUserMenu(input);
+                    showMenu();
+                    break;
+                case "2":
+                    removeUserMenu(input);
+                    showMenu();
+                    break;
+                case "3":
+                    updateUserMenu(input);
+                    showMenu();
+                    break;
+                case "4":
+                    addFriendMenu(input);
+                    showMenu();
+                    break;
+                case "5":
+                    removeFriendMenu(input);
+                    showMenu();
+                    break;
+                case "6":
+                    connectedComponentsMenu();
+                    showMenu();
+                    break;
+                case "7":
+                    sociableCommMenu();
+                    showMenu();
+                    break;
+                case "8":
+                    showUsersList();
+                    showMenu();
+                    break;
+                case "9":
+                    showFriendshipsList();
+                    showMenu();
+                    break;
+                case "x":
+                    return;
+            }
+        }
+    }
+
+
+}
