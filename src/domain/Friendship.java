@@ -35,6 +35,10 @@ public class Friendship extends Entity<Tuple<Long, Long>>{
         setId(new Tuple(buddy1,buddy2));
     }
 
+    public Friendship() {
+
+    }
+
     /**
      * @return String representing the date when this friendship was made
      */
@@ -68,7 +72,7 @@ public class Friendship extends Entity<Tuple<Long, Long>>{
      */
     @Override
     public String toString() {
-        return buddy1 + " " + buddy2;
+        return buddy1 + " " + buddy2 + " " + " friends since " + date;
     }
 
     /**

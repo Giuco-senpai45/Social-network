@@ -5,6 +5,7 @@ import domain.Tuple;
 import domain.User;
 import repository.Repository;
 import service.serviceExceptions.AddException;
+import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
@@ -117,6 +118,15 @@ public class UserService {
         else{
             System.out.println("User updated with success");
         }
+    }
+
+    public User findUserById(Long id){
+        User user = repoUsers.findOne(id);
+        if(user == null){
+            throw new FindException("No user with the specified id exists");
+        }
+        System.out.println("User found");
+        return user;
     }
 
     /**

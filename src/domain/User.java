@@ -31,6 +31,10 @@ public class User extends Entity<Long>{
         this.lastName = lastName;
     }
 
+    public User() {
+
+    }
+
     /**
      * @return String representing the users firstName
      */

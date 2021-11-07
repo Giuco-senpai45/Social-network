@@ -8,6 +8,7 @@ import repository.Repository;
 import service.FriendshipService;
 import service.UserService;
 import service.serviceExceptions.AddException;
+import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
@@ -103,6 +104,19 @@ public class UI {
         }
     }
 
+    private void findUserMenu(Scanner input) {
+        System.out.println();
+        System.out.println("User's ID:");
+        Long id = input.nextLong();
+        try{
+            User foundUser = userService.findUserById(id);
+            System.out.println(foundUser);
+        }
+        catch (FindException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     /**
      * This is the ui function for adding a friendship
      * @param input Scanner representing the scanner
@@ -140,6 +154,21 @@ public class UI {
         }
     }
 
+    private void findFriendMenu(Scanner input) {
+        System.out.println();
+        System.out.println("Friend1: ");
+        Long friend1 = input.nextLong();
+        System.out.println("Friend2: ");
+        Long friend2 = input.nextLong();
+        Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
+        try {
+            Friendship friendship = friendsService.findFriendshipById(tuple);
+            System.out.println(friendship);
+        }
+        catch (FindException | ValidationException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     /**
      * This function shows the current users stored in the repo
@@ -187,12 +216,14 @@ public class UI {
         System.out.println("1.Add User");
         System.out.println("2.Remove User");
         System.out.println("3.Update User");
-        System.out.println("4.Add Friendship");
-        System.out.println("5.Remove Friendship");
-        System.out.println("6.The number of connected components");
-        System.out.println("7.The longest path in the network");
-        System.out.println("8.Show users");
-        System.out.println("9.Show friendships");
+        System.out.println("4.Find User by id");
+        System.out.println("5.Add Friendship");
+        System.out.println("6.Remove Friendship");
+        System.out.println("7.Find Friendship");
+        System.out.println("8.The number of connected components");
+        System.out.println("9.The longest path in the network");
+        System.out.println("10.Show users");
+        System.out.println("11.Show friendships");
         System.out.println("x.Exit application");
     }
 
@@ -219,26 +250,34 @@ public class UI {
                     showMenu();
                     break;
                 case "4":
-                    addFriendMenu(input);
+                    findUserMenu(input);
                     showMenu();
                     break;
                 case "5":
-                    removeFriendMenu(input);
+                    addFriendMenu(input);
                     showMenu();
                     break;
                 case "6":
-                    connectedComponentsMenu();
+                    removeFriendMenu(input);
                     showMenu();
                     break;
                 case "7":
-                    sociableCommMenu();
+                    findFriendMenu(input);
                     showMenu();
                     break;
                 case "8":
-                    showUsersList();
+                    connectedComponentsMenu();
                     showMenu();
                     break;
                 case "9":
+                    sociableCommMenu();
+                    showMenu();
+                    break;
+                case "10":
+                    showUsersList();
+                    showMenu();
+                    break;
+                case "11":
                     showFriendshipsList();
                     showMenu();
                     break;
@@ -247,6 +286,8 @@ public class UI {
             }
         }
     }
+
+
 
 
 }

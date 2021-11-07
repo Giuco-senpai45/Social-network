@@ -5,7 +5,9 @@ import domain.validators.Validator;
 import repository.memory.InMemoryRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class UserDatabase extends InMemoryRepository<Long, User> {
@@ -92,7 +94,10 @@ public class UserDatabase extends InMemoryRepository<Long, User> {
         return null;
     }
 
-    private void loadData(){
+    @Override
+    public Iterable<User> findAll() {
+        List<User> users = new ArrayList<>();
+
         try(Connection connection = DriverManager.getConnection(url,username,password);
             PreparedStatement statement = connection.prepareStatement("SELECT * from users");
             ResultSet resultSet = statement.executeQuery()){
@@ -104,11 +109,49 @@ public class UserDatabase extends InMemoryRepository<Long, User> {
 
                 User user = new User(firstName,lastName);
                 user.setId(id);
-                super.save(user);
+                users.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return users;
+    }
+
+    @Override
+    public User findOne(Long id) {
+        User user = new User();
+
+        if(super.findOne(id) == null){
+            return null;
+        }
+
+        String sql = "SELECT * from users where user_id = ?";
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setLong(1,id);
+
+            ResultSet resultSet = ps.executeQuery();
+
+            resultSet.next();
+
+            Long user_id = resultSet.getLong("user_id");
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setId(user_id);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    private void loadData(){
+        Iterable<User> users = findAll();
+        users.forEach(super::save);
     }
 
 }

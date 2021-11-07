@@ -7,7 +7,9 @@ import domain.validators.Validator;
 import repository.memory.InMemoryRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class FriendshipDatabase extends InMemoryRepository<Tuple<Long,Long>, Friendship> {
@@ -71,7 +73,9 @@ public class FriendshipDatabase extends InMemoryRepository<Tuple<Long,Long>, Fri
         return removedFriendship;
     }
 
-    private void loadData(){
+    @Override
+    public Iterable<Friendship> findAll() {
+        List<Friendship> friends = new ArrayList<>();
         try(Connection connection = DriverManager.getConnection(url,username,password);
             PreparedStatement statement = connection.prepareStatement("SELECT * from friendships");
             ResultSet resultSet = statement.executeQuery()){
@@ -83,10 +87,48 @@ public class FriendshipDatabase extends InMemoryRepository<Tuple<Long,Long>, Fri
 
                 Friendship friendship = new Friendship(buddy1,buddy2);
                 friendship.setDate(date);
-                super.save(friendship);
+                friends.add(friendship);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return friends;
+    }
+
+    @Override
+    public Friendship findOne(Tuple<Long, Long> id) {
+        Friendship friendship = new Friendship();
+
+        if(super.findOne(id) == null){
+            return null;
+        }
+
+        String sql = "SELECT * from friendships where buddy1 = ? and buddy2 = ?";
+
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setLong(1,id.getE1());
+            ps.setLong(2,id.getE2());
+
+            ResultSet resultSet = ps.executeQuery();
+            resultSet.next();
+
+            Long buddy1 = resultSet.getLong("buddy1");
+            Long buddy2 = resultSet.getLong("buddy2");
+            String date = resultSet.getString("date");
+
+            friendship = new Friendship(buddy1,buddy2);
+            friendship.setDate(date);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendship;
+    }
+
+    private void loadData(){
+        Iterable<Friendship> friendships = findAll();
+        friendships.forEach(super::save);
     }
 }
