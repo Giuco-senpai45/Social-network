@@ -48,6 +48,13 @@ public class FriendshipService {
      * @throws AddException if the users with the specified ids don't exist , if the
      */
     public void addFriendship(Long buddy1, Long buddy2){
+
+        //Check if the reverse friendship exists
+        Tuple<Long,Long> tuple = new Tuple<>(buddy2,buddy1);
+        if(repoFriends.findOne(tuple) != null){
+            throw new AddException("This friendship already exists");
+        }
+
         Iterable<User> iterator = getUsers();
         boolean foundFriend1 = false;
         boolean foundFriend2 = false;

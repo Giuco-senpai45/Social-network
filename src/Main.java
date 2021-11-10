@@ -26,5 +26,7 @@ public class Main {
 //        Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipFile("data/friends.csv", new FriendshipValidator());
         UI ui = new UI(repoUser,repoFriends);
         ui.run();
+
+        //TODO Update friendship,comm
     }
 }

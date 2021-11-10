@@ -4,6 +4,7 @@ import domain.Friendship;
 import domain.Tuple;
 import domain.User;
 import domain.validators.ValidationException;
+import org.postgresql.util.PSQLException;
 import repository.Repository;
 import service.FriendshipService;
 import service.UserService;
