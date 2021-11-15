@@ -31,10 +31,6 @@ public class User extends Entity<Long>{
         this.lastName = lastName;
     }
 
-    public User() {
-
-    }
-
     /**
      * @return String representing the users firstName
      */
@@ -93,7 +89,7 @@ public class User extends Entity<Long>{
      */
     @Override
     public String toString() {
-        return firstName + " " + lastName + " " + getFriendListSize() + " prieteni";
+        return firstName + " " + lastName;
     }
 
     /**
