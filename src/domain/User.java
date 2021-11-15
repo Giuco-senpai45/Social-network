@@ -89,7 +89,7 @@ public class User extends Entity<Long>{
      */
     @Override
     public String toString() {
-        return firstName + " " + lastName + " " + getFriendListSize() + " prieteni";
+        return firstName + " " + lastName;
     }
 
     /**

@@ -20,11 +20,10 @@ public class Main {
      * @param args arguments from the command line
      */
     public static void main(String[] args) {
-        Repository<Long,User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","cornflakes45", new UserValidator());
-        Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","cornflakes45", new FriendshipValidator());
-//        Repository<Long, User> repo = new UserFile("data/users.csv", new UserValidator());
-//        Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipFile("data/friends.csv", new FriendshipValidator());
+        Repository<Long,User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new UserValidator());
+        Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendshipValidator());
         UI ui = new UI(repoUser,repoFriends);
         ui.run();
+        //TODO baga friends in friendslist
     }
 }

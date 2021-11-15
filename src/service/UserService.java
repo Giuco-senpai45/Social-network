@@ -5,6 +5,7 @@ import domain.Tuple;
 import domain.User;
 import repository.Repository;
 import service.serviceExceptions.AddException;
+import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
@@ -87,17 +88,6 @@ public class UserService {
         if(user == null){
             throw new RemoveException("User does not exist!");
         }
-        Iterable<Friendship> friendships = repoFriends.findAll();
-        ArrayList<Tuple<Long,Long>> deletedIds = new ArrayList<>();
-        for(Friendship friendship : friendships){
-            if(user.getId() == friendship.getBuddy1() || user.getId() == friendship.getBuddy2())
-            {
-                deletedIds.add(friendship.getId());
-            }
-        }
-        for(Tuple<Long,Long> deletedId : deletedIds){
-            repoFriends.delete(deletedId);
-        }
         System.out.println(user.toString() + " deleted");
     }
 
@@ -117,6 +107,15 @@ public class UserService {
         else{
             System.out.println("User updated with success");
         }
+    }
+
+    public User findUserById(Long id){
+        User user = repoUsers.findOne(id);
+        if(user == null){
+            throw new FindException("No user with the specified id exists");
+        }
+        System.out.println("User found");
+        return user;
     }
 
     /**

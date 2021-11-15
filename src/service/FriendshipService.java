@@ -6,6 +6,7 @@ import domain.User;
 import graph.Graph;
 import repository.Repository;
 import service.serviceExceptions.AddException;
+import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import java.util.ArrayList;
 
@@ -47,6 +48,13 @@ public class FriendshipService {
      * @throws AddException if the users with the specified ids don't exist , if the
      */
     public void addFriendship(Long buddy1, Long buddy2){
+
+        //Check if the reverse friendship exists
+        Tuple<Long,Long> tuple = new Tuple<>(buddy2,buddy1);
+        if(repoFriends.findOne(tuple) != null){
+            throw new AddException("This friendship already exists");
+        }
+
         Iterable<User> iterator = getUsers();
         boolean foundFriend1 = false;
         boolean foundFriend2 = false;
@@ -139,6 +147,15 @@ public class FriendshipService {
                 user.setFriends(friends);
             }
         }
+    }
+
+    public Friendship findFriendshipById(Tuple<Long,Long> tuple){
+        Friendship friendship = repoFriends.findOne(tuple);
+        if(friendship == null){
+            throw new FindException("Friendship doesn't exist");
+        }
+        System.out.println("Friendship found");
+        return friendship;
     }
 
     /**

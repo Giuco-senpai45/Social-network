@@ -43,6 +43,14 @@ public class Graph {
     {
         this.users = users;
         int size = (int) StreamSupport.stream(users.spliterator(), false).count();
+        int maxx = 0;
+        for(User user : users){
+            if(user.getId() > maxx){
+                maxx = user.getId().intValue();
+            }
+        }
+        size = maxx;
+        System.out.println("Maximul " + maxx);
         V = size;
         adjList = new LinkedList[size];
         for (int i = 0; i < size; i++) {
@@ -54,6 +62,17 @@ public class Graph {
             int y = friendship.getBuddy2().intValue();
             addEdge(x - 1,y - 1);
         }
+    }
+
+    private boolean isActualFriendship(int vertex)
+    {
+        vertex++;
+        for(User user : users){
+            if(user.getId() == vertex){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -99,12 +118,11 @@ public class Graph {
 
         for (int i = 0; i < V; i++) {
             ArrayList<Integer> al = new ArrayList<>();
-            if (!visited[i])
+            if (!visited[i] && isActualFriendship(i))
             {
                 DFSUtil(i, visited, al);
                 components.add(al);
             }
-
         }
     }
 
