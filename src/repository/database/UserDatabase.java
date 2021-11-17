@@ -41,38 +41,9 @@ public class UserDatabase implements Repository<Long, User> {
 
             ps.executeUpdate();
         } catch (SQLException  e) {
-//            throw new AddException(e.getMessage());
                 return entity;
         }
         return null;
-    }
-
-    public Long findMaxId(){
-
-        String sql = "select MAX(user_id) as max_user_id from users ";
-        Long max_id = 0L;
-        try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ResultSet resultSet = ps.executeQuery();
-            if(resultSet.next()){
-                max_id = resultSet.getLong("max_user_id");
-            }
-        }
-        catch (SQLException  e) {
-            e.printStackTrace();
-        }
-//        max_id += 1;
-//        int maximul = max_id.intValue();
-//        String sql2 = "ALTER SEQUENCE users_user_id_seq RESTART WITH maximul";
-//        try (Connection connection = DriverManager.getConnection(url, username, password);
-//             PreparedStatement ps = connection.prepareStatement(sql2)) {
-//            ps.executeUpdate();
-//        }
-//        catch (SQLException  e) {
-//            e.printStackTrace();
-//        }
-        return max_id;
     }
 
     @Override
