@@ -22,7 +22,7 @@ public class Friendship extends Entity<Tuple<Long, Long>>{
     /**
      * String representing the date this friendship was made
      */
-    private String date;
+    private LocalDate date;
 
     /**
      * @param buddy1 Long representing the id of the first friend
@@ -31,7 +31,7 @@ public class Friendship extends Entity<Tuple<Long, Long>>{
     public Friendship(Long buddy1, Long buddy2) {
         this.buddy1 = buddy1;
         this.buddy2 = buddy2;
-        date = LocalDate.now().toString();
+        date = LocalDate.now();
         setId(new Tuple(buddy1,buddy2));
     }
 
@@ -42,14 +42,14 @@ public class Friendship extends Entity<Tuple<Long, Long>>{
     /**
      * @return String representing the date when this friendship was made
      */
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
     /**
      * @param date String representing the date that the date of the current entity is set to
      */
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
