@@ -307,6 +307,8 @@ public class UI {
                     break;
                 case "x":
                     return;
+                default:
+                    showMenu();
             }
         }
     }
