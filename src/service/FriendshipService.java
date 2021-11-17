@@ -152,13 +152,7 @@ public class FriendshipService {
     public Friendship findFriendshipById(Tuple<Long,Long> tuple){
         Friendship friendship = repoFriends.findOne(tuple);
         if(friendship == null){
-            Tuple<Long,Long> tupleRev = new Tuple<>(tuple.getE2(),tuple.getE1());
-            Friendship friendshipReverse = repoFriends.findOne(tupleRev);
-            if(friendshipReverse == null){
-                throw new FindException("Friendship doesn't exist");
-            }
-            System.out.println("Friendship found");
-            return friendshipReverse;
+            throw new FindException("Friendship doesn't exist");
         }
         System.out.println("Friendship found");
         return friendship;

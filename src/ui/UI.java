@@ -3,7 +3,6 @@ package ui;
 import domain.Friendship;
 import domain.Tuple;
 import domain.User;
-import domain.UserFriendshipsDTO;
 import domain.validators.ValidationException;
 import org.postgresql.util.PSQLException;
 import repository.Repository;
@@ -15,7 +14,6 @@ import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -211,24 +209,6 @@ public class UI {
         System.out.println();
     }
 
-    private void showUserFriendsList(Scanner input){
-        System.out.println();
-        System.out.println("Users id: ");
-        Long userID = input.nextLong();
-        try {
-            List<UserFriendshipsDTO> userFriendList = userService.getUserFriendList(userID);
-            if(userFriendList.size() > 0){
-                userFriendList.forEach(System.out::println);
-            }
-            else{
-                System.out.println("This user doesn't have any friends, sums up Society if you ask me..");
-            }
-        }
-        catch(FindException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
     /**
      * This function shows the menu
      */
@@ -245,9 +225,10 @@ public class UI {
         System.out.println("9.The longest path in the network");
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
-        System.out.println("12:Show users friend list");
         System.out.println("x.Exit application");
     }
+
+
 
     /**
      * This function runs the menu
@@ -299,10 +280,6 @@ public class UI {
                     break;
                 case "11":
                     showFriendshipsList();
-                    showMenu();
-                    break;
-                case "12":
-                    showUserFriendsList(input);
                     showMenu();
                     break;
                 case "x":

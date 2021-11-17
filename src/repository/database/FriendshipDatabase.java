@@ -7,10 +7,7 @@ import repository.Repository;
 import service.serviceExceptions.AddException;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +37,7 @@ public class FriendshipDatabase implements Repository<Tuple<Long,Long>, Friendsh
 
             ps.setLong(1, entity.getBuddy1());
             ps.setLong(2, entity.getBuddy2());
-            ps.setDate(3,Date.valueOf(entity.getDate()));           //verify if friendship buddy1->buddy2 exists
+            ps.setString(3,entity.getDate());           //verify if friendship buddy1->buddy2 exists
 
             ps.executeUpdate();
 
@@ -83,7 +80,7 @@ public class FriendshipDatabase implements Repository<Tuple<Long,Long>, Friendsh
             while(resultSet.next()){
                 Long buddy1 = resultSet.getLong("buddy1");
                 Long buddy2 = resultSet.getLong("buddy2");
-                LocalDate date = resultSet.getDate("date").toLocalDate();
+                String date = resultSet.getString("date");
 
                 Friendship friendship = new Friendship(buddy1,buddy2);
                 friendship.setDate(date);
@@ -112,7 +109,7 @@ public class FriendshipDatabase implements Repository<Tuple<Long,Long>, Friendsh
             if(resultSet.next()){
                 Long buddy1 = resultSet.getLong("buddy1");
                 Long buddy2 = resultSet.getLong("buddy2");
-                LocalDate date = resultSet.getDate("date").toLocalDate();
+                String date = resultSet.getString("date");
 
                 friendship = new Friendship(buddy1,buddy2);
                 friendship.setDate(date);

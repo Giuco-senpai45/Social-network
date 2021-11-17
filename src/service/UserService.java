@@ -3,7 +3,6 @@ package service;
 import domain.Friendship;
 import domain.Tuple;
 import domain.User;
-import domain.UserFriendshipsDTO;
 import repository.Repository;
 import service.serviceExceptions.AddException;
 import service.serviceExceptions.FindException;
@@ -11,10 +10,6 @@ import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * The service for the User entities
@@ -79,6 +74,7 @@ public class UserService {
         }
         else{
             System.out.println("User added cu with success");
+//            currentUserID++;
         }
     }
 
@@ -120,32 +116,6 @@ public class UserService {
         }
         System.out.println("User found");
         return user;
-    }
-
-    public List<UserFriendshipsDTO> getUserFriendList(Long id){
-        Iterable<Friendship> friendships = repoFriends.findAll();
-        ArrayList<Friendship> listFriendships = new ArrayList<>();
-        friendships.forEach(listFriendships::add);
-
-        User userExists = repoUsers.findOne(id);
-        if(userExists == null){
-            throw new FindException("No user with the specified id exists");
-        }
-
-        Predicate<Friendship> testIsFriendshipForUser = f -> f.getBuddy1().equals(id) || f.getBuddy2().equals(id);
-
-        return listFriendships.stream()
-                .filter(testIsFriendshipForUser)
-                .map((friendship) -> {
-                    User friend;
-                    if(friendship.getBuddy1().equals(id)){
-                        friend = repoUsers.findOne(friendship.getBuddy2());
-                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate());
-                    }
-                    friend = repoUsers.findOne(friendship.getBuddy1());
-                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate());
-                })
-                .collect(Collectors.toList());
     }
 
     /**
