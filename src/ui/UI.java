@@ -240,17 +240,17 @@ public class UI {
         System.out.println();
         System.out.println("Users id: ");
         Long userID = input.nextLong();
-        System.out.println("Month: ");
-        int monthNr = input.nextInt();
         input.nextLine();
-        YearMonth month = YearMonth.of(2021,monthNr);
+        System.out.println("Month: ");
+        Integer month = input.nextInt();
+        input.nextLine();
         try {
-            List<UserFriendshipsDTO> userFriendList = userService.getFriendshipsMonth(userID,month);
-            if(userFriendList.size() > 0){
-                userFriendList.forEach(System.out::println);
+            List<UserFriendshipsDTO> userFriendListByMonth = userService.getUserFriendListByMonth(userID, month);
+            if(userFriendListByMonth.size() > 0){
+                userFriendListByMonth.forEach(System.out::println);
             }
             else{
-                System.out.println("This user doesn't have any friends, sums up Society if you ask me..");
+                System.out.println("This user didn't make any friends that month.");
             }
         }
         catch(FindException e){
@@ -275,7 +275,7 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
-        System.out.println("13:Show users friend list filtered by a month");
+        System.out.println("13.Show users friend list by month");
         System.out.println("x.Exit application");
     }
 
