@@ -14,6 +14,7 @@ import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -78,6 +79,7 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
+        input.nextLine();
         try{
             userService.removeUser(id);
         }
@@ -111,6 +113,7 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
+        input.nextLine();
         try{
             User foundUser = userService.findUserById(id);
             System.out.println(foundUser);
@@ -130,6 +133,7 @@ public class UI {
         Long id1 = input.nextLong();
         System.out.println("Friend2 id:");
         Long id2 = input.nextLong();
+        input.nextLine();
         try {
             friendsService.addFriendship(id1,id2);
         }
@@ -148,6 +152,7 @@ public class UI {
         Long friend1 = input.nextLong();
         System.out.println("Friend2: ");
         Long friend2 = input.nextLong();
+        input.nextLine();
         Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
         try {
             friendsService.removeFriendship(tuple);
@@ -163,6 +168,7 @@ public class UI {
         Long friend1 = input.nextLong();
         System.out.println("Friend2: ");
         Long friend2 = input.nextLong();
+        input.nextLine();
         Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
         try {
             Friendship friendship = friendsService.findFriendshipById(tuple);
@@ -215,8 +221,31 @@ public class UI {
         System.out.println();
         System.out.println("Users id: ");
         Long userID = input.nextLong();
+        input.nextLine();
         try {
             List<UserFriendshipsDTO> userFriendList = userService.getUserFriendList(userID);
+            if(userFriendList.size() > 0){
+                userFriendList.forEach(System.out::println);
+            }
+            else{
+                System.out.println("This user doesn't have any friends, sums up Society if you ask me..");
+            }
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void showUserFriendsListByMonth(Scanner input){
+        System.out.println();
+        System.out.println("Users id: ");
+        Long userID = input.nextLong();
+        System.out.println("Month: ");
+        int monthNr = input.nextInt();
+        input.nextLine();
+        YearMonth month = YearMonth.of(2021,monthNr);
+        try {
+            List<UserFriendshipsDTO> userFriendList = userService.getFriendshipsMonth(userID,month);
             if(userFriendList.size() > 0){
                 userFriendList.forEach(System.out::println);
             }
@@ -246,6 +275,7 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
+        System.out.println("13:Show users friend list filtered by a month");
         System.out.println("x.Exit application");
     }
 
@@ -305,8 +335,17 @@ public class UI {
                     showUserFriendsList(input);
                     showMenu();
                     break;
+                case "13":
+                    showUserFriendsListByMonth(input);
+                    showMenu();
+                    break;
                 case "x":
                     return;
+                default:
+                    System.out.println("Comanda introdusa a fost gresita");
+                    System.out.println();
+                    showMenu();
+                    break;
             }
         }
     }
