@@ -5,7 +5,6 @@ import domain.Tuple;
 import domain.User;
 import domain.UserFriendshipsDTO;
 import domain.validators.ValidationException;
-import org.postgresql.util.PSQLException;
 import repository.Repository;
 import service.FriendshipService;
 import service.UserService;
@@ -78,6 +77,7 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
+        input.nextLine();
         try{
             userService.removeUser(id);
         }
@@ -111,6 +111,7 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
+        input.nextLine();
         try{
             User foundUser = userService.findUserById(id);
             System.out.println(foundUser);
@@ -229,6 +230,28 @@ public class UI {
         }
     }
 
+    private void showUserFriendsListByMonth(Scanner input){
+        System.out.println();
+        System.out.println("Users id: ");
+        Long userID = input.nextLong();
+        input.nextLine();
+        System.out.println("Month: ");
+        Integer month = input.nextInt();
+        input.nextLine();
+        try {
+            List<UserFriendshipsDTO> userFriendListByMonth = userService.getUserFriendListByMonth(userID, month);
+            if(userFriendListByMonth.size() > 0){
+                userFriendListByMonth.forEach(System.out::println);
+            }
+            else{
+                System.out.println("This user didn't make any friends that month.");
+            }
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     /**
      * This function shows the menu
      */
@@ -246,6 +269,7 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
+        System.out.println("13.Show users friend list by month");
         System.out.println("x.Exit application");
     }
 
@@ -303,6 +327,10 @@ public class UI {
                     break;
                 case "12":
                     showUserFriendsList(input);
+                    showMenu();
+                    break;
+                case "13":
+                    showUserFriendsListByMonth(input);
                     showMenu();
                     break;
                 case "x":
