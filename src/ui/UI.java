@@ -1,13 +1,11 @@
 package ui;
 
-import domain.Friendship;
-import domain.Tuple;
-import domain.User;
-import domain.UserFriendshipsDTO;
+import domain.*;
 import domain.validators.ValidationException;
 import org.postgresql.util.PSQLException;
 import repository.Repository;
 import service.FriendshipService;
+import service.MessageService;
 import service.UserService;
 import service.serviceExceptions.AddException;
 import service.serviceExceptions.FindException;
@@ -31,6 +29,10 @@ public class UI {
      */
     private Repository<Tuple<Long,Long>, Friendship> repoFriends;
 
+    private Repository<Long, Message> messageRepository;
+    private Repository<Long, Chat> chatRepository;
+
+
     /**
      * User service
      */
@@ -40,16 +42,21 @@ public class UI {
      */
     private FriendshipService friendsService;
 
+    private MessageService messageService;
     /**
      * Overloaded constructor
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends) {
+    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
-        userService = new UserService(repoUsers,repoFriends);
-        friendsService = new FriendshipService(repoFriends,repoUsers);
+        this.messageRepository = messageRepository;
+        this.chatRepository = chatRepository;
+
+        this.userService = new UserService(repoUsers, repoFriends);
+        this.friendsService = new FriendshipService(repoFriends, repoUsers);
+        this.messageService = new MessageService(repoFriends, repoUsers, messageRepository, chatRepository);
     }
 
     /**
@@ -229,6 +236,16 @@ public class UI {
         }
     }
 
+    private void showConversation(Scanner input){
+        System.out.println();
+        System.out.println("Chat Id");
+        Long id = input.nextLong();
+        input.nextLine();
+        for(ChatDTO pair : messageService.getConversation(id)) {
+            System.out.println(pair);
+        }
+    }
+
     /**
      * This function shows the menu
      */
@@ -246,7 +263,43 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
+        System.out.println("14.Show a conversation");
+        System.out.println("15.Login");
         System.out.println("x.Exit application");
+    }
+
+    private void loginMenu(){
+        System.out.println("# You are logged in. Choose an action: #");
+        System.out.println("1.Send messages");
+        System.out.println("2.Reply to messages");
+        System.out.println("x.Logout");
+    }
+
+    private void sendMessageMenu(Scanner input, Long id){
+        System.out.println("User you want to text: ");
+        Long userID = input.nextLong();
+        input.nextLine();
+        System.out.println("Message: ");
+        String message = input.nextLine();
+        messageService.addMessage(id, message, userID);
+    }
+
+    private void runLogin(Scanner input, Long id){
+        loginMenu();
+        while (true){
+            switch (input.nextLine()){
+                case "1":
+                    sendMessageMenu(input, id);
+                    loginMenu();
+                    break;
+                case "2":
+
+                    loginMenu();
+                    break;
+                case "x":
+                    return;
+            }
+        }
     }
 
     /**
@@ -303,6 +356,18 @@ public class UI {
                     break;
                 case "12":
                     showUserFriendsList(input);
+                    showMenu();
+                    break;
+                case "14":
+                    showConversation(input);
+                    showMenu();
+                    break;
+                case "15":
+                    System.out.println();
+                    System.out.println("Id: ");
+                    Long id = input.nextLong();
+                    input.nextLine();
+                    runLogin(input, id);
                     showMenu();
                     break;
                 case "x":
