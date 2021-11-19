@@ -20,6 +20,8 @@ public class Message extends Entity<Long>{
         this.replyId = replyId;
     }
 
+    //TODO chatters - lista de destinatari
+
     public Long getUser() {
         return user;
     }

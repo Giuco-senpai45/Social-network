@@ -86,7 +86,7 @@ public class MessageService {
 //                .collect(Collectors.toList());
 //    }
 
-    public static int compareById(ChatDTO a, ChatDTO b){
+    public static int compareByTime(ChatDTO a, ChatDTO b){
         return (int) a.getTimestamp().compareTo(b.getTimestamp());
     }
 
@@ -100,7 +100,7 @@ public class MessageService {
 
         return messages.stream()
                 .map(m -> new ChatDTO(getName.apply(m.getE1()),getMessage.apply(m.getE2()), getTime.apply(m.getE2())))
-                .sorted(MessageService::compareById)
+                .sorted(MessageService::compareByTime)
                 .collect(Collectors.toList());
     }
 
