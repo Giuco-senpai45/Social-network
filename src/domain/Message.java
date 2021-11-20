@@ -12,12 +12,14 @@ public class Message extends Entity<Long>{
     private String message;
     private Timestamp timeOfMessage;
     private Long replyId;
+    private Long chatID;
 
-    public Message(Long user, String message, Timestamp timeOfMessage, Long replyId) {
+    public Message(Long user, String message, Timestamp timeOfMessage, Long replyId,Long chatID) {
         this.user = user;
         this.message = message;
         this.timeOfMessage = timeOfMessage;
         this.replyId = replyId;
+        this.chatID = chatID;
     }
 
     public Long getUser() {
@@ -38,6 +40,10 @@ public class Message extends Entity<Long>{
 
     public Long getReplyId() {
         return replyId;
+    }
+
+    public Long getChatID() {
+        return chatID;
     }
 
     @Override

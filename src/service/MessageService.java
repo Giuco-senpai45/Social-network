@@ -5,8 +5,10 @@ import repository.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MessageService {
@@ -24,33 +26,47 @@ public class MessageService {
     }
 
     public void addMessage(Long id, String message, Long toUserId){
-        Long nextID = maximID() + 1;
-        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L);
-        msg.setId(nextID);
-        repoMessages.save(msg);
-
         Chat chat = verifyIfChatExists(id, toUserId);
         if(chat == null) {
+            System.out.println("Il creez ");
             chat = new Chat();
             chat.setId(maximChatId() + 1);
         }
-        chat.addPair(id, nextID);
-        //TODO functia save pentru chat nu salveaza bine
+        chat.addUserToChat(id);
+        chat.addUserToChat(toUserId);
+        System.out.println(chat + " gasit ");
         repoChats.save(chat);
+
+        Long nextID = maximUserID() + 1;
+        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L, chat.getId());
+        msg.setId(nextID);
+        repoMessages.save(msg);
 
         System.out.println("Message sent successfully");
     }
 
     private Chat verifyIfChatExists(Long fromID, Long toID){
+        boolean foundSender = false;
+        boolean foundReceiver = false;
         for(Chat chat: repoChats.findAll()){
-            for(Tuple<Long, Long> pair: chat.getPairUserMessage())
-                if(pair.getE1() == fromID && pair.getE2() == toID || pair.getE2() == fromID && pair.getE1() ==toID)
-                    return chat;
+            for(Long user: chat.getChatUsers()){
+                if(user == fromID){
+                    foundSender = true;
+                }
+                if(user == toID){
+                    foundReceiver = true;
+                }
+            }
+            if(foundSender && foundReceiver) {
+                return chat;
+            }
+            foundSender = false;
+            foundReceiver = false;
         }
         return null;
     }
 
-    private Long maximID() {
+    private Long maximUserID() {
         Long maxID = 0L;
         for(Message msg: repoMessages.findAll()){
             if(msg.getId() > maxID)
@@ -83,22 +99,24 @@ public class MessageService {
 //    }
 
     public static int compareTime(ChatDTO a, ChatDTO b){
-        return (int) a.getTimestamp().compareTo(b.getTimestamp());
+        return  a.getTimestamp().compareTo(b.getTimestamp());
     }
 
     public List<ChatDTO> getConversation(Long id){
-        Chat chat = repoChats.findOne(id);
-        List<Tuple<Long, Long>> messages = chat.getPairUserMessage();
-        Function<Long, String> getName = x -> repoUsers.findOne(x).getLastName() + " "
-                + repoUsers.findOne(x).getFirstName();
-        Function<Long, String> getMessage = x -> repoMessages.findOne(x).getMessage();
-        Function<Long, Timestamp> getTime = x -> repoMessages.findOne(x).getTimeOfMessage();
+        Iterable<Message> messages = repoMessages.findAll();
+        List<Message> messagesList = new ArrayList<>();
+        messages.forEach(messagesList::add);
 
-        return messages.stream()
-                .map(m -> new ChatDTO(getName.apply(m.getE1()),getMessage.apply(m.getE2()), getTime.apply(m.getE2())))
+        Predicate<Message> testIsInChat = m -> m.getChatID().equals(id);
+        Function<Long, String> getName = x ->{
+            User user = repoUsers.findOne(x);
+            return user.getFirstName() + " " + user.getLastName();
+        };
+
+        return messagesList.stream()
+                .filter(testIsInChat)
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage()))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
-
-
 }
