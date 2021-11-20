@@ -276,12 +276,32 @@ public class UI {
     }
 
     private void sendMessageMenu(Scanner input, Long loggedUser){
-        System.out.println("User you want to text: ");
+        System.out.println();
+        System.out.println("User ID you want to text: ");
         Long toUserId = input.nextLong();
         input.nextLine();
         System.out.println("Message: ");
         String message = input.nextLine();
         messageService.addMessage(loggedUser, message, toUserId);
+    }
+
+    private void replyMessageMenu(Scanner input, Long loggedUser){
+        List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
+        StringBuilder messageIDs = new StringBuilder();
+        for(Long msgID: msgsToReply)
+            messageIDs.append(msgID).append(" ");
+        if(messageIDs.isEmpty())
+            System.out.println("You don't have any messages.");
+        else {
+            System.out.println("You can reply to the following messages: " + messageIDs);
+            System.out.println();
+            System.out.println("Message ID you want to reply to: ");
+            Long messageID = input.nextLong();
+            input.nextLine();
+            System.out.println("Message: ");
+            String message = input.nextLine();
+            messageService.replyMessage(loggedUser, message, messageID);
+        }
     }
 
     private void runLogin(Scanner input, Long loggedUser){
@@ -293,7 +313,7 @@ public class UI {
                     loginMenu();
                     break;
                 case "2":
-
+                    replyMessageMenu(input, loggedUser);
                     loginMenu();
                     break;
                 case "x":

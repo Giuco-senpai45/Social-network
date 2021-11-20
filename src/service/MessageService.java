@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -34,7 +35,6 @@ public class MessageService {
         }
         chat.addUserToChat(id);
         chat.addUserToChat(toUserId);
-        System.out.println(chat + " gasit ");
         repoChats.save(chat);
 
         Long nextID = maximUserID() + 1;
@@ -85,18 +85,45 @@ public class MessageService {
         return maxID;
     }
 
-//    public List<Long> chatsForUser(Long id){
-//        Iterable<Chat> chats = repoChats.findAll();
-//        ArrayList<Chat> listChats = new ArrayList<>();
-//        chats.forEach(listChats::add);
-//
-//        Predicate<Chat> testUserInChat = f -> Objects.equals(f.getId(), id);
-//
-//        return listChats.stream()
-//                .filter(testUserInChat)
-//                .map(Entity::getId)
-//                .collect(Collectors.toList());
-//    }
+    public void replyMessage(Long id, String message, Long messageIDforReply){
+        Message m = repoMessages.findOne(messageIDforReply);
+        Long toUserId = m.getUser();
+        Chat chat = verifyIfChatExists(id, toUserId);
+
+        Long nextID = maximUserID() + 1;
+        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, chat.getId());
+        msg.setId(nextID);
+        repoMessages.save(msg);
+
+        System.out.println("Message sent successfully");
+    }
+
+
+    public List<Long> messagesToReplyForUser(Long userID){
+        Iterable<Chat> chats = repoChats.findAll();
+        ArrayList<Chat> listChats = new ArrayList<>();
+        chats.forEach(listChats::add);
+
+        Predicate<Chat> testUserInChat = f -> f.getChatUsers().contains(userID);
+
+        List<Long> cts = listChats.stream()
+                .filter(testUserInChat)
+                .map(Entity::getId)
+                .collect(Collectors.toList());
+
+        Iterable<Message> messages = repoMessages.findAll();
+        ArrayList<Message> listMessages = new ArrayList<>();
+        messages.forEach(listMessages::add);
+
+        Predicate<Message> testMessageInChat = f -> cts.contains(f.getChatID());
+        Predicate<Message> testMessageFromUser = f -> !Objects.equals(f.getUser(), userID);
+        Predicate<Message> testBoth = testMessageInChat.and(testMessageFromUser);
+
+        return listMessages.stream()
+                .filter(testBoth)
+                .map(Entity::getId)
+                .collect(Collectors.toList());
+    }
 
 
     public static int compareTime(ChatDTO a, ChatDTO b){
@@ -116,7 +143,7 @@ public class MessageService {
 
         return messagesList.stream()
                 .filter(testIsInChat)
-                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage()))
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId()))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }

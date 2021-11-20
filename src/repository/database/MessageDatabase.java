@@ -80,7 +80,7 @@ public class MessageDatabase implements Repository<Long, Message> {
 
     @Override
     public Message save(Message entity) {
-        String sql = "insert into messages (from_user_id, message, date_time, chat_id) values (?, ?, ?, ?)";
+        String sql = "insert into messages (from_user_id, message, date_time, chat_id, reply_id) values (?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -89,6 +89,7 @@ public class MessageDatabase implements Repository<Long, Message> {
             ps.setString(2, entity.getMessage());
             ps.setTimestamp(3, entity.getTimeOfMessage());
             ps.setLong(4,entity.getChatID());
+            ps.setLong(5, entity.getReplyId());
 
             ps.executeUpdate();
         } catch (SQLException e) {

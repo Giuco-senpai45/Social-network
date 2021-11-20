@@ -9,12 +9,12 @@ public class ChatDTO {
     private Timestamp timestamp;
     private Long replyID;
 
-    //TODO adaugare parte de reply in DTO si in tabela de chats I guess??
 
-    public ChatDTO(String userName, String message, Timestamp timestamp) {
+    public ChatDTO(String userName, String message, Timestamp timestamp, Long replyID) {
         this.userName = userName;
         this.message = message;
         this.timestamp = timestamp;
+        this.replyID = replyID;
     }
 
     public String getUserName() {
@@ -31,7 +31,10 @@ public class ChatDTO {
 
     @Override
     public String toString() {
-        return userName + ", " + timestamp + "\n" + "         " + message;
-
+        if(replyID == -1)
+            return userName + ", " + timestamp + "\n" + "         " + message;
+        else
+            return userName + ", " + timestamp + ", replied to: " + replyID +
+                    "\n" + "         " + message;
     }
 }
