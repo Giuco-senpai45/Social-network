@@ -275,21 +275,21 @@ public class UI {
         System.out.println("x.Logout");
     }
 
-    private void sendMessageMenu(Scanner input, Long id){
+    private void sendMessageMenu(Scanner input, Long loggedUser){
         System.out.println("User you want to text: ");
-        Long userID = input.nextLong();
+        Long toUserId = input.nextLong();
         input.nextLine();
         System.out.println("Message: ");
         String message = input.nextLine();
-        messageService.addMessage(id, message, userID);
+        messageService.addMessage(loggedUser, message, toUserId);
     }
 
-    private void runLogin(Scanner input, Long id){
+    private void runLogin(Scanner input, Long loggedUser){
         loginMenu();
         while (true){
             switch (input.nextLine()){
                 case "1":
-                    sendMessageMenu(input, id);
+                    sendMessageMenu(input, loggedUser);
                     loginMenu();
                     break;
                 case "2":
@@ -364,10 +364,10 @@ public class UI {
                     break;
                 case "15":
                     System.out.println();
-                    System.out.println("Id: ");
-                    Long id = input.nextLong();
+                    System.out.println("Login as user: ");
+                    Long loggedUserId = input.nextLong();
                     input.nextLine();
-                    runLogin(input, id);
+                    runLogin(input, loggedUserId);
                     showMenu();
                     break;
                 case "x":

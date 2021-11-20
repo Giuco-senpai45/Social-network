@@ -2,6 +2,7 @@ package repository.database;
 
 import domain.Message;
 import domain.User;
+import domain.validators.Validator;
 import repository.Repository;
 
 import java.sql.*;
@@ -14,11 +15,13 @@ public class MessageDatabase implements Repository<Long, Message> {
     private String url;
     private String username;
     private String password;
+    private Validator validator;
 
-    public MessageDatabase(String url, String username, String password) {
+    public MessageDatabase(String url, String username, String password, Validator<Message> validator) {
         this.url = url;
         this.username = username;
         this.password = password;
+        this.validator = validator;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class MessageDatabase implements Repository<Long, Message> {
     @Override
     public Message save(Message entity) {
         String sql = "insert into messages (from_user_id, message, date_time) values (?, ?, ?)";
-        //validator.validate(entity);
+        validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 

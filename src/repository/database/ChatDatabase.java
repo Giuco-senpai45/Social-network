@@ -3,6 +3,7 @@ package repository.database;
 import domain.Chat;
 import domain.Tuple;
 import domain.User;
+import domain.validators.Validator;
 import repository.Repository;
 
 import java.sql.*;
@@ -15,11 +16,13 @@ public class ChatDatabase implements Repository<Long, Chat> {
     private String url;
     private String username;
     private String password;
+    private Validator validator;
 
-    public ChatDatabase(String url, String username, String password) {
+    public ChatDatabase(String url, String username, String password, Validator<Chat> validator) {
         this.url = url;
         this.username = username;
         this.password = password;
+        this.validator = validator;
     }
 
     @Override
@@ -87,7 +90,7 @@ public class ChatDatabase implements Repository<Long, Chat> {
     @Override
     public Chat save(Chat entity) {
         String sql = "insert into chats (chat_id, user_id, message_id) values (?, ?, ?)";
-        //validator.validate(entity);
+        validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
