@@ -120,4 +120,7 @@ public class MessageService {
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
+
+    //TODO create group chat from UI
+
 }

@@ -62,7 +62,7 @@ public class ChatDatabase implements Repository<Long, Chat> {
             ResultSet resultSet = statement.executeQuery()){
 
             while(resultSet.next()){
-                Long chat_id = resultSet.getLong("user_id");
+                Long chat_id = resultSet.getLong("chat_id");
                 Long user_id = resultSet.getLong("user_id");
 
                 Chat chat = new Chat();
@@ -87,15 +87,23 @@ public class ChatDatabase implements Repository<Long, Chat> {
     @Override
     public Chat save(Chat entity) {
         String sql = "insert into chats (chat_id, user_id) values (?, ?)";
+        String sql2 = "SELECT * from chats where chat_id = ? and user_id = ?";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql);
+             PreparedStatement ps2 = connection.prepareStatement(sql2)) {
 
             for(Long user: entity.getChatUsers()) {
-                ps.setLong(1, entity.getId());
-                ps.setLong(2, user);
+                ps2.setLong(1, entity.getId());
+                ps2.setLong(2, user);
+                ResultSet resultSet = ps2.executeQuery();
+                if(!resultSet.next()) {
 
-                ps.executeUpdate();
+                    ps.setLong(1, entity.getId());
+                    ps.setLong(2, user);
+
+                    ps.executeUpdate();
+                }
             }
         } catch (SQLException  e) {
             e.printStackTrace();

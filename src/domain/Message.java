@@ -55,6 +55,8 @@ public class Message extends Entity<Long>{
                 ", chatters=" + chatters +
                 ", message='" + message + '\'' +
                 ", timeOfMessage=" + timeOfMessage +
+                ", replyId=" + replyId +
+                ", chatID=" + chatID +
                 '}';
     }
 
