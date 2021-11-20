@@ -36,6 +36,10 @@ public class Message extends Entity<Long>{
         return timeOfMessage;
     }
 
+    public Long getReplyId() {
+        return replyId;
+    }
+
     @Override
     public String toString() {
         return "Message{" +

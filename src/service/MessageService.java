@@ -5,12 +5,8 @@ import repository.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MessageService {
@@ -27,14 +23,13 @@ public class MessageService {
         this.repoChats = chatRepository;
     }
 
-
-    public void addMessage(Long id, String message, Long toID){
-        //TODO validari
+    public void addMessage(Long id, String message, Long toUserId){
         Long nextID = maximID() + 1;
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L);
+        msg.setId(nextID);
         repoMessages.save(msg);
 
-        Chat chat = verifyChat(id, toID);
+        Chat chat = verifyIfChatExists(id, toUserId);
         if(chat == null) {
             chat = new Chat();
             chat.setId(maximChatId() + 1);
@@ -46,7 +41,7 @@ public class MessageService {
         System.out.println("Message sent successfully");
     }
 
-    private Chat verifyChat(Long fromID, Long toID){
+    private Chat verifyIfChatExists(Long fromID, Long toID){
         for(Chat chat: repoChats.findAll()){
             for(Tuple<Long, Long> pair: chat.getPairUserMessage())
                 if(pair.getE1() == fromID && pair.getE2() == toID || pair.getE2() == fromID && pair.getE1() ==toID)
@@ -70,6 +65,7 @@ public class MessageService {
             if(chat.getId() > maxID)
                 maxID = chat.getId();
         }
+//        System.out.println("Idul maxim de chat " + maxID);
         return maxID;
     }
 
@@ -86,7 +82,7 @@ public class MessageService {
 //                .collect(Collectors.toList());
 //    }
 
-    public static int compareById(ChatDTO a, ChatDTO b){
+    public static int compareTime(ChatDTO a, ChatDTO b){
         return (int) a.getTimestamp().compareTo(b.getTimestamp());
     }
 
@@ -100,7 +96,7 @@ public class MessageService {
 
         return messages.stream()
                 .map(m -> new ChatDTO(getName.apply(m.getE1()),getMessage.apply(m.getE2()), getTime.apply(m.getE2())))
-                .sorted(MessageService::compareById)
+                .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
 
