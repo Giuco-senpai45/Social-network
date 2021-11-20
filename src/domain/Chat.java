@@ -6,27 +6,26 @@ import java.util.Objects;
 
 public class Chat extends Entity<Long>{
 
-    private List<Tuple<Long, Long>> pairUserMessage;
+    private List<Long> chatUsers;
 
     public Chat(){
-        pairUserMessage = new ArrayList<>();
+        chatUsers = new ArrayList<>();
     }
 
-    public void addPair(Long userID, Long messageID){
-        Tuple<Long, Long> pair = new Tuple<>(userID, messageID);
-        pairUserMessage.add(pair);
+    public void addUserToChat(Long userID){
+        chatUsers.add(userID);
     }
 
-    public List<Tuple<Long, Long>> getPairUserMessage() {
-        return pairUserMessage;
+    public List< Long> getChatUsers() {
+        return chatUsers;
     }
 
     @Override
     public String toString() {
-        String pairs = "";
-        for(Tuple<Long, Long> pair: getPairUserMessage())
-            pairs = pairs + pair.getE1().toString() + " " + pair.getE2().toString() + ", ";
-        return "Chat: " + "pairUserMessage = " + pairs;
+        String users = "";
+        for(Long user: getChatUsers())
+            users = users + user + " , ";
+        return "Chat: " + "pairUserMessage = " + users;
     }
 
     @Override
@@ -34,11 +33,11 @@ public class Chat extends Entity<Long>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Chat chat = (Chat) o;
-        return Objects.equals(pairUserMessage, chat.pairUserMessage);
+        return Objects.equals(chatUsers, chat.chatUsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pairUserMessage);
+        return Objects.hash(chatUsers);
     }
 }

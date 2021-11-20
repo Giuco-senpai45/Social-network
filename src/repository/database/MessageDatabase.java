@@ -40,8 +40,9 @@ public class MessageDatabase implements Repository<Long, Message> {
                 String message = resultSet.getString("message");
                 Timestamp dateTime = resultSet.getTimestamp("date_time");
                 Long replyId = resultSet.getLong("reply_id");
+                Long chatId = resultSet.getLong("chat_id");
 
-                entity = new Message(fromId, message, dateTime, replyId);
+                entity = new Message(fromId, message, dateTime, replyId,chatId);
                 entity.setId(messageId);
             }
 
@@ -65,8 +66,9 @@ public class MessageDatabase implements Repository<Long, Message> {
                 String message = resultSet.getString("message");
                 Timestamp dateTime = resultSet.getTimestamp("date_time");
                 Long replyId = resultSet.getLong("reply_id");
+                Long chatId = resultSet.getLong("chat_id");
 
-                Message entity = new Message(fromId, message, dateTime, replyId);
+                Message entity = new Message(fromId, message, dateTime, replyId,chatId);
                 entity.setId(messageId);
                 messages.add(entity);
             }
@@ -78,7 +80,7 @@ public class MessageDatabase implements Repository<Long, Message> {
 
     @Override
     public Message save(Message entity) {
-        String sql = "insert into messages (from_user_id, message, date_time) values (?, ?, ?)";
+        String sql = "insert into messages (from_user_id, message, date_time, chat_id) values (?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -86,6 +88,7 @@ public class MessageDatabase implements Repository<Long, Message> {
             ps.setLong(1, entity.getUser());
             ps.setString(2, entity.getMessage());
             ps.setTimestamp(3, entity.getTimeOfMessage());
+            ps.setLong(4,entity.getChatID());
 
             ps.executeUpdate();
         } catch (SQLException e) {

@@ -2,7 +2,6 @@ package repository.database;
 
 import domain.Chat;
 import domain.Tuple;
-import domain.User;
 import domain.validators.Validator;
 import repository.Repository;
 
@@ -44,9 +43,8 @@ public class ChatDatabase implements Repository<Long, Chat> {
                     setEntity = true;
                 }
                 Long user_id = resultSet.getLong("user_id");
-                Long message_id = resultSet.getLong("message_id");
 
-                chat.addPair(user_id, message_id);
+                chat.addUserToChat(user_id);
             }
 
         } catch (SQLException e) {
@@ -66,7 +64,6 @@ public class ChatDatabase implements Repository<Long, Chat> {
             while(resultSet.next()){
                 Long chat_id = resultSet.getLong("user_id");
                 Long user_id = resultSet.getLong("user_id");
-                Long message_id = resultSet.getLong("message_id");
 
                 Chat chat = new Chat();
                 chat.setId(chat_id);
@@ -77,7 +74,7 @@ public class ChatDatabase implements Repository<Long, Chat> {
                         found = true;
                     }
 
-                chat.addPair(user_id, message_id);
+                chat.addUserToChat(user_id);
                 if(!found)
                     chats.add(chat);
             }
@@ -89,16 +86,14 @@ public class ChatDatabase implements Repository<Long, Chat> {
 
     @Override
     public Chat save(Chat entity) {
-        String sql = "insert into chats (chat_id, user_id, message_id) values (?, ?, ?)";
+        String sql = "insert into chats (chat_id, user_id) values (?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            //TODO ar trebui salvat doar ultimul element din pereche
-            for(Tuple<Long, Long> pair: entity.getPairUserMessage()) {
+            for(Long user: entity.getChatUsers()) {
                 ps.setLong(1, entity.getId());
-                ps.setLong(2, pair.getE1());;
-                ps.setLong(3, pair.getE2());
+                ps.setLong(2, user);
 
                 ps.executeUpdate();
             }
