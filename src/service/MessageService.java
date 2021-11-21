@@ -2,6 +2,7 @@ package service;
 
 import domain.*;
 import repository.Repository;
+import service.serviceExceptions.FindException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -26,23 +27,39 @@ public class MessageService {
         this.repoChats = chatRepository;
     }
 
-    public void addMessage(Long id, String message, Long toUserId){
-        Chat chat = verifyIfChatExists(id, toUserId);
-        if(chat == null) {
-            System.out.println("Il creez ");
+    public void addMessage(Long id, String message, List<Long> chatters){
+        String errors = "";
+        for(Long chatterID: chatters) {
+            User user = repoUsers.findOne(chatterID);
+            if (user == null)
+                errors = errors + "The user " + chatterID + " doesn't exist!\n";
+        }
+        if(!errors.equals(""))
+            throw new FindException(errors);
+
+        boolean chatExists = true;
+        Chat chat = null;
+        for(Long chatterID: chatters) {
+            Chat c = verifyIfChatExists(id, chatterID);
+            chat = c;
+            if(c == null)
+                chatExists = false;
+        }
+
+        if(!chatExists) {
             chat = new Chat();
             chat.setId(maximChatId() + 1);
         }
         chat.addUserToChat(id);
-        chat.addUserToChat(toUserId);
+        for(Long chatterID: chatters) {
+            chat.addUserToChat(chatterID);
+        }
         repoChats.save(chat);
 
         Long nextID = maximUserID() + 1;
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L, chat.getId());
         msg.setId(nextID);
         repoMessages.save(msg);
-
-        System.out.println("Message sent successfully");
     }
 
     private Chat verifyIfChatExists(Long fromID, Long toID){
@@ -94,8 +111,6 @@ public class MessageService {
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, chat.getId());
         msg.setId(nextID);
         repoMessages.save(msg);
-
-        System.out.println("Message sent successfully");
     }
 
 
@@ -147,7 +162,5 @@ public class MessageService {
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
-
-    //TODO create group chat from UI
 
 }

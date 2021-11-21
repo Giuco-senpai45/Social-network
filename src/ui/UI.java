@@ -14,6 +14,7 @@ import service.serviceExceptions.UpdateException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -277,47 +278,72 @@ public class UI {
 
     private void sendMessageMenu(Scanner input, Long loggedUser){
         System.out.println();
-        System.out.println("User ID you want to text: ");
-        Long toUserId = input.nextLong();
+        System.out.println("Users IDs you want to text: ");
+        String users = input.nextLine();
         input.nextLine();
-        System.out.println("Message: ");
-        String message = input.nextLine();
-        messageService.addMessage(loggedUser, message, toUserId);
+        while(true) {
+            System.out.println("Message: ");
+            String message = input.nextLine();
+            input.nextLine();
+            String[] usersSplitted = users.split(" ");
+            List<Long> chatters = new ArrayList<>();
+            for (String c : usersSplitted)
+                chatters.add(Long.parseLong(c));
+
+            messageService.addMessage(loggedUser, message, chatters);
+            System.out.println("The message was sent successfully\n");
+            System.out.println("Do you want to send another message to this user? [Y/n]");
+            String response = input.nextLine();
+            if(Objects.equals(response, "n"))
+                break;
+        }
     }
 
     private void replyMessageMenu(Scanner input, Long loggedUser){
-        List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
-        StringBuilder messageIDs = new StringBuilder();
-        for(Long msgID: msgsToReply)
-            messageIDs.append(msgID).append(" ");
-        if(messageIDs.isEmpty())
-            System.out.println("You don't have any messages.");
-        else {
-            System.out.println("You can reply to the following messages: " + messageIDs);
-            System.out.println();
-            System.out.println("Message ID you want to reply to: ");
-            Long messageID = input.nextLong();
-            input.nextLine();
-            System.out.println("Message: ");
-            String message = input.nextLine();
-            messageService.replyMessage(loggedUser, message, messageID);
+        while(true) {
+            List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
+            StringBuilder messageIDs = new StringBuilder();
+            for (Long msgID : msgsToReply)
+                messageIDs.append(msgID).append(" ");
+            if (messageIDs.isEmpty())
+                System.out.println("You don't have any messages.");
+            else {
+                System.out.println("You can reply to the following messages: " + messageIDs);
+                System.out.println();
+                System.out.println("Message ID you want to reply to: ");
+                Long messageID = input.nextLong();
+                input.nextLine();
+                System.out.println("Message: ");
+                String message = input.nextLine();
+                messageService.replyMessage(loggedUser, message, messageID);
+                System.out.println("The message was sent successfully\n");
+            }
+            System.out.println("Do you want to reply to another message? [Y/n]");
+            String response = input.nextLine();
+            if(Objects.equals(response, "n"))
+                break;
         }
     }
 
     private void runLogin(Scanner input, Long loggedUser){
         loginMenu();
         while (true){
-            switch (input.nextLine()){
-                case "1":
-                    sendMessageMenu(input, loggedUser);
-                    loginMenu();
-                    break;
-                case "2":
-                    replyMessageMenu(input, loggedUser);
-                    loginMenu();
-                    break;
-                case "x":
-                    return;
+            try {
+                switch (input.nextLine()) {
+                    case "1":
+                        sendMessageMenu(input, loggedUser);
+                        loginMenu();
+                        break;
+                    case "2":
+                        replyMessageMenu(input, loggedUser);
+                        loginMenu();
+                        break;
+                    case "x":
+                        return;
+                }
+            }
+            catch (FindException | ValidationException e){
+                System.out.println(e.getMessage());
             }
         }
     }
