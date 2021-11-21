@@ -98,7 +98,6 @@ public class MessageService {
             if(chat.getId() > maxID)
                 maxID = chat.getId();
         }
-//        System.out.println("Idul maxim de chat " + maxID);
         return maxID;
     }
 

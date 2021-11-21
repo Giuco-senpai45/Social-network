@@ -280,21 +280,23 @@ public class UI {
         System.out.println();
         System.out.println("Users IDs you want to text: ");
         String users = input.nextLine();
-        input.nextLine();
         while(true) {
             System.out.println("Message: ");
             String message = input.nextLine();
-            input.nextLine();
             String[] usersSplitted = users.split(" ");
             List<Long> chatters = new ArrayList<>();
             for (String c : usersSplitted)
                 chatters.add(Long.parseLong(c));
-
-            messageService.addMessage(loggedUser, message, chatters);
-            System.out.println("The message was sent successfully\n");
+            try {
+                messageService.addMessage(loggedUser, message, chatters);
+                System.out.println("The message was sent successfully\n");
+            }
+            catch (FindException | ValidationException e){
+                System.out.println(e.getMessage());
+            }
             System.out.println("Do you want to send another message to this user? [Y/n]");
             String response = input.nextLine();
-            if(Objects.equals(response, "n"))
+            if (Objects.equals(response, "n"))
                 break;
         }
     }
@@ -315,8 +317,13 @@ public class UI {
                 input.nextLine();
                 System.out.println("Message: ");
                 String message = input.nextLine();
-                messageService.replyMessage(loggedUser, message, messageID);
-                System.out.println("The message was sent successfully\n");
+                try {
+                    messageService.replyMessage(loggedUser, message, messageID);
+                    System.out.println("The message was sent successfully\n");
+                }
+                catch (FindException | ValidationException e){
+                    System.out.println(e.getMessage());
+                }
             }
             System.out.println("Do you want to reply to another message? [Y/n]");
             String response = input.nextLine();
@@ -325,25 +332,34 @@ public class UI {
         }
     }
 
+    private void tryToLoginMenu(Scanner input){
+        System.out.println();
+        System.out.println("Login as user: ");
+        Long loggedUserId = input.nextLong();
+        input.nextLine();
+        try {
+            userService.findUserById(loggedUserId);
+            runLogin(input, loggedUserId);
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void runLogin(Scanner input, Long loggedUser){
         loginMenu();
         while (true){
-            try {
-                switch (input.nextLine()) {
-                    case "1":
-                        sendMessageMenu(input, loggedUser);
-                        loginMenu();
-                        break;
-                    case "2":
-                        replyMessageMenu(input, loggedUser);
-                        loginMenu();
-                        break;
-                    case "x":
-                        return;
-                }
-            }
-            catch (FindException | ValidationException e){
-                System.out.println(e.getMessage());
+            switch (input.nextLine()) {
+                case "1":
+                    sendMessageMenu(input, loggedUser);
+                    loginMenu();
+                    break;
+                case "2":
+                    replyMessageMenu(input, loggedUser);
+                    loginMenu();
+                    break;
+                case "x":
+                    return;
             }
         }
     }
@@ -409,11 +425,7 @@ public class UI {
                     showMenu();
                     break;
                 case "15":
-                    System.out.println();
-                    System.out.println("Login as user: ");
-                    Long loggedUserId = input.nextLong();
-                    input.nextLine();
-                    runLogin(input, loggedUserId);
+                    tryToLoginMenu(input);
                     showMenu();
                     break;
                 case "x":
