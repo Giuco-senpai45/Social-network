@@ -81,22 +81,8 @@ public class MessageService {
             if(chat.getId() > maxID)
                 maxID = chat.getId();
         }
-//        System.out.println("Idul maxim de chat " + maxID);
         return maxID;
     }
-
-//    public List<Long> chatsForUser(Long id){
-//        Iterable<Chat> chats = repoChats.findAll();
-//        ArrayList<Chat> listChats = new ArrayList<>();
-//        chats.forEach(listChats::add);
-//
-//        Predicate<Chat> testUserInChat = f -> Objects.equals(f.getId(), id);
-//
-//        return listChats.stream()
-//                .filter(testUserInChat)
-//                .map(Entity::getId)
-//                .collect(Collectors.toList());
-//    }
 
 
     public static int compareTime(ChatDTO a, ChatDTO b){
@@ -120,7 +106,5 @@ public class MessageService {
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
-
-    //TODO create group chat from UI
 
 }

@@ -2,10 +2,10 @@ package ui;
 
 import domain.*;
 import domain.validators.ValidationException;
-import org.postgresql.util.PSQLException;
 import repository.Repository;
 import service.FriendshipService;
 import service.MessageService;
+import service.FriendRequestService;
 import service.UserService;
 import service.serviceExceptions.AddException;
 import service.serviceExceptions.FindException;
@@ -31,7 +31,7 @@ public class UI {
 
     private Repository<Long, Message> messageRepository;
     private Repository<Long, Chat> chatRepository;
-
+    private Repository<Long, FriendRequest> requestRepository;
 
     /**
      * User service
@@ -43,20 +43,25 @@ public class UI {
     private FriendshipService friendsService;
 
     private MessageService messageService;
+    private FriendRequestService friendRequestService;
     /**
      * Overloaded constructor
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
+    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends,
+              Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository,
+              Repository<Long, FriendRequest> requestRepository) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
         this.messageRepository = messageRepository;
         this.chatRepository = chatRepository;
+        this.requestRepository = requestRepository;
 
         this.userService = new UserService(repoUsers, repoFriends);
         this.friendsService = new FriendshipService(repoFriends, repoUsers);
         this.messageService = new MessageService(repoFriends, repoUsers, messageRepository, chatRepository);
+        this.friendRequestService = new FriendRequestService(repoFriends,repoUsers,requestRepository);
     }
 
     /**
@@ -246,6 +251,78 @@ public class UI {
         }
     }
 
+    private void sendRequestMenu(Scanner input,Long loggedUser){
+        System.out.println();
+        while(true){
+            System.out.println("Send request to?");
+            Long receiverID = input.nextLong();
+            input.nextLine();
+            try {
+                boolean sentSuccess = friendRequestService.sendRequest(loggedUser,receiverID);
+                if(sentSuccess){
+                    System.out.println("Request sent successfully");
+                }
+            }
+            catch(AddException | FindException e){
+                System.out.println(e.getMessage());
+                continue;
+            }
+            System.out.println("Do you want to send another request?");
+            System.out.println("1.Yes");
+            System.out.println("2.No");
+            Long response = input.nextLong();
+            input.nextLine();
+            if(response.equals(2L)){
+                break;
+            }
+        }
+    }
+
+    private void processRequestMenu(Scanner input,Long loggedUser){
+        System.out.println();
+        while(true){
+            List<FriendRequest> requestsList = friendRequestService.findPendingRequestsForUser(loggedUser);
+            if(requestsList.size() == 0){
+                System.out.println("There are currently no requests");
+                break;
+            }
+            else{
+                requestsList.forEach(System.out::println);
+                System.out.println("Select a request:");
+                Long requestId = input.nextLong();
+                input.nextLine();
+                System.out.println("1.Accept");
+                System.out.println("2.Reject");
+                Long action = input.nextLong();
+                input.nextLine();
+                String status ="";
+                if(action.equals(1L)){
+                    status = "approved";
+                }
+                else if(action.equals(2L)){
+                    status = "rejected";
+                }
+                else {
+                    System.out.println("Not a valid command");
+                    continue;
+                }
+                try {
+                    boolean processed = friendRequestService.processRequest(requestId,status);
+                    System.out.println();
+                    if(processed){
+                        System.out.println("Friend request accepted");
+                    }
+                    else {
+                        System.out.println("Friend request rejected");
+                    }
+                }
+                catch (FindException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
     /**
      * This function shows the menu
      */
@@ -272,6 +349,8 @@ public class UI {
         System.out.println("# You are logged in. Choose an action: #");
         System.out.println("1.Send messages");
         System.out.println("2.Reply to messages");
+        System.out.println("3.Send friend request");
+        System.out.println("4.View friend requests");
         System.out.println("x.Logout");
     }
 
@@ -294,6 +373,14 @@ public class UI {
                     break;
                 case "2":
 
+                    loginMenu();
+                    break;
+                case "3":
+                    sendRequestMenu(input, loggedUser);
+                    loginMenu();
+                    break;
+                case "4":
+                    processRequestMenu(input, loggedUser);
                     loginMenu();
                     break;
                 case "x":
