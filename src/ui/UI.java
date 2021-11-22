@@ -15,6 +15,8 @@ import service.serviceExceptions.UpdateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * This is the User interface class
@@ -291,6 +293,11 @@ public class UI {
                 System.out.println("Select a request:");
                 Long requestId = input.nextLong();
                 input.nextLine();
+                Predicate<FriendRequest> testIDisInRequests = r ->r.getId().equals(requestId);
+                if(requestsList.stream().filter(testIDisInRequests).collect(Collectors.toList()).size() == 0){
+                    System.out.println("This isn't an available request");
+                    continue;
+                }
                 System.out.println("1.Accept");
                 System.out.println("2.Reject");
                 Long action = input.nextLong();
