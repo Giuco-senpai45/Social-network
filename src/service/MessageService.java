@@ -37,16 +37,18 @@ public class MessageService {
         if(!errors.equals(""))
             throw new FindException(errors);
 
-        boolean chatExists = true;
         Chat chat = null;
-        for(Long chatterID: chatters) {
-            Chat c = verifyIfChatExists(id, chatterID);
-            chat = c;
-            if(c == null)
-                chatExists = false;
+        for(Chat c: repoChats.findAll()){
+            int count = 0;
+            for(Long chatterID: chatters) {
+                if(c.getChatUsers().contains(chatterID))
+                    count++;
+            }
+            if(count == chatters.size())
+                chat = c;
         }
 
-        if(!chatExists) {
+        if(chat == null) {
             chat = new Chat();
             chat.setId(maximChatId() + 1);
         }
@@ -102,14 +104,18 @@ public class MessageService {
     }
 
     public void replyMessage(Long id, String message, Long messageIDforReply){
+        verifyReplyForMessage(id, messageIDforReply);
         Message m = repoMessages.findOne(messageIDforReply);
-        Long toUserId = m.getUser();
-        Chat chat = verifyIfChatExists(id, toUserId);
-
         Long nextID = maximUserID() + 1;
-        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, chat.getId());
+        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, m.getChatID());
         msg.setId(nextID);
         repoMessages.save(msg);
+    }
+
+    private void verifyReplyForMessage(Long userID, Long messageID){
+        List<Long> messagesForReply = messagesToReplyForUser(userID);
+        if(!messagesForReply.contains(messageID))
+            throw new FindException("You can't reply to this message!\n");
     }
 
 
@@ -152,7 +158,10 @@ public class MessageService {
         Predicate<Message> testIsInChat = m -> m.getChatID().equals(id);
         Function<Long, String> getName = x ->{
             User user = repoUsers.findOne(x);
-            return user.getFirstName() + " " + user.getLastName();
+            if(user == null)
+                return "Deleted user";
+            else
+                return user.getFirstName() + " " + user.getLastName();
         };
 
         return messagesList.stream()

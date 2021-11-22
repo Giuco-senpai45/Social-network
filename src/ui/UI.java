@@ -290,14 +290,16 @@ public class UI {
             try {
                 messageService.addMessage(loggedUser, message, chatters);
                 System.out.println("The message was sent successfully\n");
+                System.out.println("Do you want to send another message to this user? [Y/n]");
+                String response = input.nextLine();
+                if (Objects.equals(response, "n"))
+                    break;
             }
             catch (FindException | ValidationException e){
                 System.out.println(e.getMessage());
-            }
-            System.out.println("Do you want to send another message to this user? [Y/n]");
-            String response = input.nextLine();
-            if (Objects.equals(response, "n"))
                 break;
+            }
+
         }
     }
 
