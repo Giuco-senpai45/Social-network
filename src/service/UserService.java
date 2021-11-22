@@ -4,6 +4,7 @@ import domain.Friendship;
 import domain.Tuple;
 import domain.User;
 import domain.UserFriendshipsDTO;
+import domain.validators.ValidationException;
 import repository.Repository;
 import service.serviceExceptions.AddException;
 import service.serviceExceptions.FindException;
@@ -12,6 +13,7 @@ import service.serviceExceptions.UpdateException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -147,6 +149,49 @@ public class UserService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * This function returns all friends of a users made in a specific month
+     * @param userID representing the id of a user
+     * @param month the month to filter friends list by
+     * @return
+     */
+    public List<UserFriendshipsDTO> getUserFriendListByMonth(Long userID, Integer month) {
+        String errors = "";
+        User userExists = repoUsers.findOne(userID);
+        if(userExists == null)
+            errors = errors + "No user with the specified id exists.\n";
+        if(month < 1 || month > 12)
+            errors = errors + "There is no such month.";
+        if(!errors.equals(""))
+            throw new FindException(errors);
+
+        List<Friendship> friendships = new ArrayList<>();
+        repoFriends.findAll().forEach(friendships::add);
+
+        Predicate<Friendship> testID = x -> (Objects.equals(x.getBuddy1(), userID) ||
+                Objects.equals(x.getBuddy2(), userID));
+        Predicate<Friendship> testMonth = x -> x.getDate().getMonthValue() == month;
+        Predicate<Friendship> testBoth = testID.and(testMonth);
+
+        Function<Long, String> getFriendFirstName = x -> repoUsers.findOne(x).getFirstName();
+        Function<Long, String> getFriendLastName = x -> repoUsers.findOne(x).getLastName();
+
+        return friendships.stream()
+                .filter(testBoth)
+                .map(u -> {
+                    Long friendID;
+                    if(Objects.equals(u.getBuddy1(), userID))
+                        friendID = u.getBuddy2();
+                    else
+                        friendID = u.getBuddy1();
+                    return new UserFriendshipsDTO(getFriendFirstName.apply(friendID),
+                            getFriendLastName.apply(friendID), u.getDate());
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     /**
      * This function returns all the users present in the repo
