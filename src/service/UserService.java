@@ -11,6 +11,7 @@ import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -94,7 +95,7 @@ public class UserService {
         if(user == null){
             throw new RemoveException("User does not exist!");
         }
-        System.out.println(user.toString() + " deleted");
+        System.out.println(user + " deleted");
     }
 
     /**
@@ -147,6 +148,15 @@ public class UserService {
                     friend = repoUsers.findOne(friendship.getBuddy1());
                     return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate());
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<UserFriendshipsDTO> getFriendshipsMonth(Long id,YearMonth month){
+        List<UserFriendshipsDTO> friendsUser = getUserFriendList(id);
+        Predicate<UserFriendshipsDTO> testIsInMonth = f -> f.getDate().getMonthValue() == month.getMonthValue();
+
+        return friendsUser.stream()
+                .filter(testIsInMonth)
                 .collect(Collectors.toList());
     }
 
