@@ -12,8 +12,10 @@ import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -144,6 +146,7 @@ public class UI {
         Long id1 = input.nextLong();
         System.out.println("Friend2 id:");
         Long id2 = input.nextLong();
+        input.nextLine();
         try {
             friendsService.addFriendship(id1,id2);
         }
@@ -162,6 +165,7 @@ public class UI {
         Long friend1 = input.nextLong();
         System.out.println("Friend2: ");
         Long friend2 = input.nextLong();
+        input.nextLine();
         Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
         try {
             friendsService.removeFriendship(tuple);
@@ -177,6 +181,7 @@ public class UI {
         Long friend1 = input.nextLong();
         System.out.println("Friend2: ");
         Long friend2 = input.nextLong();
+        input.nextLine();
         Tuple<Long,Long> tuple = new Tuple<>(friend1, friend2);
         try {
             Friendship friendship = friendsService.findFriendshipById(tuple);
@@ -229,6 +234,7 @@ public class UI {
         System.out.println();
         System.out.println("Users id: ");
         Long userID = input.nextLong();
+        input.nextLine();
         try {
             List<UserFriendshipsDTO> userFriendList = userService.getUserFriendList(userID);
             if(userFriendList.size() > 0){
@@ -362,24 +368,87 @@ public class UI {
     }
 
     private void sendMessageMenu(Scanner input, Long loggedUser){
-        System.out.println("User you want to text: ");
-        Long toUserId = input.nextLong();
+        System.out.println();
+        System.out.println("Users IDs you want to text: ");
+        String users = input.nextLine();
+        while(true) {
+            System.out.println("Message: ");
+            String message = input.nextLine();
+            String[] usersSplitted = users.split(" ");
+            List<Long> chatters = new ArrayList<>();
+            for (String c : usersSplitted)
+                chatters.add(Long.parseLong(c));
+            try {
+                messageService.addMessage(loggedUser, message, chatters);
+                System.out.println("The message was sent successfully\n");
+                System.out.println("Do you want to send another message to this user? [Y/n]");
+                String response = input.nextLine();
+                if (Objects.equals(response, "n"))
+                    break;
+            }
+            catch (FindException | ValidationException e){
+                System.out.println(e.getMessage());
+                break;
+            }
+
+        }
+    }
+
+    private void replyMessageMenu(Scanner input, Long loggedUser){
+        while(true) {
+            List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
+            StringBuilder messageIDs = new StringBuilder();
+            for (Long msgID : msgsToReply)
+                messageIDs.append(msgID).append(" ");
+            if (messageIDs.isEmpty())
+                System.out.println("You don't have any messages.");
+            else {
+                System.out.println("You can reply to the following messages: " + messageIDs);
+                System.out.println();
+                System.out.println("Message ID you want to reply to: ");
+                Long messageID = input.nextLong();
+                input.nextLine();
+                System.out.println("Message: ");
+                String message = input.nextLine();
+                try {
+                    messageService.replyMessage(loggedUser, message, messageID);
+                    System.out.println("The message was sent successfully\n");
+                }
+                catch (FindException | ValidationException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println("Do you want to reply to another message? [Y/n]");
+            String response = input.nextLine();
+            if(Objects.equals(response, "n"))
+                break;
+        }
+    }
+
+    private void tryToLoginMenu(Scanner input){
+        System.out.println();
+        System.out.println("Login as user: ");
+        Long loggedUserId = input.nextLong();
         input.nextLine();
-        System.out.println("Message: ");
-        String message = input.nextLine();
-        messageService.addMessage(loggedUser, message, toUserId);
+        try {
+            userService.findUserById(loggedUserId);
+            runLogin(input, loggedUserId);
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private void runLogin(Scanner input, Long loggedUser){
         loginMenu();
         while (true){
-            switch (input.nextLine()){
+            switch (input.nextLine()) {
                 case "1":
                     sendMessageMenu(input, loggedUser);
                     loginMenu();
                     break;
                 case "2":
-
+                    replyMessageMenu(input, loggedUser);
                     loginMenu();
                     break;
                 case "3":
@@ -457,15 +526,16 @@ public class UI {
                     showMenu();
                     break;
                 case "15":
-                    System.out.println();
-                    System.out.println("Login as user: ");
-                    Long loggedUserId = input.nextLong();
-                    input.nextLine();
-                    runLogin(input, loggedUserId);
+                    tryToLoginMenu(input);
                     showMenu();
                     break;
                 case "x":
                     return;
+                default:
+                    System.out.println("Comanda introdusa a fost gresita");
+                    System.out.println();
+                    showMenu();
+                    break;
             }
         }
     }

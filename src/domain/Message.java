@@ -8,7 +8,6 @@ import java.util.Objects;
 public class Message extends Entity<Long>{
 
     private Long user;
-    private List<Long> chatters;
     private String message;
     private Timestamp timeOfMessage;
     private Long replyId;
@@ -22,14 +21,8 @@ public class Message extends Entity<Long>{
         this.chatID = chatID;
     }
 
-    //TODO chatters - lista de destinatari
-
     public Long getUser() {
         return user;
-    }
-
-    public List<Long> getChatters() {
-        return chatters;
     }
 
     public String getMessage() {
@@ -52,7 +45,6 @@ public class Message extends Entity<Long>{
     public String toString() {
         return "Message{" +
                 "user=" + user +
-                ", chatters=" + chatters +
                 ", message='" + message + '\'' +
                 ", timeOfMessage=" + timeOfMessage +
                 ", replyId=" + replyId +
@@ -65,14 +57,13 @@ public class Message extends Entity<Long>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message1 = (Message) o;
-        return Objects.equals(user, message1.user) && Objects.equals(chatters, message1.chatters)
-                && Objects.equals(message, message1.message)
+        return Objects.equals(user, message1.user) && Objects.equals(message, message1.message)
                 && Objects.equals(timeOfMessage, message1.timeOfMessage)
                 && Objects.equals(replyId, message1.replyId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, chatters, message, timeOfMessage, replyId);
+        return Objects.hash(user, message, timeOfMessage, replyId);
     }
 }
