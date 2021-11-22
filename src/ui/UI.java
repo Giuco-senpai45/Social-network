@@ -1,12 +1,11 @@
 package ui;
 
-import domain.Friendship;
-import domain.Tuple;
-import domain.User;
-import domain.UserFriendshipsDTO;
+import domain.*;
 import domain.validators.ValidationException;
+import org.postgresql.util.PSQLException;
 import repository.Repository;
 import service.FriendshipService;
+import service.MessageService;
 import service.UserService;
 import service.serviceExceptions.AddException;
 import service.serviceExceptions.FindException;
@@ -16,6 +15,7 @@ import service.serviceExceptions.UpdateException;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -31,6 +31,10 @@ public class UI {
      */
     private Repository<Tuple<Long,Long>, Friendship> repoFriends;
 
+    private Repository<Long, Message> messageRepository;
+    private Repository<Long, Chat> chatRepository;
+
+
     /**
      * User service
      */
@@ -40,16 +44,21 @@ public class UI {
      */
     private FriendshipService friendsService;
 
+    private MessageService messageService;
     /**
      * Overloaded constructor
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends) {
+    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
-        userService = new UserService(repoUsers,repoFriends);
-        friendsService = new FriendshipService(repoFriends,repoUsers);
+        this.messageRepository = messageRepository;
+        this.chatRepository = chatRepository;
+
+        this.userService = new UserService(repoUsers, repoFriends);
+        this.friendsService = new FriendshipService(repoFriends, repoUsers);
+        this.messageService = new MessageService(repoFriends, repoUsers, messageRepository, chatRepository);
     }
 
     /**
@@ -78,7 +87,6 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
-        input.nextLine();
         try{
             userService.removeUser(id);
         }
@@ -112,7 +120,6 @@ public class UI {
         System.out.println();
         System.out.println("User's ID:");
         Long id = input.nextLong();
-        input.nextLine();
         try{
             User foundUser = userService.findUserById(id);
             System.out.println(foundUser);
@@ -235,25 +242,13 @@ public class UI {
         }
     }
 
-    private void showUserFriendsListByMonth(Scanner input){
+    private void showConversation(Scanner input){
         System.out.println();
-        System.out.println("Users id: ");
-        Long userID = input.nextLong();
+        System.out.println("Chat Id");
+        Long id = input.nextLong();
         input.nextLine();
-        System.out.println("Month: ");
-        Integer month = input.nextInt();
-        input.nextLine();
-        try {
-            List<UserFriendshipsDTO> userFriendListByMonth = userService.getUserFriendListByMonth(userID, month);
-            if(userFriendListByMonth.size() > 0){
-                userFriendListByMonth.forEach(System.out::println);
-            }
-            else{
-                System.out.println("This user didn't make any friends that month.");
-            }
-        }
-        catch(FindException e){
-            System.out.println(e.getMessage());
+        for(ChatDTO pair : messageService.getConversation(id)) {
+            System.out.println(pair);
         }
     }
 
@@ -274,8 +269,106 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
-        System.out.println("13.Show users friend list by month");
+        System.out.println("14.Show a conversation");
+        System.out.println("15.Login");
         System.out.println("x.Exit application");
+    }
+
+    private void loginMenu(){
+        System.out.println("# You are logged in. Choose an action: #");
+        System.out.println("1.Send messages");
+        System.out.println("2.Reply to messages");
+        System.out.println("x.Logout");
+    }
+
+    private void sendMessageMenu(Scanner input, Long loggedUser){
+        System.out.println();
+        System.out.println("Users IDs you want to text: ");
+        String users = input.nextLine();
+        while(true) {
+            System.out.println("Message: ");
+            String message = input.nextLine();
+            String[] usersSplitted = users.split(" ");
+            List<Long> chatters = new ArrayList<>();
+            for (String c : usersSplitted)
+                chatters.add(Long.parseLong(c));
+            try {
+                messageService.addMessage(loggedUser, message, chatters);
+                System.out.println("The message was sent successfully\n");
+                System.out.println("Do you want to send another message to this user? [Y/n]");
+                String response = input.nextLine();
+                if (Objects.equals(response, "n"))
+                    break;
+            }
+            catch (FindException | ValidationException e){
+                System.out.println(e.getMessage());
+                break;
+            }
+
+        }
+    }
+
+    private void replyMessageMenu(Scanner input, Long loggedUser){
+        while(true) {
+            List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
+            StringBuilder messageIDs = new StringBuilder();
+            for (Long msgID : msgsToReply)
+                messageIDs.append(msgID).append(" ");
+            if (messageIDs.isEmpty())
+                System.out.println("You don't have any messages.");
+            else {
+                System.out.println("You can reply to the following messages: " + messageIDs);
+                System.out.println();
+                System.out.println("Message ID you want to reply to: ");
+                Long messageID = input.nextLong();
+                input.nextLine();
+                System.out.println("Message: ");
+                String message = input.nextLine();
+                try {
+                    messageService.replyMessage(loggedUser, message, messageID);
+                    System.out.println("The message was sent successfully\n");
+                }
+                catch (FindException | ValidationException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println("Do you want to reply to another message? [Y/n]");
+            String response = input.nextLine();
+            if(Objects.equals(response, "n"))
+                break;
+        }
+    }
+
+    private void tryToLoginMenu(Scanner input){
+        System.out.println();
+        System.out.println("Login as user: ");
+        Long loggedUserId = input.nextLong();
+        input.nextLine();
+        try {
+            userService.findUserById(loggedUserId);
+            runLogin(input, loggedUserId);
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void runLogin(Scanner input, Long loggedUser){
+        loginMenu();
+        while (true){
+            switch (input.nextLine()) {
+                case "1":
+                    sendMessageMenu(input, loggedUser);
+                    loginMenu();
+                    break;
+                case "2":
+                    replyMessageMenu(input, loggedUser);
+                    loginMenu();
+                    break;
+                case "x":
+                    return;
+            }
+        }
     }
 
     /**
@@ -334,8 +427,12 @@ public class UI {
                     showUserFriendsList(input);
                     showMenu();
                     break;
-                case "13":
-                    showUserFriendsListByMonth(input);
+                case "14":
+                    showConversation(input);
+                    showMenu();
+                    break;
+                case "15":
+                    tryToLoginMenu(input);
                     showMenu();
                     break;
                 case "x":

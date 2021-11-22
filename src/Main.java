@@ -1,10 +1,12 @@
-import domain.Friendship;
-import domain.Tuple;
-import domain.User;
+import domain.*;
+import domain.validators.ChatValidator;
 import domain.validators.FriendshipValidator;
+import domain.validators.MessageValidator;
 import domain.validators.UserValidator;
 import repository.Repository;
+import repository.database.ChatDatabase;
 import repository.database.FriendshipDatabase;
+import repository.database.MessageDatabase;
 import repository.database.UserDatabase;
 import repository.file.FriendshipFile;
 import repository.file.UserFile;
@@ -22,7 +24,9 @@ public class Main {
     public static void main(String[] args) {
         Repository<Long,User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new UserValidator());
         Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendshipValidator());
-        UI ui = new UI(repoUser,repoFriends);
+        Repository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
+        Repository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
+        UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat);
         ui.run();
     }
 }
