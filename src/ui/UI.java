@@ -249,6 +249,28 @@ public class UI {
         }
     }
 
+    private void showUserFriendsListByMonth(Scanner input){
+        System.out.println();
+        System.out.println("Users id: ");
+        Long userID = input.nextLong();
+        input.nextLine();
+        System.out.println("Month: ");
+        Integer month = input.nextInt();
+        input.nextLine();
+        try {
+            List<UserFriendshipsDTO> userFriendListByMonth = userService.getUserFriendListByMonth(userID, month);
+            if(userFriendListByMonth.size() > 0){
+                userFriendListByMonth.forEach(System.out::println);
+            }
+            else{
+                System.out.println("This user didn't make any friends that month.");
+            }
+        }
+        catch(FindException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void showConversation(Scanner input){
         System.out.println();
         System.out.println("Chat Id");
@@ -353,6 +375,7 @@ public class UI {
         System.out.println("10.Show users");
         System.out.println("11.Show friendships");
         System.out.println("12:Show users friend list");
+        System.out.println("13.Show users friend list by month");
         System.out.println("14.Show a conversation");
         System.out.println("15.Login");
         System.out.println("x.Exit application");
@@ -519,6 +542,10 @@ public class UI {
                     break;
                 case "12":
                     showUserFriendsList(input);
+                    showMenu();
+                    break;
+                case "13":
+                    showUserFriendsListByMonth(input);
                     showMenu();
                     break;
                 case "14":
