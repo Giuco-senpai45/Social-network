@@ -12,7 +12,6 @@ import service.serviceExceptions.FindException;
 import service.serviceExceptions.RemoveException;
 import service.serviceExceptions.UpdateException;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -433,7 +432,7 @@ public class UI {
             for (String c : usersSplitted)
                 chatters.add(Long.parseLong(c));
             try {
-                messageService.addMessage(loggedUser, message, chatters);
+                messageService.sendMessage(loggedUser, message, chatters);
                 System.out.println("The message was sent successfully\n");
                 System.out.println("Do you want to send another message to this user? [Y/n]");
                 String response = input.nextLine();

@@ -13,13 +13,35 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for Messages and Chat
+ */
 public class MessageService {
 
+    /**
+     * repository for Friendship entities
+     */
     private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    /**
+     * repository for User entities
+     */
     private Repository<Long, User> repoUsers;
+    /**
+     * repository for Message entities
+     */
     private Repository<Long, Message> repoMessages;
+    /**
+     * repository for Chat entities
+     */
     private Repository<Long, Chat> repoChats;
 
+    /**
+     * Overloaded constructor
+     * @param repoFriends repository for Friendship entities
+     * @param repoUsers repository for User entities
+     * @param messageRepository repository for Message entities
+     * @param chatRepository repository for Chat entitites
+     */
     public MessageService(Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, User> repoUsers, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
@@ -27,7 +49,14 @@ public class MessageService {
         this.repoChats = chatRepository;
     }
 
-    public void addMessage(Long id, String message, List<Long> chatters){
+    /**
+     * This function sends a message from a specified user to another user(s)
+     * Checks if there is already a chat between the given users and creates one if not
+     * @param id Long parameter which represents the id of the sender
+     * @param message String message which represents the message that user want to send
+     * @param chatters List of Longs representing the ids of the receivers
+     */
+    public void sendMessage(Long id, String message, List<Long> chatters){
         String errors = "";
         for(Long chatterID: chatters) {
             User user = repoUsers.findOne(chatterID);
@@ -37,6 +66,7 @@ public class MessageService {
         if(!errors.equals(""))
             throw new FindException(errors);
 
+        chatters.add(id);
         Chat chat = null;
         for(Chat c: repoChats.findAll()){
             int count = 0;
@@ -44,7 +74,7 @@ public class MessageService {
                 if(c.getChatUsers().contains(chatterID))
                     count++;
             }
-            if(count == chatters.size())
+            if(count == chatters.size() && chatters.size() == c.getChatUsers().size())
                 chat = c;
         }
 
@@ -52,18 +82,18 @@ public class MessageService {
             chat = new Chat();
             chat.setId(maximChatId() + 1);
         }
-        chat.addUserToChat(id);
         for(Long chatterID: chatters) {
             chat.addUserToChat(chatterID);
         }
         repoChats.save(chat);
 
-        Long nextID = maximUserID() + 1;
+        Long nextID = maximMessageID() + 1;
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L, chat.getId());
         msg.setId(nextID);
         repoMessages.save(msg);
     }
 
+    //TODO hai sa stergem functia asta
     private Chat verifyIfChatExists(Long fromID, Long toID){
         boolean foundSender = false;
         boolean foundReceiver = false;
@@ -85,7 +115,11 @@ public class MessageService {
         return null;
     }
 
-    private Long maximUserID() {
+    /**
+     * Computes the maximum id from the message database
+     * @return Long representing the required id
+     */
+    private Long maximMessageID() {
         Long maxID = 0L;
         for(Message msg: repoMessages.findAll()){
             if(msg.getId() > maxID)
@@ -94,6 +128,10 @@ public class MessageService {
         return maxID;
     }
 
+    /**
+     * Computes the maximum id from the chat database
+     * @return Long representing the required id
+     */
     private Long maximChatId() {
         Long maxID = 0L;
         for(Chat chat: repoChats.findAll()){
@@ -103,17 +141,21 @@ public class MessageService {
         return maxID;
     }
 
-    
-    public void replyMessage(Long id, String message, Long messageIDforReply){
-        verifyReplyForMessage(id, messageIDforReply);
+    /**
+     * This function sends a reply from a given user for one specific message
+     * @param userID Long parameter which represents the id of the sender
+     * @param message String parameter which represents the message the user want to send
+     * @param messageIDforReply Long parameter which represents the id of the message the reply is sent to
+     */
+    public void replyMessage(Long userID, String message, Long messageIDforReply){
+        verifyReplyForMessage(userID, messageIDforReply);
         Message m = repoMessages.findOne(messageIDforReply);
-        Long nextID = maximUserID() + 1;
-        Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, m.getChatID());
+        Long nextID = maximMessageID() + 1;
+        Message msg = new Message(userID, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, m.getChatID());
         msg.setId(nextID);
         repoMessages.save(msg);
     }
 
-    //TODO verifica
     /**
      * This function checks if the specified User can reply to the specified Message ID.
      * @param userID Long representing the Users ID
@@ -126,7 +168,6 @@ public class MessageService {
             throw new FindException("You can't reply to this message!\n");
     }
 
-    //TODO verifica te rog daca am scris bine
     /**
      * This function returns a list of IDs that represent the IDs of Messages the specified User can reply to
      * @param userID Long representing the Users ID
@@ -158,7 +199,6 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-
     /**
      * This function compares the time at which 2 message where sent.
      * @param a ChatDTO representing a message sent by a user
@@ -174,7 +214,7 @@ public class MessageService {
 
     /**
      * This function returns a List of ChatDTOs that are going to represent
-     * Messages sent in a Chat by a certain user
+     * Messages sent in a specified Chat and the users who sent them
      * @param id Long representing the ID of the Chat entity
      * @return List of ChatDTO entities
      */
