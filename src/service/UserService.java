@@ -151,15 +151,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<UserFriendshipsDTO> getFriendshipsMonth(Long id,YearMonth month){
-        List<UserFriendshipsDTO> friendsUser = getUserFriendList(id);
-        Predicate<UserFriendshipsDTO> testIsInMonth = f -> f.getDate().getMonthValue() == month.getMonthValue();
-
-        return friendsUser.stream()
-                .filter(testIsInMonth)
-                .collect(Collectors.toList());
-    }
-
     /**
      * This function returns all friends of a users made in a specific month
      * @param userID representing the id of a user

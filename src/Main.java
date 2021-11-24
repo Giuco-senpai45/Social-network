@@ -23,5 +23,9 @@ public class Main {
         Repository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
         UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat,repoRequests);
         ui.run();
+
+        //TODO FriendRequest,Message,UserFriendshipsDTO,
+        // ChatDatabase,MessageDatabase,FriendRequestDatabase,
+        // MessageService (user,friendship uitat peste ele iar)
     }
 }

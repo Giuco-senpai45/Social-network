@@ -103,7 +103,7 @@ public class MessageService {
         return maxID;
     }
 
-  
+    
     public void replyMessage(Long id, String message, Long messageIDforReply){
         verifyReplyForMessage(id, messageIDforReply);
         Message m = repoMessages.findOne(messageIDforReply);
@@ -113,13 +113,25 @@ public class MessageService {
         repoMessages.save(msg);
     }
 
+    //TODO verifica
+    /**
+     * This function checks if the specified User can reply to the specified Message ID.
+     * @param userID Long representing the Users ID
+     * @param messageID Long representing the Messages ID
+     * @throws FindException if the User can't reply to that message
+     */
     private void verifyReplyForMessage(Long userID, Long messageID){
         List<Long> messagesForReply = messagesToReplyForUser(userID);
         if(!messagesForReply.contains(messageID))
             throw new FindException("You can't reply to this message!\n");
     }
 
-
+    //TODO verifica te rog daca am scris bine
+    /**
+     * This function returns a list of IDs that represent the IDs of Messages the specified User can reply to
+     * @param userID Long representing the Users ID
+     * @return List of Longs representing the ID's of the messages to which the specified user can reply to
+     */
     public List<Long> messagesToReplyForUser(Long userID){
         Iterable<Chat> chats = repoChats.findAll();
         ArrayList<Chat> listChats = new ArrayList<>();
@@ -147,10 +159,25 @@ public class MessageService {
     }
 
 
+    /**
+     * This function compares the time at which 2 message where sent.
+     * @param a ChatDTO representing a message sent by a user
+     * @param b ChatDTO representing a message sent by a user
+     * @return
+     *      -the value 0 if the two Timestamp objects are equal;
+     *      -a value less than 0 if this Timestamp object is before the given argument;
+     *      -and a value greater than 0 if this Timestamp object is after the given argument.
+     */
     public static int compareTime(ChatDTO a, ChatDTO b){
         return  a.getTimestamp().compareTo(b.getTimestamp());
     }
 
+    /**
+     * This function returns a List of ChatDTOs that are going to represent
+     * Messages sent in a Chat by a certain user
+     * @param id Long representing the ID of the Chat entity
+     * @return List of ChatDTO entities
+     */
     public List<ChatDTO> getConversation(Long id){
         Iterable<Message> messages = repoMessages.findAll();
         List<Message> messagesList = new ArrayList<>();

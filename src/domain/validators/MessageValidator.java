@@ -1,7 +1,15 @@
 package domain.validators;
 import domain.Message;
 
+/**
+ * This class represents the validator for Message entities
+ */
 public class MessageValidator implements Validator<Message> {
+    /**
+     * This function gets a Message entity and checks if it's valid
+     * @param message Message entity
+     * @throws ValidationException if the entity is not valid
+     */
     @Override
     public void validate(Message message) throws ValidationException {
         if(message.getMessage() == "" || message.getMessage() == null)

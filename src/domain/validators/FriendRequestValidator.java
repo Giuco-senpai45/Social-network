@@ -4,7 +4,15 @@ import domain.FriendRequest;
 
 import java.util.Objects;
 
+/**
+ * Validator for FriendRequest entities
+ */
 public class FriendRequestValidator implements Validator<FriendRequest> {
+    /**
+     * This function checks if the FriendRequest entity given as a parameter is valid or not
+     * @param entity representing the entity that is going to get validated
+     * @throws ValidationException if the entity is not valid
+     */
     @Override
     public void validate(FriendRequest entity) throws ValidationException {
         if(entity.getId() < 0 || entity.getId() == null){

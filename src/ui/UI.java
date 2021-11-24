@@ -230,6 +230,10 @@ public class UI {
         System.out.println();
     }
 
+    /**
+     * Shows the friends of the specified user
+     * @param input Scanner representing the scanner
+     */
     private void showUserFriendsList(Scanner input){
         System.out.println();
         System.out.println("Users id: ");
@@ -249,6 +253,10 @@ public class UI {
         }
     }
 
+    /**
+     * Shows a list of friends the specified user made in a month
+     * @param input Scanner representing the scanner
+     */
     private void showUserFriendsListByMonth(Scanner input){
         System.out.println();
         System.out.println("Users id: ");
@@ -270,7 +278,10 @@ public class UI {
             System.out.println(e.getMessage());
         }
     }
-
+    /**
+     * Shows the messages in the Chat with the specified id
+     * @param input Scanner representing the scanner
+     */
     private void showConversation(Scanner input){
         System.out.println();
         System.out.println("Chat Id");
@@ -281,6 +292,12 @@ public class UI {
         }
     }
 
+    //Todo poate adaug sa ma opresc daca nu mai vreau requestul
+    /**
+     * Sends a friend request to another existing User
+     * @param input Scanner representing the scanner
+     * @param loggedUser Long representing the ID of the currently logged User
+     */
     private void sendRequestMenu(Scanner input,Long loggedUser){
         System.out.println();
         while(true){
@@ -308,6 +325,12 @@ public class UI {
         }
     }
 
+
+    /**
+     * Shows the user the pending friend requests and lets him accept or reject them
+     * @param input Scanner representing the scanner
+     * @param loggedUser Long representing the ID of the currently logged User
+     */
     private void processRequestMenu(Scanner input,Long loggedUser){
         System.out.println();
         while(true){
@@ -381,6 +404,9 @@ public class UI {
         System.out.println("x.Exit application");
     }
 
+    /**
+     * The login menu
+     */
     private void loginMenu(){
         System.out.println("# You are logged in. Choose an action: #");
         System.out.println("1.Send messages");
@@ -390,6 +416,11 @@ public class UI {
         System.out.println("x.Logout");
     }
 
+    /**
+     * Allows the user to send a message to an existing chat or create a new chat with either one person or with a group
+     * @param input Scanner representing the scanner
+     * @param loggedUser Long representing the ID of the currently logged User
+     */
     private void sendMessageMenu(Scanner input, Long loggedUser){
         System.out.println();
         System.out.println("Users IDs you want to text: ");
@@ -417,6 +448,11 @@ public class UI {
         }
     }
 
+    /**
+     * Allows the logged User to reply to messages of chats he is part of
+     * @param input Scanner representing the scanner
+     * @param loggedUser Long representing the ID of the currently logged User
+     */
     private void replyMessageMenu(Scanner input, Long loggedUser){
         while(true) {
             List<Long> msgsToReply = messageService.messagesToReplyForUser(loggedUser);
@@ -448,6 +484,10 @@ public class UI {
         }
     }
 
+    /**
+     * Verify if the specified user exists and can login
+     * @param input Scanner input
+     */
     private void tryToLoginMenu(Scanner input){
         System.out.println();
         System.out.println("Login as user: ");
@@ -462,6 +502,11 @@ public class UI {
         }
     }
 
+    /**
+     * Login menu
+     * @param input Scanner
+     * @param loggedUser Long representing the logged User
+     */
     private void runLogin(Scanner input, Long loggedUser){
         loginMenu();
         while (true){
