@@ -2,11 +2,20 @@ package domain;
 
 import java.time.LocalDate;
 
+/**
+ * Class of Data Transfer Object type which contains the name of a friend of a specific user and the date of the beginning of their friendship
+ */
 public class UserFriendshipsDTO {
     private String friendFirstName;
     private String friendLastName;
     private LocalDate date;
 
+    /**
+     * Overloaded constructor
+     * @param friendFirstName String representing the first name of a user
+     * @param friendLastName String representing the last name of a user
+     * @param date LocalDate representing the beginning of a friendship
+     */
     public UserFriendshipsDTO(String friendFirstName, String friendLastName, LocalDate date) {
         this.friendFirstName = friendFirstName;
         this.friendLastName = friendLastName;
