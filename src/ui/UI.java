@@ -603,15 +603,11 @@ public class UI {
                 case "x":
                     return;
                 default:
-                    System.out.println("Comanda introdusa a fost gresita");
+                    System.out.println("The command introduced doesn't exist");
                     System.out.println();
                     showMenu();
                     break;
             }
         }
     }
-
-
-
-
 }

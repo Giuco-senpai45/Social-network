@@ -2,8 +2,6 @@ import domain.*;
 import domain.validators.*;
 import repository.Repository;
 import repository.database.*;
-import repository.file.FriendshipFile;
-import repository.file.UserFile;
 import ui.UI;
 
 /**
@@ -23,9 +21,5 @@ public class Main {
         Repository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
         UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat,repoRequests);
         ui.run();
-
-        //TODO FriendRequest,Message,UserFriendshipsDTO,
-        // ChatDatabase,MessageDatabase,FriendRequestDatabase,
-        // MessageService (user,friendship uitat peste ele iar)
     }
 }

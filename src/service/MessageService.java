@@ -93,28 +93,6 @@ public class MessageService {
         repoMessages.save(msg);
     }
 
-    //TODO hai sa stergem functia asta
-    private Chat verifyIfChatExists(Long fromID, Long toID){
-        boolean foundSender = false;
-        boolean foundReceiver = false;
-        for(Chat chat: repoChats.findAll()){
-            for(Long user: chat.getChatUsers()){
-                if(user == fromID){
-                    foundSender = true;
-                }
-                if(user == toID){
-                    foundReceiver = true;
-                }
-            }
-            if(foundSender && foundReceiver) {
-                return chat;
-            }
-            foundSender = false;
-            foundReceiver = false;
-        }
-        return null;
-    }
-
     /**
      * Computes the maximum id from the message database
      * @return Long representing the required id
