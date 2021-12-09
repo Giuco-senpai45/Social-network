@@ -8,5 +8,10 @@ module sn.socialnetwork {
     requires java.sql;
 
     opens sn.socialnetwork to javafx.fxml;
+    opens controller to javafx.fxml;
     exports sn.socialnetwork;
+    exports controller;
+    exports main.domain;
+    exports main.repository;
+    exports main.service;
 }

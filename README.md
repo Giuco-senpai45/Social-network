@@ -32,4 +32,4 @@ Here's a quick preview of the first version of the network.
 <i> <font size="-1">(with a few extra functionalities like finding the most sociable community and raw operations
 for the User and Friendship entities)</font>
 </i>
-![](imgs/Lab5.gif)
+![](src/main/resources/imgs/Lab5.gif)
