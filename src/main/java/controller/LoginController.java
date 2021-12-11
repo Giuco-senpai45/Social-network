@@ -8,10 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import main.Main;
+import main.domain.FriendRequest;
 import main.domain.User;
 import main.service.FriendRequestService;
-import main.service.FriendshipService;
 import main.service.UserService;
 import main.service.serviceExceptions.FindException;
 import sn.socialnetwork.MainApp;
@@ -32,9 +31,10 @@ public class LoginController {
     private TextField textPassword;
 
     private UserService userService;
-
-    public void setServicesLogin(UserService userService){
+    private FriendRequestService friendRequestService;
+    public void setServicesLogin(UserService userService, FriendRequestService friendRequestService){
         this.userService = userService;
+        this.friendRequestService = friendRequestService;
     }
 
     public void loginButtonAction(ActionEvent event) {
@@ -66,7 +66,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             UserController userController = fxmlLoader.getController();
-            userController.createUserProfile(connectedUser);
+            userController.loadAppLoggedUser(userService,friendRequestService,connectedUser);
         }
         catch(IOException e) {
             e.printStackTrace();

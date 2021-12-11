@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="604.0" prefWidth="638.0" style="-fx-background-color: a5a58d;" styleClass="anchorPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserProfileController">
+   <children>
+      <Label fx:id="profileNameLabel" layoutX="34.0" layoutY="56.0" text="Username">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <ListView layoutX="362.0" layoutY="151.0" prefHeight="340.0" prefWidth="223.0" style="-fx-background-color: ffe8d6;" />
+      <Label layoutX="435.0" layoutY="116.0" text="Friends">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="34.0" layoutY="116.0" prefHeight="35.0" prefWidth="120.0" text="About me:">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

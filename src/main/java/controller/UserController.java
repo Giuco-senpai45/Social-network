@@ -7,20 +7,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import main.domain.User;
 import javafx.scene.input.MouseEvent;
+import main.service.FriendRequestService;
+import main.service.UserService;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
 
 public class UserController {
-
-    @FXML
-    private Label labelFirstName;
-
-    @FXML
-    private Label labelLastName;
-
     @FXML
     private Label userNameLabel;
 
@@ -31,29 +27,45 @@ public class UserController {
     private AnchorPane friendRequestsAnchor;
 
     @FXML
-    private Pane changingPanel;
+    private StackPane stackProfile;
+
+    @FXML
+    private Pane changingPane;
 
     private FriendRequestsControll friendRequestsControll;
+    private User loggedUser;
+    private UserService userService;
+    private FriendRequestService friendRequestService;
 
-    public void createUserProfile(User user){
+    public void loadAppLoggedUser(UserService userService, FriendRequestService friendRequestService,User user) {
         userNameLabel.setText(user.getLastName() + user.getFirstName());
-        EventHandler<Event> changeToFriendRequestsEvent = new EventHandler<Event>(){
+        this.loggedUser = user;
+        this.friendRequestService = friendRequestService;
 
-            @Override
-            public void handle(Event event) {
-                loadFriendRequestspanel();
-            }
-        };
-        friendRequestsAnchor.addEventHandler(MouseEvent.MOUSE_PRESSED, changeToFriendRequestsEvent);
-        labelFirstName.setText(user.getFirstName());
-        labelLastName.setText(user.getLastName());
     }
 
-    private void loadFriendRequestspanel(){
+    public void profileClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/user-profile-view.fxml"));
+            if(changingPane.getChildren() != null){
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
+            UserProfileController userProfileController = fxmlLoader.getController();
+            userProfileController.createUserProfile(userService,loggedUser);
+        }
+        catch(IOException e) {
+                e.printStackTrace();
+        }
+    }
+
+    public void friendrequestClicked(MouseEvent mouseEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/friend-requests-view.fxml"));
-            changingPanel.getChildren().add(fxmlLoader.load());
-            friendRequestsControll = fxmlLoader.getController();
+            if(changingPane.getChildren() != null){
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
         }
         catch(IOException e) {
             e.printStackTrace();
