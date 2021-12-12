@@ -1,21 +1,28 @@
 package main.domain;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class FriendRequest extends Entity<Long>{
     private Long from;
     private Long to;
     private String status;
+    private LocalDate time;
 
     public FriendRequest(Long from, Long to, String status) {
         this.from = from;
         this.to = to;
         this.status = status;
+        this.time = LocalDate.now();
     }
 
     @Override
     public String toString() {
         return "Request id: " + getId() + " from: " +  from + " to: " + to + " (" + status + ")";
+    }
+
+    public LocalDate getTime() {
+        return time;
     }
 
     public Long getFrom() {

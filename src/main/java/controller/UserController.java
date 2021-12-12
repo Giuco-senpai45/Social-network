@@ -67,6 +67,7 @@ public class UserController {
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.loggedUser = user;
+        this.userService = userService;
         this.friendRequestService = friendRequestService;
         final BooleanProperty firstTime = new SimpleBooleanProperty(true);
         searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
@@ -101,6 +102,9 @@ public class UserController {
                 changingPane.getChildren().clear();
             }
             changingPane.getChildren().add(fxmlLoader.load());
+            FriendRequestsControll friendRequestsControll = fxmlLoader.getController();
+            friendRequestsControll.initialise(userService,friendRequestService,loggedUser);
+            friendRequestsControll.showCurrentFriendRequests();
         }
         catch(IOException e) {
             e.printStackTrace();
