@@ -40,6 +40,7 @@ public class UserController {
     public void loadAppLoggedUser(UserService userService, FriendRequestService friendRequestService,User user) {
         userNameLabel.setText(user.getLastName() + user.getFirstName());
         this.loggedUser = user;
+        this.userService = userService;
         this.friendRequestService = friendRequestService;
 
     }
@@ -66,6 +67,9 @@ public class UserController {
                 changingPane.getChildren().clear();
             }
             changingPane.getChildren().add(fxmlLoader.load());
+            FriendRequestsControll friendRequestsControll = fxmlLoader.getController();
+            friendRequestsControll.initialise(userService,friendRequestService,loggedUser);
+            friendRequestsControll.showCurrentFriendRequests();
         }
         catch(IOException e) {
             e.printStackTrace();

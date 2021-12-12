@@ -73,6 +73,10 @@ public class FriendRequestService {
                 repoRequests.save(request);
                 return true;
             }
+            else if (foundRequest.getStatus().equals("rejected")){
+                processRequest(request.getId(),"pending");
+                return true;
+            }
             else {
                 throw new AddException("Request already exists");
             }
@@ -80,7 +84,6 @@ public class FriendRequestService {
         else {
             throw new FindException("Couldn't find the user with the specified id");
         }
-
     }
 
     /**
@@ -128,6 +131,18 @@ public class FriendRequestService {
 
         return requestsList.stream()
                 .filter(testValid)
+                .collect(Collectors.toList());
+    }
+
+    public List<FriendRequest> getHistoryRequests(Long id){
+        Iterable<FriendRequest> requests = repoRequests.findAll();
+        List<FriendRequest> requestsList = new ArrayList<>();
+        requests.forEach(requestsList::add);
+
+        Predicate<FriendRequest> testIsValid = fr -> fr.getStatus().equals("approved") || fr.getStatus().equals("rejected");
+
+        return requestsList.stream()
+                .filter(testIsValid)
                 .collect(Collectors.toList());
     }
 
