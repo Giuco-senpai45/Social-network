@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import main.domain.FriendRequest;
 import main.domain.User;
 import main.service.FriendRequestService;
+import main.service.FriendshipService;
 import main.service.UserService;
 import main.service.serviceExceptions.FindException;
 import sn.socialnetwork.MainApp;
@@ -32,9 +33,12 @@ public class LoginController {
 
     private UserService userService;
     private FriendRequestService friendRequestService;
-    public void setServicesLogin(UserService userService, FriendRequestService friendRequestService){
+    private FriendshipService friendshipService;
+
+    public void setServicesLogin(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService){
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+        this.friendshipService = friendshipService;
     }
 
     public void loginButtonAction(ActionEvent event) {
@@ -66,7 +70,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             UserController userController = fxmlLoader.getController();
-            userController.loadAppLoggedUser(userService,friendRequestService,connectedUser);
+            userController.loadAppLoggedUser(userService, friendshipService, friendRequestService, connectedUser);
         }
         catch(IOException e) {
             e.printStackTrace();

@@ -14,6 +14,7 @@ import main.service.serviceExceptions.UpdateException;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -143,10 +144,10 @@ public class UserService {
                     User friend;
                     if(friendship.getBuddy1().equals(id)){
                         friend = repoUsers.findOne(friendship.getBuddy2());
-                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate());
+                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
                     }
                     friend = repoUsers.findOne(friendship.getBuddy1());
-                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate());
+                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
                 })
                 .collect(Collectors.toList());
     }
@@ -187,8 +188,34 @@ public class UserService {
                     else
                         friendID = u.getBuddy1();
                     return new UserFriendshipsDTO(getFriendFirstName.apply(friendID),
-                            getFriendLastName.apply(friendID), u.getDate());
+                            getFriendLastName.apply(friendID), u.getDate(), friendID);
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<Tuple<String, Long>> allUsersByCharacters(String searchString) {
+        List<User> users = new ArrayList<>();
+        repoUsers.findAll().forEach(users::add);
+
+        Predicate<User> testFirstName = x -> (x.getFirstName().toLowerCase().startsWith(searchString.toLowerCase(), 0));
+        Predicate<User> testLastName = x -> (x.getLastName().toLowerCase().startsWith(searchString.toLowerCase(), 0));
+
+        Function<User, Tuple<String, Long>> getFriendName = x -> {
+            if (testFirstName.test(x)){
+                return new Tuple<>(repoUsers.findOne(x.getId()).getFirstName() + " " +
+                        repoUsers.findOne(x.getId()).getLastName(), x.getId());
+            }
+            else if (testLastName.test(x)){
+                return new Tuple<>(repoUsers.findOne(x.getId()).getLastName() + " " +
+                        repoUsers.findOne(x.getId()).getFirstName(), x.getId());
+            }
+            return null;
+        };
+
+
+        return users.stream()
+                .filter(testFirstName.or(testLastName))
+                .map(getFriendName)
                 .collect(Collectors.toList());
     }
 

@@ -8,7 +8,6 @@ import main.service.serviceExceptions.FindException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -142,5 +141,17 @@ public class FriendRequestService {
                 maxID = friendRequest.getId();
         }
         return maxID;
+    }
+
+    public void deleteFriendRequest(Long fromID, Long toID){
+        Iterable<FriendRequest> friendRequestIterable = repoRequests.findAll();
+        FriendRequest friendRequest = null;
+        for(FriendRequest fRequest: friendRequestIterable)
+            if(Objects.equals(fRequest.getFrom(), fromID) && Objects.equals(fRequest.getTo(), toID))
+                friendRequest = fRequest;
+        if (friendRequest != null)
+            repoRequests.delete(friendRequest.getId());
+        else
+            throw new FindException("There is no friend request between these users");
     }
 }

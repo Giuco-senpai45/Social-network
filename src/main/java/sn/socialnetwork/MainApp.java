@@ -39,7 +39,7 @@ public class MainApp extends Application {
 
         BorderPane loginLayout = loginLoader.load();
         LoginController loginController =  loginLoader.getController();
-        loginController.setServicesLogin(userService,friendRequestService);
+        loginController.setServicesLogin(userService, friendsService, friendRequestService);
 
 
         primaryStage.setScene(new Scene(loginLayout));
