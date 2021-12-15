@@ -1,14 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.RegisterController"
-            prefHeight="400.0" prefWidth="600.0">
 
-</AnchorPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <Label prefHeight="73.0" prefWidth="510.0" text="Welcome to Truth Rose" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="48.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <SplitPane prefHeight="160.0" prefWidth="200.0" style="-fx-background-color: #6b705c;" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TextField layoutX="144.0" layoutY="14.0" prefHeight="32.0" prefWidth="155.0" promptText="First Name" style="-fx-background-color: ffe8d6;" />
+                  <TextField layoutX="428.0" layoutY="14.0" prefHeight="32.0" prefWidth="155.0" promptText="Last Name" style="-fx-background-color: ffe8d6;" />
+                  <TextField layoutX="144.0" layoutY="78.0" prefHeight="32.0" prefWidth="439.0" promptText="Address" style="-fx-background-color: ffe8d6;" />
+                  <ComboBox layoutX="247.0" layoutY="144.0" prefHeight="5.0" prefWidth="104.0" promptText="Day" style="-fx-background-color: ffe8d6;" />
+                  <ComboBox layoutX="364.0" layoutY="144.0" prefHeight="5.0" prefWidth="104.0" promptText="Month" style="-fx-background-color: ffe8d6;" />
+                  <ComboBox layoutX="479.0" layoutY="144.0" prefHeight="5.0" prefWidth="104.0" promptText="Year" style="-fx-background-color: ffe8d6;" />
+                  <Label layoutX="144.0" layoutY="148.0" prefHeight="5.0" prefWidth="83.0" text="Birth Date:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <RadioButton layoutX="256.0" layoutY="197.0" mnemonicParsing="false" text="Male" />
+                  <RadioButton layoutX="373.0" layoutY="197.0" mnemonicParsing="false" text="Female" />
+                  <RadioButton layoutX="488.0" layoutY="197.0" mnemonicParsing="false" text="Other" />
+                  <Label layoutX="144.0" layoutY="193.0" prefHeight="5.0" prefWidth="83.0" text="Gender:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField layoutX="286.0" layoutY="234.0" prefHeight="32.0" prefWidth="155.0" promptText="Username" style="-fx-background-color: ffe8d6;" />
+                  <TextField layoutX="286.0" layoutY="289.0" prefHeight="32.0" prefWidth="155.0" promptText="Password" style="-fx-background-color: ffe8d6;" />
+                  <TextField layoutX="286.0" layoutY="343.0" prefHeight="32.0" prefWidth="155.0" promptText="Re-type password" style="-fx-background-color: ffe8d6;" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </center>
+</BorderPane>

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import main.domain.FriendRequest;
 import main.domain.User;
@@ -78,6 +79,24 @@ public class LoginController {
         stage.setTitle("Blooming");
         stage.setWidth(900);
         stage.setHeight(800);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void registerButtonPressed(MouseEvent mouseEvent) {
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/register-view.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+            RegisterController registerController = fxmlLoader.getController();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        stage.setTitle("Registring");
+        stage.setWidth(700);
+        stage.setHeight(600);
         stage.setScene(scene);
         stage.show();
     }

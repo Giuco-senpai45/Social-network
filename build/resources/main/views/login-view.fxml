@@ -43,7 +43,7 @@
             <TextField fx:id="textUsername" layoutX="145.0" layoutY="108.0" promptText="Username" style="-fx-background-color: ffe8d6;" />
             <PasswordField fx:id="textPassword" layoutX="145.0" layoutY="176.0" promptText="Password" style="-fx-background-color: ffe8d6;" />
             <Button fx:id="loginButton" layoutX="34.0" layoutY="282.0" mnemonicParsing="false" onAction="#loginButtonAction" prefHeight="34.0" prefWidth="72.0" style="-fx-background-color: #6b705c;" text="Login" textFill="#ffe8d6" />
-            <Button fx:id="registerButton" layoutX="257.0" layoutY="280.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="74.0" style="-fx-background-color: #6b705c;" text="Register" textFill="#ffe8d6" />
+            <Button fx:id="registerButton" layoutX="257.0" layoutY="280.0" mnemonicParsing="false" onMousePressed="#registerButtonPressed" prefHeight="36.0" prefWidth="74.0" style="-fx-background-color: #6b705c;" text="Register" textFill="#ffe8d6" />
             <Label fx:id="loginErrorLabel" layoutX="72.0" layoutY="236.0" textFill="#ed3939">
                <font>
                   <Font size="18.0" />

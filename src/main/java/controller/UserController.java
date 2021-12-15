@@ -142,6 +142,9 @@ public class UserController {
             Tuple<String, Long> tupleList = userService.allUsersByCharacters(searchBar.getText()).get(index);
             User newUser = userService.findUserById(tupleList.getE2());
             setSearchedUserProfile(newUser);
+            searchList.setVisible(false);
+            searchBar.setText(null);
+            searchBar.setPromptText("Search user");
         } catch (IndexOutOfBoundsException e) {
         }
     }

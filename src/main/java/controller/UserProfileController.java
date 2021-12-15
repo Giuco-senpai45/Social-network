@@ -79,7 +79,7 @@ public class UserProfileController {
                 }
             if (found == true){
                 friendshipStatus.setVisible(false);
-                friendshipButton.setText("Decline friend request");
+                friendshipButton.setText("Cancel friend request");
                 friendshipButton.setVisible(true);
             }
             else {
