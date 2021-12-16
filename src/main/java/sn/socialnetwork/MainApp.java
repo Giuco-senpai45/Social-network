@@ -32,7 +32,8 @@ public class MainApp extends Application {
         Repository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
         Repository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
         Repository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
-        UserService userService = new UserService(repoUser, repoFriends);
+        Repository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+        UserService userService = new UserService(repoUser, repoFriends, repoLogin);
         FriendshipService friendsService = new FriendshipService(repoFriends, repoUser);
         MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat);
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;

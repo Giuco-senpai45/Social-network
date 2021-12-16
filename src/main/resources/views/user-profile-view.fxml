@@ -13,13 +13,13 @@
             <Font name="Castellar" size="24.0" />
          </font>
       </Label>
-      <ListView fx:id="friendsList" layoutX="362.0" layoutY="151.0" onMouseClicked="#handleFriendsListClick" prefHeight="340.0" prefWidth="223.0" style="-fx-background-color: ffe8d6;" />
-      <Label layoutX="435.0" layoutY="116.0" text="Friends">
+      <ListView fx:id="friendsList" layoutX="379.0" layoutY="150.0" onMouseClicked="#handleFriendsListClick" prefHeight="340.0" prefWidth="223.0" style="-fx-background-color: ffe8d6;" />
+      <Label layoutX="444.0" layoutY="116.0" text="Friends">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label layoutX="34.0" layoutY="116.0" prefHeight="35.0" prefWidth="120.0" text="About me:">
+      <Label layoutX="34.0" layoutY="116.0" prefHeight="35.0" prefWidth="201.0" text="About me section">
          <font>
             <Font size="24.0" />
          </font>
@@ -27,5 +27,35 @@
       <Label fx:id="friendshipStatus" layoutX="34.0" layoutY="77.0" text="Label" />
       <Button fx:id="friendshipButton" layoutX="330.0" layoutY="65.0" mnemonicParsing="false" onAction="#handleFriendshipButton" text="Cancel friend request" />
       <Button fx:id="sendMessageButton" layoutX="474.0" layoutY="65.0" mnemonicParsing="false" onAction="#handleMessagesButton" text="Send message" />
+      <Label layoutX="48.0" layoutY="165.0" prefHeight="35.0" prefWidth="201.0" text="Address:">
+         <font>
+            <Font name="Arial Italic" size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="48.0" layoutY="250.0" prefHeight="35.0" prefWidth="201.0" text="Born on:">
+         <font>
+            <Font name="Arial Italic" size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="48.0" layoutY="344.0" prefHeight="35.0" prefWidth="201.0" text="Contact:">
+         <font>
+            <Font name="Arial Italic" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="contactCompleted" layoutX="85.0" layoutY="379.0" prefHeight="35.0" prefWidth="273.0" text="ContactCompleted">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="birthDateCompleted" layoutX="85.0" layoutY="285.0" prefHeight="35.0" prefWidth="201.0" text="BirthDateCompleted">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="addressCompleted" layoutX="85.0" layoutY="200.0" prefHeight="35.0" prefWidth="231.0" text="AddressCompleted">
+         <font>
+            <Font name="Arial" size="16.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

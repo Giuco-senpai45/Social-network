@@ -7,6 +7,7 @@ import main.repository.memory.InMemoryRepository;
 import main.service.serviceExceptions.AddException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,13 +32,19 @@ public class UserDatabase implements Repository<Long, User> {
 
     @Override
     public User save(User entity) {
-        String sql = "insert into users (first_name, last_name ) values (?, ?)";
+        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email) " +
+                "values (?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
+            ps.setString(3, entity.getAddress());
+            ps.setDate(4, Date.valueOf(entity.getBirthDate()));
+            ps.setString(5, entity.getGender());
+            ps.setString(6, entity.getEmail());
+
 
             ps.executeUpdate();
         } catch (SQLException  e) {
@@ -94,8 +101,12 @@ public class UserDatabase implements Repository<Long, User> {
                 Long id = resultSet.getLong("user_id");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
+                String address = resultSet.getString("address");
+                LocalDate birthDate = LocalDate.parse(resultSet.getString("birth_date"));
+                String gender = resultSet.getString("gender");
+                String email = resultSet.getString("email");
 
-                User user = new User(firstName,lastName);
+                User user = new User(firstName, lastName, birthDate, address, gender, email);
                 user.setId(id);
                 users.add(user);
             }
@@ -119,8 +130,12 @@ public class UserDatabase implements Repository<Long, User> {
                 Long user_id = resultSet.getLong("user_id");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
+                String address = resultSet.getString("address");
+                LocalDate birthDate = LocalDate.parse(resultSet.getString("birth_date"));
+                String gender = resultSet.getString("gender");
+                String email = resultSet.getString("email");
 
-                user = new User(firstName,lastName);
+                user = new User(firstName, lastName, birthDate, address, gender, email);
                 user.setId(user_id);
             }
 

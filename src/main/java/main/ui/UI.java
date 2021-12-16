@@ -12,6 +12,7 @@ import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
 import main.service.serviceExceptions.UpdateException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,7 @@ public class UI {
     private Repository<Long, Message> messageRepository;
     private Repository<Long, Chat> chatRepository;
     private Repository<Long, FriendRequest> requestRepository;
+    private Repository<String, Login> loginRepository;
 
     /**
      * User service
@@ -54,14 +56,15 @@ public class UI {
      */
     public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends,
               Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository,
-              Repository<Long, FriendRequest> requestRepository) {
+              Repository<Long, FriendRequest> requestRepository, Repository<String, Login> loginRepository) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
         this.messageRepository = messageRepository;
         this.chatRepository = chatRepository;
         this.requestRepository = requestRepository;
+        this.loginRepository = loginRepository;
 
-        this.userService = new UserService(repoUsers, repoFriends);
+        this.userService = new UserService(repoUsers, repoFriends, loginRepository);
         this.friendsService = new FriendshipService(repoFriends, repoUsers);
         this.messageService = new MessageService(repoFriends, repoUsers, messageRepository, chatRepository);
         this.friendRequestService = new FriendRequestService(repoFriends,repoUsers,requestRepository);
@@ -78,7 +81,7 @@ public class UI {
         System.out.println("Lastname:");
         String lastname = input.nextLine();
         try{
-            userService.addUser(firstname,lastname);
+            userService.addUser(firstname, lastname, "N/A", LocalDate.parse("2000-01-20"), "N/A", "N/A");
         }
         catch (AddException | ValidationException e){
             System.out.println(e.getMessage());
@@ -114,12 +117,12 @@ public class UI {
         String firstname = input.nextLine();
         System.out.println("Lastname:");
         String lastname = input.nextLine();
-        try{
-            userService.updateUser(id,firstname,lastname);
-        }
-        catch (UpdateException | ValidationException e){
-            System.out.println(e.getMessage());
-        }
+//        try{
+//            userService.updateUser(id,firstname,lastname);
+//        }
+//        catch (UpdateException | ValidationException e){
+//            System.out.println(e.getMessage());
+//        }
     }
 
     private void findUserMenu(Scanner input) {

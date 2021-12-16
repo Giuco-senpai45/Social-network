@@ -21,7 +21,8 @@ public class Main {
         Repository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
         Repository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
         Repository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
-        UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat,repoRequests);
+        Repository<String, Login> loginRepository = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+        UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat,repoRequests, loginRepository);
         ui.run();
     }
 }

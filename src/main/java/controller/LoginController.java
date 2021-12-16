@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import main.domain.FriendRequest;
+import main.domain.Login;
 import main.domain.User;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
@@ -18,6 +19,7 @@ import main.service.serviceExceptions.FindException;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class LoginController {
     @FXML
@@ -50,13 +52,16 @@ public class LoginController {
 //            loginErrorLabel.setText("Password cannot be empty!");
 //        }
         else {
-            Long userId = Long.parseLong(textUsername.getText());
-            try{
-                User connectedUser= userService.findUserById(userId);
+            String username = textUsername.getText();
+            String password = textPassword.getText();
+            Login loginData = userService.findRegisteredUser(username);
+            if(loginData == null)
+                loginErrorLabel.setText("Invalid username/password!");
+            else if (!Objects.equals(loginData.getPassword(), password))
+                loginErrorLabel.setText("Invalid username/password!");
+            else {
+                User connectedUser= userService.findUserById(loginData.getUserID());
                 connectUser(connectedUser);
-            }
-            catch (FindException e){
-                System.out.println(e.getMessage());
             }
         }
         textUsername.setText(null);
@@ -90,6 +95,8 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             RegisterController registerController = fxmlLoader.getController();
+            registerController.setRegisterController(userService);
+            registerController.setComboBoxes();
         }
         catch(IOException e) {
             e.printStackTrace();

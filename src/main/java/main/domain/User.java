@@ -1,5 +1,6 @@
 package main.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,13 +23,39 @@ public class User extends Entity<Long>{
      */
     private List<User> friends;
 
+    private String address;
+    private String email;
+    private String gender;
+    private LocalDate birthDate;
+
     /**
      * @param firstName String representing the firstname of the user
      * @param lastName String representing the lastname of the user
      */
-    public User(String firstName, String lastName) {
+    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address = address;
+        this.email = email;
+        this.gender = gender;
+        this.birthDate = birthDate;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
     /**

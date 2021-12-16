@@ -41,6 +41,15 @@ public class UserProfileController {
     @FXML
     private Button sendMessageButton;
 
+    @FXML
+    private Label birthDateCompleted;
+
+    @FXML
+    private Label addressCompleted;
+
+    @FXML
+    private Label contactCompleted;
+
 
     private User loggedUser;
     private User currentUser;
@@ -62,6 +71,9 @@ public class UserProfileController {
     private void setUserProfile(){
         profileNameLabel.setText(null);
         profileNameLabel.setText(currentUser.getLastName() + "  "  + currentUser.getFirstName());
+        addressCompleted.setText(loggedUser.getAddress());
+        birthDateCompleted.setText(loggedUser.getBirthDate().toString());
+        contactCompleted.setText(loggedUser.getEmail());
         friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(currentUser.getId())));
         if(Objects.equals(currentUser.getId(), loggedUser.getId())) {
             friendshipStatus.setVisible(false);

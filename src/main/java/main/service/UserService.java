@@ -1,9 +1,6 @@
 package main.service;
 
-import main.domain.Friendship;
-import main.domain.Tuple;
-import main.domain.User;
-import main.domain.UserFriendshipsDTO;
+import main.domain.*;
 import main.domain.validators.ValidationException;
 import main.repository.Repository;
 import main.service.serviceExceptions.AddException;
@@ -11,6 +8,7 @@ import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
 import main.service.serviceExceptions.UpdateException;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +31,8 @@ public class UserService {
      */
     private Repository<Tuple<Long,Long>, Friendship> repoFriends;
 
+    private Repository<String, Login> repoLogin;
+
     /**
      * Represents an automated id.
      * This id will be equal to the maximum id present in the repo
@@ -44,9 +44,10 @@ public class UserService {
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UserService(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends) {
+    public UserService(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends, Repository<String, Login> repoLogin) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
+        this.repoLogin = repoLogin;
 
         for(User user : repoUsers.findAll())
         {
@@ -55,6 +56,10 @@ public class UserService {
         }
         currentUserID ++;
 
+    }
+
+    public Long getCurrentUserID(){
+        return currentUserID;
     }
 
     private void findMaximumId(){
@@ -73,17 +78,28 @@ public class UserService {
      * @param lastName String representing the last name of the user
      * @throws AddException that user already exists
      */
-    public void addUser(String firstName, String lastName){
-        User user = new User(firstName, lastName);
+    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email){
+        User user = new User(firstName, lastName, birthDate, address, gender, email);
         findMaximumId();
         user.setId(currentUserID);
         User addedUser = repoUsers.save(user);
         if(addedUser != null){
+            System.out.println(addedUser.toString());
             throw new AddException("User already exists!");
         }
         else{
             System.out.println("User added cu with success");
         }
+    }
+
+    public void loginUser(String username, String password, Long userID){
+        Login loginData = new Login(password, userID);
+        loginData.setId(username);
+        repoLogin.save(loginData);
+    }
+
+    public Login findRegisteredUser(String username){
+        return  repoLogin.findOne(username);
     }
 
     /**
@@ -104,8 +120,8 @@ public class UserService {
      * @param firstName String representing the new firstName
      * @param lastName String representing the new lastName
      */
-    public void updateUser(Long id,String firstName,String lastName){
-        User updatedUser = new User(firstName,lastName);
+    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String username, String password){
+        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
         System.out.println(user);
