@@ -76,8 +76,8 @@ public class UserController {
         searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
             if (newValue) {
                 if(newValue && firstTime.get()){
-                    profileAnchor.requestFocus(); // Delegate the focus to container
-                    firstTime.setValue(false); // Variable value changed for future references
+                    profileAnchor.requestFocus();
+                    firstTime.setValue(false);
                 }
             }
         });
@@ -121,14 +121,6 @@ public class UserController {
     public void handleChangeSearchBar(KeyEvent keyEvent) {
         if(Objects.equals(searchBar.getText(), "")) {
             searchList.setVisible(false);
-//            final BooleanProperty firstTime = new SimpleBooleanProperty(true);
-//            searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
-//                if (newValue && firstTime.get()) {
-//                    profileAnchor.requestFocus(); // Delegate the focus to container
-//                    firstTime.setValue(false); // Variable value changed for future references
-//                }
-//            });
-//            searchBar.setPromptText("Search user");
         }
         else {
             List<Tuple<String, Long>> tupleList = userService.allUsersByCharacters(searchBar.getText());

@@ -10,6 +10,8 @@ public class UserFriendshipsDTO {
     private String friendFirstName;
     private String friendLastName;
     private LocalDate date;
+    private String imageURL;
+    private String fullName;
 
     /**
      * Overloaded constructor
@@ -17,11 +19,21 @@ public class UserFriendshipsDTO {
      * @param friendLastName String representing the last name of a user
      * @param date LocalDate representing the beginning of a friendship
      */
-    public UserFriendshipsDTO(String friendFirstName, String friendLastName, LocalDate date, Long friendID) {
+    public UserFriendshipsDTO(String friendFirstName, String friendLastName, LocalDate date, Long friendID, String imageURL) {
         this.friendID = friendID;
         this.friendFirstName = friendFirstName;
         this.friendLastName = friendLastName;
         this.date = date;
+        this.imageURL = imageURL;
+        this.fullName = friendFirstName + " " + friendLastName;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public void setFriendFirstName(String friendFirstName) {

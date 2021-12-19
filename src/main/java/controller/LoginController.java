@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -51,6 +53,19 @@ public class LoginController {
         this.userService = userService;
         this.friendRequestService = friendRequestService;
         this.friendshipService = friendshipService;
+        getFocusFromFirstTextfield();
+    }
+
+    private void getFocusFromFirstTextfield(){
+        final BooleanProperty firstTime = new SimpleBooleanProperty(true);
+        textUsername.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue) {
+                if(newValue && firstTime.get()){
+                    root.requestFocus();
+                    firstTime.setValue(false);
+                }
+            }
+        });
     }
 
     public void loginButtonAction(ActionEvent event) {
@@ -114,8 +129,6 @@ public class LoginController {
             e.printStackTrace();
         }
         stage.setTitle("Registring");
-        stage.setWidth(700);
-        stage.setHeight(600);
         stage.setScene(scene);
         stage.show();
     }

@@ -34,7 +34,7 @@
                <children>
                   <AnchorPane fx:id="profileAnchor" prefHeight="129.0" prefWidth="224.0">
                      <children>
-                        <ImageView fitHeight="99.0" fitWidth="107.0" layoutX="69.0" onMouseClicked="#profileClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="99.0" fitWidth="107.0" layoutX="63.0" onMouseClicked="#profileClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/profile.gif" />
                            </image>
@@ -42,12 +42,12 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label layoutX="102.0" layoutY="99.0" text="Profile" />
+                        <Label layoutX="95.0" layoutY="99.0" text="Profile" />
                      </children>
                   </AnchorPane>
                   <AnchorPane fx:id="friendRequestsAnchor" prefHeight="137.0" prefWidth="224.0" GridPane.rowIndex="1">
                      <children>
-                        <ImageView fitHeight="139.0" fitWidth="144.0" layoutX="49.0" onMouseClicked="#friendsClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="139.0" fitWidth="144.0" layoutX="43.0" onMouseClicked="#friendsClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rose-friends.png" />
                            </image>
@@ -58,12 +58,12 @@
                               <DropShadow />
                            </effect>
                         </ImageView>
-                        <Label layoutX="99.0" layoutY="120.0" text="Friends" />
+                        <Label layoutX="93.0" layoutY="129.0" text="Friends" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="123.0" prefWidth="224.0" GridPane.rowIndex="2">
                      <children>
-                        <ImageView fitHeight="78.0" fitWidth="76.0" layoutX="81.0" layoutY="28.0" onMouseClicked="#friendrequestClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="78.0" fitWidth="76.0" layoutX="74.0" layoutY="28.0" onMouseClicked="#friendrequestClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rose-friend-requests.png" />
                            </image>
@@ -71,16 +71,17 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label layoutX="78.0" layoutY="110.0" text="Friend requests" />
+                        <Label layoutX="71.0" layoutY="110.0" text="Friend requests" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="121.0" prefWidth="237.0" GridPane.rowIndex="3">
                      <children>
-                        <Label layoutX="104.0" layoutY="110.0" text="Chats" />
+                        <Label layoutX="97.0" layoutY="110.0" text="Chats" />
                      </children>
                   </AnchorPane>
                </children>
             </GridPane>
+            <Label alignment="CENTER" prefHeight="116.0" prefWidth="224.0" text="Logout " />
          </children>
       </VBox>
    </left>
@@ -95,14 +96,14 @@
                <children>
                   <Pane fx:id="changingPane" prefHeight="577.0" prefWidth="639.0" />
                </children></StackPane>
-            <TextField fx:id="searchBar" layoutX="31.0" layoutY="13.0" onKeyTyped="#handleChangeSearchBar" prefHeight="25.0" prefWidth="243.0" promptText="Search user" />
-            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onMouseClicked="#handleSearchListClick" prefHeight="48.0" prefWidth="243.0" visible="false" />
+            <TextField fx:id="searchBar" layoutX="31.0" layoutY="13.0" onKeyTyped="#handleChangeSearchBar" prefHeight="25.0" prefWidth="243.0" promptText="Search user" style="-fx-background-color: ffe8d6;" />
+            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onMouseClicked="#handleSearchListClick" prefHeight="48.0" prefWidth="243.0" style="-fx-background-color: ffe8d6;" visible="false" />
             <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="254.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../imgs/search-icon.png" />
                </image>
             </ImageView>
-            <Label fx:id="usernameLabel" layoutX="435.0" layoutY="16.0" style="-fx-background-color: ddbea9;" text="Truth Rose | @username">
+            <Label fx:id="usernameLabel" layoutX="435.0" layoutY="16.0" text="Truth Rose | @username">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>

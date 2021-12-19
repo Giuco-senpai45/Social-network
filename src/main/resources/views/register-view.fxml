@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
    <top>
       <Label prefHeight="53.0" prefWidth="381.0" text="Welcome to Truth Rose" BorderPane.alignment="CENTER">
          <font>
@@ -48,7 +48,7 @@
             <PasswordField fx:id="password" layoutX="255.0" layoutY="327.0" prefHeight="32.0" prefWidth="218.0" promptText="Password" style="-fx-background-color: ffe8d6;" />
             <PasswordField fx:id="retypedPasswd" layoutX="253.0" layoutY="381.0" prefHeight="32.0" prefWidth="221.0" promptText="Re-type password" style="-fx-background-color: ffe8d6;" />
             <TextField fx:id="username" layoutX="255.0" layoutY="272.0" prefHeight="32.0" prefWidth="218.0" promptText="Username" style="-fx-background-color: ffe8d6;" />
-            <Button layoutX="566.0" layoutY="403.0" mnemonicParsing="false" onAction="#handleUserRegister" prefHeight="51.0" prefWidth="117.0" text="Register" textAlignment="CENTER" wrapText="true">
+            <Button layoutX="566.0" layoutY="403.0" mnemonicParsing="false" onAction="#handleUserRegister" prefHeight="51.0" prefWidth="117.0" style="-fx-background-color: ddbea9;" text="Register" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>

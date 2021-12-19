@@ -3,11 +3,17 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import main.domain.Friendship;
 import main.domain.Tuple;
@@ -16,6 +22,7 @@ import main.domain.UserFriendshipsDTO;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
 import main.service.UserService;
+import main.service.serviceExceptions.RemoveException;
 
 
 public class FriendsController{
@@ -23,6 +30,8 @@ public class FriendsController{
     @FXML
     private TableView friendsList;
 
+    @FXML
+    private TableColumn<UserFriendshipsDTO, String> avatar;
     @FXML
     private TableColumn<UserFriendshipsDTO, String> fullName;
 
@@ -47,13 +56,11 @@ public class FriendsController{
 
     public void start(){
         friendsList.getColumns().clear();
-
         friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(loggedUser.getId())));
-        fullName.setCellValueFactory(new PropertyValueFactory<>("friendFirstName" + " " + "friendLastName"));
+        addImageToTable();
+        fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendshipDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-
         friendsList.getColumns().addAll(fullName, friendshipDate);
-
         addButtonToTable();
     }
 
@@ -66,10 +73,17 @@ public class FriendsController{
                     private final Button btn = new Button("Remove friend");
 
                     {
+                        btn.setStyle("-fx-background-color:  ffe8d6; ");
                         btn.setOnAction((ActionEvent event) -> {
                             UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
-                            friendshipService.removeFriendship(new Tuple<>(loggedUser.getId(), data.getFriendID()));
-                            friendsList.getItems().remove(data);
+                            try {
+                                friendshipService.removeFriendship(new Tuple<>(loggedUser.getId(), data.getFriendID()));
+                                friendsList.getItems().remove(data);
+                            }
+                            catch(RemoveException e){
+                                friendshipService.removeFriendship(new Tuple<>(data.getFriendID(), loggedUser.getId()));
+                                friendsList.getItems().remove(data);
+                            }
                         });
                     }
 
@@ -89,5 +103,29 @@ public class FriendsController{
 
         action.setCellFactory(cellFactory);
         friendsList.getColumns().add(action);
+    }
+
+    private void addImageToTable(){
+        avatar.setCellFactory(new Callback<TableColumn<UserFriendshipsDTO, String>, TableCell<UserFriendshipsDTO, String>>() {
+            @Override
+            public TableCell<UserFriendshipsDTO, String> call(TableColumn<UserFriendshipsDTO, String> param) {
+                ImageView imageView = new ImageView();
+                imageView.setFitWidth(30);
+                imageView.setFitHeight(30);
+                TableCell<UserFriendshipsDTO, String> cell = new TableCell<UserFriendshipsDTO, String>() {
+                    public void updateItem(String item, boolean empty) {
+                        if (item != null) {
+                            Image image = new Image(item, false);
+                            imageView.setImage(image);
+                        }
+                    }
+                };
+                cell.setGraphic(imageView);
+                cell.setAlignment(Pos.CENTER);
+                return cell;
+            }
+        });
+        avatar.setCellValueFactory(new PropertyValueFactory<UserFriendshipsDTO, String>("imageURL"));
+        friendsList.getColumns().add(avatar);
     }
 }

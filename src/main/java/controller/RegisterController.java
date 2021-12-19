@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import main.domain.Login;
 import main.domain.User;
@@ -22,6 +25,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class RegisterController {
+
+    @FXML
+    private BorderPane root;
 
     @FXML
     private ComboBox day;
@@ -105,10 +111,23 @@ public class RegisterController {
         this.userService = userService;
         this.userValidator = new UserValidator();
         this.stage = stage;
+        getFocusFromFirstTextField();
         initializeErrorLabels();
         setComboBoxes();
+        setToggleGroupForRadioButtons();
     }
 
+    private void getFocusFromFirstTextField(){
+        final BooleanProperty firstTime = new SimpleBooleanProperty(true);
+        firstName.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue) {
+                if(newValue && firstTime.get()){
+                    root.requestFocus();
+                    firstTime.setValue(false);
+                }
+            }
+        });
+    }
 
     public void setComboBoxes(){
         List<Integer> dayList = new ArrayList<>();
@@ -261,4 +280,12 @@ public class RegisterController {
         newStage.show();
     }
 
+    private void setToggleGroupForRadioButtons(){
+        ToggleGroup toggleGroup = new ToggleGroup();
+
+        male.setToggleGroup(toggleGroup);
+        female.setToggleGroup(toggleGroup);
+        other.setToggleGroup(toggleGroup);
+        //toggleGroup.selectedToggleProperty().addListener((observable, oldVal, newVal) -> System.out.println(newVal + " was selected"));
+    }
 }

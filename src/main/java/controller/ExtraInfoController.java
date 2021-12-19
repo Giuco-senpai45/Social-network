@@ -1,11 +1,14 @@
 package controller;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import main.domain.User;
 import main.service.UserService;
@@ -17,6 +20,10 @@ import java.util.Objects;
 import java.util.Random;
 
 public class ExtraInfoController {
+
+    @FXML
+    private AnchorPane root;
+
     @FXML
     private Label relationshipError;
 
@@ -52,6 +59,9 @@ public class ExtraInfoController {
     private String imageURL;
 
     public void setController(UserService userService, Stage stage, String firstN, String lastN, String addr, String gender, LocalDate date, String e, String usrn, String passwd){
+        funFactError.setText("");
+        schoolError.setText("");
+        relationshipError.setText("");
         this.userService = userService;
         this.stage = stage;
         this.firstN = firstN;
@@ -63,6 +73,19 @@ public class ExtraInfoController {
         this.usrn = usrn;
         this.passwd = passwd;
         setComboBox();
+        getFocusFromFirstTextField();
+    }
+
+    private void getFocusFromFirstTextField(){
+        final BooleanProperty firstTime = new SimpleBooleanProperty(true);
+        school.focusedProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue) {
+                if(newValue && firstTime.get()){
+                    root.requestFocus();
+                    firstTime.setValue(false);
+                }
+            }
+        });
     }
 
     private void setComboBox(){
@@ -76,13 +99,20 @@ public class ExtraInfoController {
         relationshipStatus.setItems(FXCollections.observableArrayList(status));
     }
 
+    @FXML
     public void handleFinishRegister(ActionEvent actionEvent) {
         funFactError.setText("");
         schoolError.setText("");
         relationshipError.setText("");
         s = school.getText();
         f = funFact.getText();
-        r = relationshipStatus.getValue().toString();
+        try {
+            r = relationshipStatus.getValue().toString();
+        }
+        catch(NullPointerException e){
+            relationshipError.setText("Please choose an option!");
+            relationshipError.setVisible(true);
+        }
         if(validateFields()){
             generateAvatar();
             userService.addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL);
@@ -100,13 +130,9 @@ public class ExtraInfoController {
             funFactError.setText("Invalid fun fact!");
             funFactError.setVisible(true);
         }
-        if(r == null){
-            relationshipError.setText("Please choose an option!");
-            relationshipError.setVisible(true);
-        }
         if (Objects.equals(relationshipError.getText(), "") && Objects.equals(schoolError.getText(), "") && Objects.equals(funFactError.getText(), ""))
-            return false;
-        return true;
+            return true;
+        return false;
     }
 
     private void generateAvatar(){

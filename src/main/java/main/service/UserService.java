@@ -164,10 +164,10 @@ public class UserService {
                     User friend;
                     if(friendship.getBuddy1().equals(id)){
                         friend = repoUsers.findOne(friendship.getBuddy2());
-                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
+                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
                     }
                     friend = repoUsers.findOne(friendship.getBuddy1());
-                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
+                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
                 })
                 .collect(Collectors.toList());
     }
@@ -198,6 +198,7 @@ public class UserService {
 
         Function<Long, String> getFriendFirstName = x -> repoUsers.findOne(x).getFirstName();
         Function<Long, String> getFriendLastName = x -> repoUsers.findOne(x).getLastName();
+        Function<Long, String> getImage = x -> repoUsers.findOne(x).getImageURL();
 
         return friendships.stream()
                 .filter(testBoth)
@@ -208,7 +209,7 @@ public class UserService {
                     else
                         friendID = u.getBuddy1();
                     return new UserFriendshipsDTO(getFriendFirstName.apply(friendID),
-                            getFriendLastName.apply(friendID), u.getDate(), friendID);
+                            getFriendLastName.apply(friendID), u.getDate(), friendID, getImage.apply(friendID));
                 })
                 .collect(Collectors.toList());
     }
