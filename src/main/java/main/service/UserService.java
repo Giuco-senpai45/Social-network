@@ -78,8 +78,8 @@ public class UserService {
      * @param lastName String representing the last name of the user
      * @throws AddException that user already exists
      */
-    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email){
-        User user = new User(firstName, lastName, birthDate, address, gender, email);
+    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
+        User user = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         findMaximumId();
         user.setId(currentUserID);
         User addedUser = repoUsers.save(user);
@@ -102,6 +102,10 @@ public class UserService {
         return  repoLogin.findOne(username);
     }
 
+    public Iterable<Login> allRegisteredUsers(){
+        return  repoLogin.findAll();
+    }
+
     /**
      * This function removes the user with the given id
      * @param id representing the id of a user
@@ -120,8 +124,8 @@ public class UserService {
      * @param firstName String representing the new firstName
      * @param lastName String representing the new lastName
      */
-    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String username, String password){
-        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email);
+    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
+        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
         System.out.println(user);

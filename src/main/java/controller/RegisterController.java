@@ -3,16 +3,23 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import main.domain.Login;
 import main.domain.User;
+import main.domain.validators.UserValidator;
 import main.service.UserService;
+import sn.socialnetwork.MainApp;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RegisterController {
 
@@ -55,14 +62,51 @@ public class RegisterController {
     @FXML
     private PasswordField retypedPasswd;
 
+    @FXML
+    private Label firstNameError;
+
+    @FXML
+    private Label lastNameError;
+
+    @FXML
+    private Label addressError;
+
+    @FXML
+    private Label dateError;
+
+    @FXML
+    private Label genderError;
+
+    @FXML
+    private Label emailError;
+
+    @FXML
+    private Label usernameError;
+
+    @FXML
+    private Label passwordError;
+
+    @FXML
+    private Label retypedPasswordError;
+
+    @FXML
+    private Label generalError;
+
+
     private UserService userService;
+    private UserValidator userValidator;
     private String d;
     private String m;
     private String y;
-    private String gender;
+    private Stage stage;
+    private String gender = null;
 
-    public void setRegisterController(UserService userService){
+    public void setRegisterController(UserService userService, Stage stage){
         this.userService = userService;
+        this.userValidator = new UserValidator();
+        this.stage = stage;
+        initializeErrorLabels();
+        setComboBoxes();
     }
 
 
@@ -83,52 +127,138 @@ public class RegisterController {
 
     @FXML
     public void handleUserRegister(ActionEvent actionEvent) {
-
+        initializeErrorLabels();
+        generalError.setVisible(false);
         String firstN= firstName.getText();
         String lastN = lastName.getText();
         String addr = address.getText();
-        LocalDate date = LocalDate.parse(y + "-" + m + "-" + d);
+        LocalDate date = null;
+        try {
+            getDate();
+
+            try {
+                date = LocalDate.parse(y + "-" + m + "-" + d);
+            } catch (DateTimeParseException e) {
+                dateError.setText("Please select a valid date!");
+            }
+        }
+        catch (NullPointerException e){
+            dateError.setText("Please select a valid date!");
+        }
         String e = email.getText();
+        getGender();
+        String usrn = username.getText();
+        String passwd = password.getText();
+        String reTyped = retypedPasswd.getText();
+        if(validateData()) {
+            boolean found = false;
+            for(Login login: userService.allRegisteredUsers())
+                if(Objects.equals(login.getId(), username.getText()) && Objects.equals(login.getPassword(), password.getText()))
+                    found = true;
+            if(found) {
+                generalError.setText("Error! There is already an account with these credentials.");
+                generalError.setVisible(true);
+            }
+            else {
+                resetTextFields();
+                generalError.setVisible(false);
+                showExtraInfoWindow(firstN, lastN, addr, date, e, usrn, passwd);
+                stage.close();
+            }
+        }
+        else{
+            generalError.setText("Error! Try to introduce your info again.");
+            generalError.setVisible(true);
+        }
+    }
+
+    public boolean validateData(){
+        if (!userValidator.validateName(firstName.getText()))
+            firstNameError.setText("Invalid first name!");
+        if (!userValidator.validateName(lastName.getText()))
+            lastNameError.setText("Invalid last name!");
+        if (!userValidator.validateName(address.getText()))
+            addressError.setText("Invalid address!");
+        if (gender == null)
+            genderError.setText("Please select one of the options above!");
+        if (!userValidator.validateEmail(email.getText()))
+            emailError.setText("Invalid email address!");
+        for(Login login: userService.allRegisteredUsers())
+            if(Objects.equals(login.getId(), username.getText()))
+                usernameError.setText("Unavailable username!");
+        if(!userValidator.validatePassword(password.getText()))
+            passwordError.setText("Your password must have at least 8 characters!");
+        else if(!Objects.equals(retypedPasswd.getText(), password.getText()))
+            retypedPasswordError.setText("Retyped password doesn't match the first one!");
+        return Objects.equals(firstNameError.getText(), "") && Objects.equals(lastNameError.getText(), "") && Objects.equals(addressError.getText(), "") && Objects.equals(dateError.getText(), "") && Objects.equals(genderError.getText(), "") && Objects.equals(emailError.getText(), "") && Objects.equals(usernameError.getText(), "") && Objects.equals(passwordError.getText(), "") && Objects.equals(retypedPasswordError.getText(), "");
+    }
+
+    private void getDate() {
+        if((int) day.getValue() > 9)
+            d = day.getValue().toString();
+        else
+            d = "0" + day.getValue().toString();
+
+        if((int) month.getValue()>9)
+            m = month.getValue().toString();
+        else
+            m = "0" + month.getValue().toString();
+
+        y = year.getValue().toString();
+    }
+
+    private void getGender(){
         if(male.isSelected())
             gender = "male";
         else if(female.isSelected())
             gender = "female";
         else if(other.isSelected())
             gender = "other";
-        String usrn = username.getText();
-        String passwd = password.getText();
-        String reTyped = retypedPasswd.getText();
-        userService.addUser(firstN, lastN,  addr, date, gender, e);
-        userService.loginUser(usrn, passwd, userService.getCurrentUserID());
-
     }
 
-    public void handleDaySelection(ActionEvent actionEvent) {
-        if((int) day.getValue() > 9)
-            d = day.getValue().toString();
-        else
-            d = "0" + day.getValue().toString();
+    private void initializeErrorLabels(){
+        emailError.setText("");
+        firstNameError.setText("");
+        lastNameError.setText("");
+        addressError.setText("");
+        genderError.setText("");
+        dateError.setText("");
+        usernameError.setText("");
+        passwordError.setText("");
+        retypedPasswordError.setText("");
     }
 
-    public void handleMonthSelection(ActionEvent actionEvent) {
-
-        if((int) month.getValue()>9)
-            m = month.getValue().toString();
-        else
-            m = "0" + month.getValue().toString();
+    private void resetTextFields(){
+        firstName.setText(null);
+        lastName.setText(null);
+        address.setText(null);
+        username.setText(null);
+        password.setText(null);
+        retypedPasswd.setText(null);
+        email.setText(null);
+        male.setSelected(false);
+        female.setSelected(false);
+        other.setSelected(false);
+        day.valueProperty().set(null);
+        month.valueProperty().set(null);
+        year.valueProperty().set(null);
     }
 
-    public void handleYearSelection(ActionEvent actionEvent) {
-
-        y = year.getValue().toString();
+    public void showExtraInfoWindow(String firstN, String lastN, String addr, LocalDate date, String e, String usrn, String passwd){
+        Stage newStage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/extrainfo-view.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+            ExtraInfoController extraInfoController = fxmlLoader.getController();
+            extraInfoController.setController(userService, newStage, firstN, lastN, addr, gender, date, e, usrn, passwd);
+        }
+        catch(IOException exception) {
+            exception.printStackTrace();
+        }
+        newStage.setTitle("Welcome to Truth Rose!");
+        newStage.setScene(scene);
+        newStage.show();
     }
 
-    public void handleMaleSelection(ActionEvent actionEvent) {
-    }
-
-    public void handleFemaleSelection(ActionEvent actionEvent) {
-    }
-
-    public void handleOtherSelection(ActionEvent actionEvent) {
-    }
 }

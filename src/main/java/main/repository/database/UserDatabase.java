@@ -32,8 +32,8 @@ public class UserDatabase implements Repository<Long, User> {
 
     @Override
     public User save(User entity) {
-        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email) " +
-                "values (?, ?, ?, ?, ?, ?)";
+        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -44,6 +44,10 @@ public class UserDatabase implements Repository<Long, User> {
             ps.setDate(4, Date.valueOf(entity.getBirthDate()));
             ps.setString(5, entity.getGender());
             ps.setString(6, entity.getEmail());
+            ps.setString(7, entity.getLastGraduatedSchool());
+            ps.setString(8, entity.getRelationshipStatus());
+            ps.setString(9, entity.getFunFact());
+            ps.setString(10, entity.getImageURL());
 
 
             ps.executeUpdate();
@@ -105,8 +109,12 @@ public class UserDatabase implements Repository<Long, User> {
                 LocalDate birthDate = LocalDate.parse(resultSet.getString("birth_date"));
                 String gender = resultSet.getString("gender");
                 String email = resultSet.getString("email");
+                String lastSchool = resultSet.getString("studies");
+                String relationshipStatus = resultSet.getString("relationship_status");
+                String funFact = resultSet.getString("fun_fact");
+                String imageURL = resultSet.getString("image_url");
 
-                User user = new User(firstName, lastName, birthDate, address, gender, email);
+                User user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL);
                 user.setId(id);
                 users.add(user);
             }
@@ -134,8 +142,12 @@ public class UserDatabase implements Repository<Long, User> {
                 LocalDate birthDate = LocalDate.parse(resultSet.getString("birth_date"));
                 String gender = resultSet.getString("gender");
                 String email = resultSet.getString("email");
+                String lastSchool = resultSet.getString("studies");
+                String relationshipStatus = resultSet.getString("relationship_status");
+                String funFact = resultSet.getString("fun_fact");
+                String imageURL = resultSet.getString("image_url");
 
-                user = new User(firstName, lastName, birthDate, address, gender, email);
+                user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL);
                 user.setId(user_id);
             }
 

@@ -3,23 +3,24 @@ package controller;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import main.domain.Friendship;
-import main.domain.Tuple;
-import main.domain.User;
+import javafx.scene.layout.*;
+import javafx.scene.transform.Scale;
+import javafx.stage.Stage;
+import main.domain.*;
 import javafx.scene.input.MouseEvent;
-import main.domain.UserFriendshipsDTO;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
 import main.service.UserService;
@@ -39,22 +40,17 @@ public class UserController {
     private AnchorPane profileAnchor;
 
     @FXML
-    private AnchorPane friendRequestsAnchor;
-
-    @FXML
-    private StackPane stackProfile;
-
-    @FXML
     private Pane changingPane;
 
     @FXML
     private TextField searchBar;
 
     @FXML
-    private Button searchButton;
+    private ListView searchList;
 
     @FXML
-    private ListView searchList;
+    private Label usernameLabel;
+
 
     private FriendRequestsControll friendRequestsControll;
     private User loggedUser;
@@ -63,12 +59,19 @@ public class UserController {
     private FriendshipService friendshipService;
 
     public void loadAppLoggedUser(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService,User user) {
-        userNameLabel.setText(user.getLastName() + user.getFirstName());
-        this.userService = userService;
         this.friendshipService = friendshipService;
         this.loggedUser = user;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+
+        Login login = null;
+        for(Login l: userService.allRegisteredUsers())
+            if(Objects.equals(l.getUserID(), loggedUser.getId()))
+                login = l;
+        usernameLabel.setText("Truth Rose | @" + login.getId());
+
+        loadUserProfile();
+
         final BooleanProperty firstTime = new SimpleBooleanProperty(true);
         searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
             if (newValue) {
@@ -79,8 +82,7 @@ public class UserController {
             }
         });
     }
-
-    public void profileClicked(MouseEvent mouseEvent) {
+    private void loadUserProfile(){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/user-profile-view.fxml"));
             if(changingPane.getChildren() != null){
@@ -91,8 +93,12 @@ public class UserController {
             userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, changingPane);
         }
         catch(IOException e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
+    }
+
+    public void profileClicked(MouseEvent mouseEvent) {
+        loadUserProfile();
     }
 
     public void friendrequestClicked(MouseEvent mouseEvent) {
@@ -103,7 +109,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             FriendRequestsControll friendRequestsControll = fxmlLoader.getController();
-            friendRequestsControll.initialise(userService,friendRequestService,loggedUser);
+            friendRequestsControll.initialise(userService, friendRequestService, loggedUser);
             friendRequestsControll.showCurrentFriendRequests();
         }
         catch(IOException e) {
@@ -164,5 +170,22 @@ public class UserController {
         }
 
         searchBar.alignmentProperty();
+    }
+
+    public void friendsClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/friends-view.fxml"));
+            if(changingPane.getChildren() != null){
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
+            FriendsController friendsController = fxmlLoader.getController();
+            System.out.println(userService.getUsers());
+            friendsController.setController(userService, friendshipService, friendRequestService, loggedUser);
+            friendsController.start();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 }
