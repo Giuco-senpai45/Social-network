@@ -13,8 +13,8 @@
             <Font name="Castellar" size="24.0" />
          </font>
       </Label>
-      <ListView fx:id="friendsList" layoutX="379.0" layoutY="150.0" onMouseClicked="#handleFriendsListClick" prefHeight="340.0" prefWidth="223.0" style="-fx-background-color: ffe8d6;" />
-      <Label layoutX="444.0" layoutY="116.0" text="Friends">
+      <ListView fx:id="friendsList" layoutX="362.0" layoutY="151.0" onMouseClicked="#handleFriendsListClick" prefHeight="340.0" prefWidth="223.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" />
+      <Label layoutX="435.0" layoutY="116.0" text="Friends">
          <font>
             <Font size="24.0" />
          </font>

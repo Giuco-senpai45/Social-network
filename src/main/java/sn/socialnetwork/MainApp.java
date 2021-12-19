@@ -4,8 +4,10 @@ import controller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import main.Main;
 import main.domain.*;
 import main.domain.validators.*;
@@ -42,9 +44,9 @@ public class MainApp extends Application {
         LoginController loginController =  loginLoader.getController();
         loginController.setServicesLogin(userService, friendsService, friendRequestService);
 
-
         primaryStage.setScene(new Scene(loginLayout));
         primaryStage.setTitle("Truth Rose");
+        primaryStage.getIcons().add(new Image("imgs/rose3.jpg"));
         primaryStage.show();
         primaryStage.setWidth(800);
     }
