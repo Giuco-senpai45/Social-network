@@ -1,0 +1,43 @@
+.text-area {
+    text-area-background:  #ffe8d6 ;
+}
+
+.list-view .scroll-bar:horizontal .increment-arrow,
+.list-view .scroll-bar:horizontal .decrement-arrow,
+.list-view .scroll-bar:horizontal .increment-button,
+.list-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
+
+.table-view .scroll-bar:horizontal .increment-arrow,
+.table-view .scroll-bar:horizontal .decrement-arrow,
+.table-view .scroll-bar:horizontal .increment-button,
+.table-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
+
+.chat-menu {
+    -fx-background-color: #a5a58d;
+    -fx-border-radius: 40px;
+    -fx-background-image: url("../imgs/3dots2.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.combo-box-popup .list-cell{
+    -fx-background-color: #6b705c;
+}
+
+.combo-box .list-view{
+    -fx-translate-x: -68px;
+    -fx-background-color: #6b705c;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover{
+    -fx-background-color: #a5a58d;
+    -fx-text-fill: #ffe8d6;
+}
+
+.combo-box .arrow, .combo-box .arrow-button{
+    -fx-background-color: transparent;
+}

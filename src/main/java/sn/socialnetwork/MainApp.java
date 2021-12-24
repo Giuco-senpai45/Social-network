@@ -37,16 +37,19 @@ public class MainApp extends Application {
         Repository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
         UserService userService = new UserService(repoUser, repoFriends, repoLogin);
         FriendshipService friendsService = new FriendshipService(repoFriends, repoUser);
-        MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat);
+        MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat,"jdbc:postgresql://localhost:5432/social","postgres","postgres");
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;
 
         BorderPane loginLayout = loginLoader.load();
         LoginController loginController =  loginLoader.getController();
-        loginController.setServicesLogin(userService, friendsService, friendRequestService);
+        loginController.setServicesLogin(userService, friendsService, friendRequestService,messageService);
+
+        Iterable<Chat> chats = repoChat.findAll();
+        chats.forEach(System.out::println);
 
         primaryStage.setScene(new Scene(loginLayout));
         primaryStage.setTitle("Truth Rose");
-        primaryStage.getIcons().add(new Image("imgs/rose3.jpg"));
+        primaryStage.getIcons().add(new Image("imgs/app_icon.png"));
         primaryStage.show();
         primaryStage.setWidth(800);
     }

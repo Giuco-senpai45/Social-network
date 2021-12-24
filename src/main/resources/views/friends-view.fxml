@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendsController">
+   <children>
+      <TableView fx:id="friendsList" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: b7b7a4; -fx-control-inner-background: b7b7a4;">
+        <columns>
+          <TableColumn fx:id="avatar" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="Profile picture" />
+          <TableColumn fx:id="fullName" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="User Full Name" />
+            <TableColumn fx:id="friendshipDate" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="Friendship date" />
+            <TableColumn fx:id="action" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="Action" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </children>
+</AnchorPane>

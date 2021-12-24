@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ExtraInfoController">
+   <children>
+      <Label contentDisplay="TOP" layoutX="113.0" layoutY="54.0" prefHeight="36.0" prefWidth="490.0" text=" from becoming a part of Truth Rose community." textOverrun="CLIP">
+         <font>
+            <Font name="Calibri Bold" size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="220.0" layoutY="114.0" text="Please provide us some extra information about you.">
+         <font>
+            <Font name="Calibri" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="school" layoutX="269.0" layoutY="139.0" prefHeight="32.0" prefWidth="270.0" promptText="Graduated School" style="-fx-background-color: ffe8d6;" />
+      <TextField fx:id="funFact" layoutX="269.0" layoutY="219.0" prefHeight="32.0" prefWidth="270.0" promptText="Fun fact about you" style="-fx-background-color: ffe8d6;" />
+      <Label layoutX="270.0" layoutY="386.0" text="Go back now and login into your account.">
+         <font>
+            <Font name="Calibri" size="16.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="relationshipStatus" layoutX="313.0" layoutY="293.0" prefHeight="25.0" prefWidth="182.0" promptText="Relationship status" style="-fx-background-color: ffe8d6;" />
+      <Button layoutX="346.0" layoutY="437.0" mnemonicParsing="false" onAction="#handleFinishRegister" prefHeight="51.0" prefWidth="117.0" style="-fx-background-color: ddbea9;" text="Finish" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Label layoutX="323.0" layoutY="368.0" text="That's all. Thank you!">
+         <font>
+            <Font name="Calibri" size="16.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="212.0" fitWidth="117.0" layoutX="83.0" layoutY="181.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../imgs/15-red-rose-animated-2.gif" />
+         </image>
+      </ImageView>
+      <Label fx:id="schoolError" layoutX="270.0" layoutY="171.0" text="Label" textFill="#c30e0e">
+         <font>
+            <Font name="System Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="funFactError" layoutX="270.0" layoutY="251.0" text="Label" textFill="#c30e0e">
+         <font>
+            <Font name="System Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="relationshipError" layoutX="313.0" layoutY="318.0" text="Label" textFill="#c30e0e">
+         <font>
+            <Font name="System Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="177.0" layoutY="26.0" text="Congratulations! You're one step away">
+         <font>
+            <Font name="Calibri Bold" size="24.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

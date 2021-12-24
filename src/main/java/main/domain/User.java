@@ -27,20 +27,27 @@ public class User extends Entity<Long>{
     private String email;
     private String gender;
     private LocalDate birthDate;
+    private String lastGraduatedSchool;
+    private String relationshipStatus;
+    private String funFact;
+    private String imageURL;
 
     /**
      * @param firstName String representing the firstname of the user
      * @param lastName String representing the lastname of the user
      */
-    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email) {
+    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email, String lastGraduatedSchool, String relationshipStatus, String funFact, String imageURL) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.email = email;
         this.gender = gender;
         this.birthDate = birthDate;
+        this.relationshipStatus = relationshipStatus;
+        this.imageURL = imageURL;
+        this.funFact = funFact;
+        this.lastGraduatedSchool = lastGraduatedSchool;
     }
-
 
     public String getAddress() {
         return address;
@@ -56,6 +63,22 @@ public class User extends Entity<Long>{
 
     public LocalDate getBirthDate() {
         return birthDate;
+    }
+
+    public String getLastGraduatedSchool() {
+        return lastGraduatedSchool;
+    }
+
+    public String getRelationshipStatus() {
+        return relationshipStatus;
+    }
+
+    public String getFunFact() {
+        return funFact;
+    }
+
+    public String getImageURL() {
+        return imageURL;
     }
 
     /**

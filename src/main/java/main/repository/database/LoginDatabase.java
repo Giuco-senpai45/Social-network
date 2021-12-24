@@ -85,7 +85,7 @@ public class LoginDatabase implements Repository<String, Login> {
         List<Login> logins = new ArrayList<>();
 
         try(Connection connection = DriverManager.getConnection(url,username,password);
-            PreparedStatement statement = connection.prepareStatement("SELECT * from users");
+            PreparedStatement statement = connection.prepareStatement("SELECT * from login");
             ResultSet resultSet = statement.executeQuery()){
 
             while(resultSet.next()){

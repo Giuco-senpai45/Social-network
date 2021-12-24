@@ -7,6 +7,7 @@ import main.service.serviceExceptions.AddException;
 import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
 import main.service.serviceExceptions.UpdateException;
+import main.utils.AES256;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -78,8 +79,8 @@ public class UserService {
      * @param lastName String representing the last name of the user
      * @throws AddException that user already exists
      */
-    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email){
-        User user = new User(firstName, lastName, birthDate, address, gender, email);
+    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
+        User user = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         findMaximumId();
         user.setId(currentUserID);
         User addedUser = repoUsers.save(user);
@@ -93,13 +94,21 @@ public class UserService {
     }
 
     public void loginUser(String username, String password, Long userID){
-        Login loginData = new Login(password, userID);
+        //TODO encripting
+        AES256 passwordEncrypter = new AES256();
+        String encryptedPassword = passwordEncrypter.encrypt(password);
+        Login loginData = new Login(encryptedPassword, userID);
+//        Login loginData = new Login(password, userID);
         loginData.setId(username);
         repoLogin.save(loginData);
     }
 
     public Login findRegisteredUser(String username){
         return  repoLogin.findOne(username);
+    }
+
+    public Iterable<Login> allRegisteredUsers(){
+        return  repoLogin.findAll();
     }
 
     /**
@@ -120,8 +129,8 @@ public class UserService {
      * @param firstName String representing the new firstName
      * @param lastName String representing the new lastName
      */
-    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String username, String password){
-        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email);
+    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
+        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
         System.out.println(user);
@@ -160,10 +169,10 @@ public class UserService {
                     User friend;
                     if(friendship.getBuddy1().equals(id)){
                         friend = repoUsers.findOne(friendship.getBuddy2());
-                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
+                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
                     }
                     friend = repoUsers.findOne(friendship.getBuddy1());
-                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId());
+                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
                 })
                 .collect(Collectors.toList());
     }
@@ -194,6 +203,7 @@ public class UserService {
 
         Function<Long, String> getFriendFirstName = x -> repoUsers.findOne(x).getFirstName();
         Function<Long, String> getFriendLastName = x -> repoUsers.findOne(x).getLastName();
+        Function<Long, String> getImage = x -> repoUsers.findOne(x).getImageURL();
 
         return friendships.stream()
                 .filter(testBoth)
@@ -204,7 +214,7 @@ public class UserService {
                     else
                         friendID = u.getBuddy1();
                     return new UserFriendshipsDTO(getFriendFirstName.apply(friendID),
-                            getFriendLastName.apply(friendID), u.getDate(), friendID);
+                            getFriendLastName.apply(friendID), u.getDate(), friendID, getImage.apply(friendID));
                 })
                 .collect(Collectors.toList());
     }

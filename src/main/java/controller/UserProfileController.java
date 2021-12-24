@@ -7,8 +7,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import main.domain.*;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
@@ -27,9 +33,6 @@ public class UserProfileController {
     private Label profileNameLabel;
 
     @FXML
-    private ListView friendsList;
-
-    @FXML
     private Pane changingPane;
 
     @FXML
@@ -42,13 +45,28 @@ public class UserProfileController {
     private Button sendMessageButton;
 
     @FXML
-    private Label birthDateCompleted;
-
-    @FXML
     private Label addressCompleted;
 
     @FXML
-    private Label contactCompleted;
+    private Label dateCompleted;
+
+    @FXML
+    private Label studiesCompleted;
+
+    @FXML
+    private Label emailCompleted;
+
+    @FXML
+    private Label relationshipCompleted;
+
+    @FXML
+    private Label funFactCompleted;
+
+    @FXML
+    private AnchorPane root;
+
+    @FXML
+    private Circle circleAvatar;
 
 
     private User loggedUser;
@@ -63,6 +81,8 @@ public class UserProfileController {
         this.currentUser = currentUser;
         this.userService = userService;
         this.changingPane = changingPane;
+        root.setLayoutX(changingPane.getLayoutX());
+        root.setLayoutY(changingPane.getLayoutY());
         this.friendshipService = friendshipService;
         this.friendRequestService = friendRequestService;
         setUserProfile();
@@ -71,10 +91,7 @@ public class UserProfileController {
     private void setUserProfile(){
         profileNameLabel.setText(null);
         profileNameLabel.setText(currentUser.getLastName() + "  "  + currentUser.getFirstName());
-        addressCompleted.setText(loggedUser.getAddress());
-        birthDateCompleted.setText(loggedUser.getBirthDate().toString());
-        contactCompleted.setText(loggedUser.getEmail());
-        friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(currentUser.getId())));
+        setInfo();
         if(Objects.equals(currentUser.getId(), loggedUser.getId())) {
             friendshipStatus.setVisible(false);
             sendMessageButton.setVisible(false);
@@ -85,11 +102,11 @@ public class UserProfileController {
             List<FriendRequest> friendRequests = friendRequestService.findPendingRequestsForUser(currentUser.getId());
             boolean found = false;
             for(FriendRequest fr: friendRequests)
-                if (fr.getFrom() == loggedUser.getId()) {
+                if (Objects.equals(fr.getFrom(), loggedUser.getId())) {
                     found = true;
                     break;
                 }
-            if (found == true){
+            if (found){
                 friendshipStatus.setVisible(false);
                 friendshipButton.setText("Cancel friend request");
                 friendshipButton.setVisible(true);
@@ -110,17 +127,30 @@ public class UserProfileController {
         }
     }
 
+    private void setInfo(){
+        circleAvatar.setStroke(Color.BLACK);
+        Image image = new Image(currentUser.getImageURL(), false);
+        circleAvatar.setFill(new ImagePattern(image));
+
+        addressCompleted.setText(currentUser.getAddress());
+        dateCompleted.setText(currentUser.getBirthDate().toString());
+        studiesCompleted.setText(currentUser.getLastGraduatedSchool());
+        emailCompleted.setText(currentUser.getEmail());
+        relationshipCompleted.setText(currentUser.getRelationshipStatus());
+        funFactCompleted.setText(currentUser.getFunFact());
+    }
+
     @FXML
     public void handleFriendsListClick(MouseEvent mouseEvent) {
-        int index = friendsList.getSelectionModel().getSelectedIndex();
-        try {
-            UserFriendshipsDTO userFriendshipsDTO = userService.getUserFriendList(currentUser.getId()).get(index);
-            User newUser = userService.findUserById(userFriendshipsDTO.getFriendID());
-            setNewUserProfile(newUser);
-        }
-        catch (IndexOutOfBoundsException e){
-
-        }
+//       // int index = friendsList.getSelectionModel().getSelectedIndex();
+//        try {
+//            UserFriendshipsDTO userFriendshipsDTO = userService.getUserFriendList(currentUser.getId()).get(index);
+//            User newUser = userService.findUserById(userFriendshipsDTO.getFriendID());
+//            setNewUserProfile(newUser);
+//        }
+//        catch (IndexOutOfBoundsException e){
+//
+//        }
     }
 
     public void setNewUserProfile(User newUser) {
@@ -143,7 +173,7 @@ public class UserProfileController {
         String text = friendshipButton.getText();
         if (Objects.equals(text, "Remove friend")){
             friendshipService.removeFriendship(new Tuple<>(loggedUser.getId(), currentUser.getId()));
-            friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(currentUser.getId())));
+//            friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(currentUser.getId())));
             friendshipStatus.setVisible(false);
             friendshipButton.setText("Add new friend");
         }

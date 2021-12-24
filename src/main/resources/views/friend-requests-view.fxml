@@ -6,12 +6,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="604.0" prefWidth="638.0" style="-fx-background-color: a5a58d;"
-            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="@../css/friend-requests.css"
-            fx:controller="controller.FriendRequestsControll">
+<AnchorPane prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendRequestsControll">
    <children>
-      <ListView fx:id="friendRequestListView" layoutX="35.0" layoutY="86.0" prefHeight="409.0" prefWidth="566.0" style="-fx-background-color: ddbea9; -fx-control-inner-background: ffe8d6;" />
+      <ListView fx:id="friendRequestListView" layoutX="35.0" layoutY="86.0" prefHeight="409.0" prefWidth="589.0" style="-fx-background-color: ddbea9; -fx-control-inner-background: ddbea9;" />
       <Button fx:id="acceptButton" layoutX="395.0" layoutY="530.0" mnemonicParsing="false" onMousePressed="#acceptRequestEvent" prefHeight="40.0" prefWidth="86.0" style="-fx-background-color: #6b705c;" text="Accept" textFill="#ffe8d6" />
       <Button fx:id="rejectButton" layoutX="515.0" layoutY="530.0" mnemonicParsing="false" onMousePressed="#rejectRequestEvent" prefHeight="40.0" prefWidth="86.0" style="-fx-background-color: cb997e;" text="Reject" />
       <Label fx:id="friendRequestsLabel" layoutX="37.0" layoutY="51.0" text="Label">

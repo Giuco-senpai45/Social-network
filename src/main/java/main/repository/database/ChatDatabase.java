@@ -43,8 +43,11 @@ public class ChatDatabase implements Repository<Long, Chat> {
                     setEntity = true;
                 }
                 Long user_id = resultSet.getLong("user_id");
-
+                String url = resultSet.getString("url");
+                String name = resultSet.getString("name");
                 chat.addUserToChat(user_id);
+                chat.setUrl(url);
+                chat.setName(name);
             }
 
         } catch (SQLException e) {
@@ -64,9 +67,13 @@ public class ChatDatabase implements Repository<Long, Chat> {
             while(resultSet.next()){
                 Long chat_id = resultSet.getLong("chat_id");
                 Long user_id = resultSet.getLong("user_id");
+                String url = resultSet.getString("url");
+                String name = resultSet.getString("name");
 
                 Chat chat = new Chat();
                 chat.setId(chat_id);
+                chat.setUrl(url);
+                chat.setName(name);
                 boolean found = false;
                 for(Chat c: chats)
                     if(Objects.equals(c.getId(), chat_id)) {
@@ -86,7 +93,7 @@ public class ChatDatabase implements Repository<Long, Chat> {
 
     @Override
     public Chat save(Chat entity) {
-        String sql = "insert into chats (chat_id, user_id) values (?, ?)";
+        String sql = "insert into chats (chat_id, user_id, url, name) values (?, ?, ?, ?)";
         String sql2 = "SELECT * from chats where chat_id = ? and user_id = ?";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -101,6 +108,8 @@ public class ChatDatabase implements Repository<Long, Chat> {
 
                     ps.setLong(1, entity.getId());
                     ps.setLong(2, user);
+                    ps.setString(3,entity.getUrl());
+                    ps.setString(4,entity.getName());
 
                     ps.executeUpdate();
                 }
@@ -131,6 +140,17 @@ public class ChatDatabase implements Repository<Long, Chat> {
 
     @Override
     public Chat update(Chat entity) {
+        String sql = "update chats set url = ?, name = ? where chat_id = ?";
+
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setString(1, entity.getUrl());
+            ps.setString(2, entity.getName());
+            ps.setLong(3, entity.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

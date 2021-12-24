@@ -27,6 +27,15 @@ public class ChatDTO {
      */
     private Long replyID;
 
+    private String repliedMessage;
+
+
+    public ChatDTO(String userName, String message, Timestamp timestamp, Long replyID) {
+        this.userName = userName;
+        this.message = message;
+        this.timestamp = timestamp;
+        this.replyID = replyID;
+    }
 
     /**
      * @param userName String representing the full name of the user.
@@ -34,11 +43,14 @@ public class ChatDTO {
      * @param timestamp Timestamp representing the time when the message was sent
      * @param replyID Long representing if the current Message is a reply or not
      */
-    public ChatDTO(String userName, String message, Timestamp timestamp, Long replyID) {
+
+
+    public ChatDTO(String userName, String message, Timestamp timestamp, Long replyID, String replyMessage) {
         this.userName = userName;
         this.message = message;
         this.timestamp = timestamp;
         this.replyID = replyID;
+        this.repliedMessage = replyMessage;
     }
 
     /**

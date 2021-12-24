@@ -20,4 +20,19 @@ public class UserValidator implements Validator<User> {
             throw new ValidationException("LastName must not be null!");
         }
     }
+
+    public boolean validateName(String name){
+        String pattern = "^[A-Z]([a-z]+)$";
+        return name.matches(pattern);
+    }
+
+    public boolean validateEmail(String name){
+        String pattern = "^([a-z0-9]+)@([a-z]+).([a-z]+)$";
+        return name.matches(pattern);
+    }
+
+    public boolean validatePassword(String text){
+        String pattern = "^(.{8,})";
+        return text.matches(pattern);
+    }
 }

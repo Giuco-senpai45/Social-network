@@ -86,10 +86,19 @@ public class FriendshipService {
      */
     public void removeFriendship(Tuple<Long,Long> id){
         Friendship friendship = repoFriends.delete(id);
+        Tuple<Long,Long> idreversed = new Tuple<>(id.getE2(),id.getE1());
+        Friendship friendshipreversed = null;
         if(friendship == null){
-            throw new RemoveException("This friendship doesn't exist");
+            friendshipreversed = repoFriends.delete(idreversed);
+            if(friendshipreversed == null) {
+                throw new RemoveException("This friendship doesn't exist");
+            }
         }
-        System.out.println(friendship.toString() + " removed");
+        if(friendship != null)
+            System.out.println(friendship.toString() + " removed");
+        else if (friendshipreversed != null){
+            System.out.println(friendshipreversed.toString() + "removed");
+        }
         updateFriendList();
     }
 

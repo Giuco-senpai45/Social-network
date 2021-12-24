@@ -80,12 +80,12 @@ public class UI {
         String firstname = input.nextLine();
         System.out.println("Lastname:");
         String lastname = input.nextLine();
-        try{
-            userService.addUser(firstname, lastname, "N/A", LocalDate.parse("2000-01-20"), "N/A", "N/A");
-        }
-        catch (AddException | ValidationException e){
-            System.out.println(e.getMessage());
-        }
+//        try{
+//            userService.addUser(firstname, lastname, "N/A", LocalDate.parse("2000-01-20"), "N/A", "N/A");
+//        }
+//        catch (AddException | ValidationException e){
+//            System.out.println(e.getMessage());
+//        }
     }
 
     /**
@@ -351,6 +351,8 @@ public class UI {
                     System.out.println("This isn't an available request");
                     continue;
                 }
+                List<FriendRequest> historylist = friendRequestService.getHistoryRequests(loggedUser);
+                historylist.forEach(System.out::println);
                 System.out.println("1.Accept");
                 System.out.println("2.Reject");
                 Long action = input.nextLong();

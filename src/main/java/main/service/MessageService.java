@@ -3,8 +3,12 @@ package main.service;
 import main.domain.*;
 import main.repository.Repository;
 import main.service.serviceExceptions.FindException;
+import main.utils.Observable;
+import main.utils.Observer;
+import main.utils.events.ChangeEventType;
+import main.utils.events.MessageEvent;
 
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Service class for Messages and Chat
  */
-public class MessageService {
+public class MessageService implements Observable<MessageEvent> {
 
     /**
      * repository for Friendship entities
@@ -35,6 +39,10 @@ public class MessageService {
      */
     private Repository<Long, Chat> repoChats;
 
+    private String username;
+    private  String password;
+    private String url;
+
     /**
      * Overloaded constructor
      * @param repoFriends repository for Friendship entities
@@ -47,6 +55,16 @@ public class MessageService {
         this.repoUsers = repoUsers;
         this.repoMessages = messageRepository;
         this.repoChats = chatRepository;
+    }
+
+    public MessageService(Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, User> repoUsers, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository,String url,String username,String password) {
+        this.repoFriends = repoFriends;
+        this.repoUsers = repoUsers;
+        this.repoMessages = messageRepository;
+        this.repoChats = chatRepository;
+        this.username = username;
+        this.password = password;
+        this.url = url;
     }
 
     /**
@@ -66,7 +84,9 @@ public class MessageService {
         if(!errors.equals(""))
             throw new FindException(errors);
 
-        chatters.add(id);
+//        chatters.add(id);
+//        System.out.println("chaterii");
+        chatters.forEach(System.out::println);
         Chat chat = null;
         for(Chat c: repoChats.findAll()){
             int count = 0;
@@ -74,8 +94,9 @@ public class MessageService {
                 if(c.getChatUsers().contains(chatterID))
                     count++;
             }
-            if(count == chatters.size() && chatters.size() == c.getChatUsers().size())
+            if(count == chatters.size() && chatters.size() == c.getChatUsers().size()){
                 chat = c;
+            }
         }
 
         if(chat == null) {
@@ -91,6 +112,7 @@ public class MessageService {
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L, chat.getId());
         msg.setId(nextID);
         repoMessages.save(msg);
+        notifyObservers(new MessageEvent(ChangeEventType.ADD, msg));
     }
 
     /**
@@ -132,6 +154,7 @@ public class MessageService {
         Message msg = new Message(userID, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, m.getChatID());
         msg.setId(nextID);
         repoMessages.save(msg);
+        notifyObservers(new MessageEvent(ChangeEventType.ADD, msg));
     }
 
     /**
@@ -217,4 +240,81 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    public List<Chat> getChatsForUser(Long id){
+        Iterable<Chat> chats = repoChats.findAll();
+        List<Chat> chatsList = new ArrayList<>();
+        chats.forEach(chatsList::add);
+
+        List<Chat> userChats = new ArrayList<>();
+
+        for(Chat c : chatsList){
+            List<Long> users = c.getChatUsers();
+            boolean found = false;
+            for(Long u : users){
+                if (u.equals(id)) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found){
+                userChats.add(c);
+            }
+        }
+        return userChats;
+    }
+
+    public Tuple<String,String> getPrivateChatData(Long loggedUser,Chat chat){
+        if(chat.getChatUsers().size() !=2){
+            return null;
+        }
+        for(Long id : chat.getChatUsers()){
+            if(!id.equals(loggedUser)){
+                User otherUser = repoUsers.findOne(id);
+                return new Tuple<>(otherUser.getFirstName() + " " + otherUser.getLastName(),
+                        otherUser.getImageURL());
+            }
+        }
+        return null;
+    }
+
+    public Long getOtherUserPrivateChat(Long loggedUser,Chat chat){
+        for(Long id : chat.getChatUsers()){
+            if(!id.equals(loggedUser)){
+                return id;
+            }
+        }
+        return null;
+    }
+
+    public void update(Chat chat,Long otherUser){
+        String sql = "update chats set url = ?, name = ? where chat_id = ? and user_id = ?";
+
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setString(1, chat.getUrl());
+            ps.setString(2, chat.getName());
+            ps.setLong(3, chat.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<Observer<MessageEvent>> observers=new ArrayList<>();
+
+
+    @Override
+    public void addObserver(Observer<MessageEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<MessageEvent> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(MessageEvent t) {
+        observers.stream().forEach(x -> x.update(t));
+    }
 }

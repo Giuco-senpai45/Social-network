@@ -72,8 +72,8 @@ public class FriendRequestService {
                 repoRequests.save(request);
                 return true;
             }
-            else if (foundRequest.getStatus().equals("rejected")){
-                processRequest(request.getId(),"pending");
+            else if (foundRequest.getStatus().equals("rejected") || foundRequest.getStatus().equals("deleted")){
+                processRequest(foundRequest.getId(),"pending");
                 return true;
             }
             else {
@@ -104,7 +104,7 @@ public class FriendRequestService {
                 repoFriends.save(friendship);
                 return true;
             }
-            else if(newStatus.equals("rejected")){
+            else if(newStatus.equals("rejected") || newStatus.equals("deleted")){
                 return false;
             }
         }
@@ -138,10 +138,12 @@ public class FriendRequestService {
         List<FriendRequest> requestsList = new ArrayList<>();
         requests.forEach(requestsList::add);
 
-        Predicate<FriendRequest> testIsValid = fr -> fr.getStatus().equals("approved") || fr.getStatus().equals("rejected");
+        Predicate<FriendRequest> testIsUser = fr -> fr.getTo().equals(id);
+        Predicate<FriendRequest> testIsValid = fr -> fr.getStatus().equals("approved") ||
+                fr.getStatus().equals("rejected") || fr.getStatus().equals("deleted");
 
         return requestsList.stream()
-                .filter(testIsValid)
+                .filter(testIsUser.and(testIsValid))
                 .collect(Collectors.toList());
     }
 
@@ -166,6 +168,23 @@ public class FriendRequestService {
                 friendRequest = fRequest;
         if (friendRequest != null)
             repoRequests.delete(friendRequest.getId());
+        else
+            throw new FindException("There is no friend request between these users");
+    }
+
+    public FriendRequest findFriendRequest(Long fromID, Long toID){
+        Iterable<FriendRequest> friendRequestIterable = repoRequests.findAll();
+        FriendRequest friendRequest = null;
+        for(FriendRequest fRequest: friendRequestIterable)
+            if(Objects.equals(fRequest.getFrom(), fromID) && Objects.equals(fRequest.getTo(), toID))
+                friendRequest = fRequest;
+        if (friendRequest == null) {
+            for(FriendRequest fRequest: friendRequestIterable)
+                if(Objects.equals(fRequest.getFrom(), toID) && Objects.equals(fRequest.getTo(), fromID))
+                    friendRequest = fRequest;
+        }
+        if(friendRequest != null)
+            return friendRequest;
         else
             throw new FindException("There is no friend request between these users");
     }

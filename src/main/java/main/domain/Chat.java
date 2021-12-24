@@ -18,6 +18,24 @@ public class Chat extends Entity<Long>{
      * This List of Longs represents the users that are present in this Chat
      */
     private List<Long> chatUsers;
+    private String url;
+    private String name;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * Default constructor, the chat is initially empty
