@@ -84,9 +84,6 @@ public class MessageService implements Observable<MessageEvent> {
         if(!errors.equals(""))
             throw new FindException(errors);
 
-//        chatters.add(id);
-//        System.out.println("chaterii");
-        chatters.forEach(System.out::println);
         Chat chat = null;
         for(Chat c: repoChats.findAll()){
             int count = 0;
@@ -235,7 +232,7 @@ public class MessageService implements Observable<MessageEvent> {
 
         return messagesList.stream()
                 .filter(testIsInChat)
-                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId()))
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId(),m.getUser()))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
@@ -277,16 +274,14 @@ public class MessageService implements Observable<MessageEvent> {
         return null;
     }
 
-    public Long getOtherUserPrivateChat(Long loggedUser,Chat chat){
-        for(Long id : chat.getChatUsers()){
-            if(!id.equals(loggedUser)){
-                return id;
-            }
+    public void updateChat(Chat chat){
+        Chat updatedChat = repoChats.update(chat);
+        if(updatedChat!=null){
+            throw new FindException("Failed to update the chat");
         }
-        return null;
     }
 
-    public void update(Chat chat,Long otherUser){
+    public void updateChatForUser(Chat chat, Long otherUser){
         String sql = "update chats set url = ?, name = ? where chat_id = ? and user_id = ?";
 
         try(Connection connection = DriverManager.getConnection(url,username,password);
@@ -295,6 +290,8 @@ public class MessageService implements Observable<MessageEvent> {
             ps.setString(1, chat.getUrl());
             ps.setString(2, chat.getName());
             ps.setLong(3, chat.getId());
+            ps.setLong(4, otherUser);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

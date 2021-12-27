@@ -87,7 +87,6 @@ public class FriendRequestsControll {
             historyButton.setText("Back");
             friendRequestListView.getItems().clear();
             List<FriendRequest> historyFriendRequests = friendRequestService.getHistoryRequests(loggedUser.getId());
-            historyFriendRequests.forEach(System.out::println);
             friendRequestListView.setItems(FXCollections.observableArrayList(insertFriendRequest(historyFriendRequests)));
         }
         else {

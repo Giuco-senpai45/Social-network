@@ -148,6 +148,8 @@ public class ChatDatabase implements Repository<Long, Chat> {
             ps.setString(1, entity.getUrl());
             ps.setString(2, entity.getName());
             ps.setLong(3, entity.getId());
+
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

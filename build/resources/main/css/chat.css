@@ -16,26 +16,48 @@
     -fx-padding:0;
 }
 
-.chat-menu {
+/*Chat listView*/
+.list-view .list-cell:filled:hover {
+    /*-fx-background-color:  #737362;*/
+    -fx-background-color:  #b8b89a;
+    -fx-text-fill: black;
+}
+
+.list-cell:empty {
     -fx-background-color: #a5a58d;
+}
+
+.list-cell:odd {
+    -fx-background-color: #a5a58d;
+}
+
+.list-cell:even {
+    -fx-background-color: #a5a58d;
+}
+
+/*Combo box*/
+.combo-box {
+    /*-fx-background-color: #a5a58d;*/
     -fx-border-radius: 40px;
     -fx-background-image: url("../imgs/3dots2.png");
     -fx-background-repeat: no-repeat;
-    -fx-background-position: center center;
+    -fx-background-position: left center;
 }
 
 .combo-box-popup .list-cell{
-    -fx-background-color: #6b705c;
+    -fx-background-color: transparent;/*#6b705c;*/
 }
 
 .combo-box .list-view{
-    -fx-translate-x: -68px;
-    -fx-background-color: #6b705c;
+    -fx-translate-x: -150px;
+    -fx-translate-y: -55px;
+    -fx-background-color: transparent;
 }
 
 .combo-box-popup .list-view .list-cell:filled:hover{
-    -fx-background-color: #a5a58d;
-    -fx-text-fill: #ffe8d6;
+    -fx-background-color: none;
+    /*-fx-text-fill: #ffe8d6;*/
+    -fx-border-radius: 50px;
 }
 
 .combo-box .arrow, .combo-box .arrow-button{

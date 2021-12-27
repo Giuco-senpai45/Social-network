@@ -4,9 +4,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendsController">
+<AnchorPane prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" stylesheets="@../css/friends.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendsController">
    <children>
-      <TableView fx:id="friendsList" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: b7b7a4; -fx-control-inner-background: b7b7a4;">
+      <TableView fx:id="friendsList" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: b7b7a4; -fx-control-inner-background: b7b7a4;" stylesheets="@../css/friends.css">
         <columns>
           <TableColumn fx:id="avatar" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="Profile picture" />
           <TableColumn fx:id="fullName" prefWidth="75.0" style="-fx-background-color: a5a58d;" text="User Full Name" />

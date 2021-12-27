@@ -84,12 +84,20 @@ public class LoginController {
             String username = textUsername.getText();
             String password = textPassword.getText();
             Login loginData = userService.findRegisteredUser(username);
+            if(loginData == null) {
+                loginErrorLabel.setText("We couldn't find that username!");
+                textUsername.setText(null);
+                textPassword.setText(null);
+                return;
+            }
             AES256 passwordEncrypter = new AES256();
             String decryptedPassword =  passwordEncrypter.decrypt(loginData.getPassword());
-            if(loginData == null)
-                loginErrorLabel.setText("Invalid username!");
-            else if (!Objects.equals(decryptedPassword, password))
+            if(!Objects.equals(decryptedPassword, password)) {
                 loginErrorLabel.setText("Incorrect password!");
+                textUsername.setText(null);
+                textPassword.setText(null);
+                return;
+            }
             else {
                 User connectedUser= userService.findUserById(loginData.getUserID());
                 connectUser(connectedUser, event);

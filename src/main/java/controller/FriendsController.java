@@ -1,13 +1,11 @@
 package controller;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -45,7 +43,6 @@ public class FriendsController{
 
     public void setController(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, User loggedUser){
         this.userService = userService;
-        System.out.println(userService.getUsers());
         this.friendshipService = friendshipService;
         this.friendRequestService = friendRequestService;
         this.loggedUser = loggedUser;
@@ -70,7 +67,7 @@ public class FriendsController{
                     private final Button btn = new Button("Remove friend");
 
                     {
-                        btn.setStyle("-fx-background-color:  ffe8d6; ");
+                        btn.getStyleClass().add("remove-friend-btn");
                         btn.setOnAction((ActionEvent event) -> {
                             UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
                             try {
@@ -91,10 +88,12 @@ public class FriendsController{
                         if (empty) {
                             setGraphic(null);
                         } else {
+                            btn.setAlignment(Pos.CENTER);
                             setGraphic(btn);
                         }
                     }
                 };
+                cell.setAlignment(Pos.CENTER);
                 return cell;
             }
         };

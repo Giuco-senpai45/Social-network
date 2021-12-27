@@ -191,7 +191,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             ChatController chatController = fxmlLoader.getController();
-            chatController.setServicesChat(messageService,userService,loggedUser);
+            chatController.setServicesChat(messageService,userService,loggedUser,friendshipService);
             chatController.initChatView();
         }
         catch(IOException e) {

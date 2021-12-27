@@ -69,7 +69,7 @@ public class Chat extends Entity<Long>{
         String users = "";
         for(Long user: getChatUsers())
             users = users + user + " , ";
-        return "Chat: " + "pairUserMessage = " + users;
+        return "Chat: " + getId() + " url " + url + " name "+ getName() + " " + "users " + users;
     }
 
     /**

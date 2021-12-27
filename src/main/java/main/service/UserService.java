@@ -147,7 +147,6 @@ public class UserService {
         if(user == null){
             throw new FindException("No user with the specified id exists");
         }
-        System.out.println("User found");
         return user;
     }
 
