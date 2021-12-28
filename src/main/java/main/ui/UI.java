@@ -3,6 +3,7 @@ package main.ui;
 import main.domain.*;
 import main.domain.validators.ValidationException;
 import main.repository.Repository;
+import main.repository.paging.PagingRepository;
 import main.service.FriendshipService;
 import main.service.MessageService;
 import main.service.FriendRequestService;
@@ -27,16 +28,16 @@ public class UI {
     /**
      * Repository for user entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
     /**
      * Repository for friendship entities
      */
-    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long>, Friendship> repoFriends;
 
-    private Repository<Long, Message> messageRepository;
-    private Repository<Long, Chat> chatRepository;
-    private Repository<Long, FriendRequest> requestRepository;
-    private Repository<String, Login> loginRepository;
+    private PagingRepository<Long, Message> messageRepository;
+    private PagingRepository<Long, Chat> chatRepository;
+    private PagingRepository<Long, FriendRequest>requestRepository;
+    private PagingRepository<String, Login> loginRepository;
 
     /**
      * User service
@@ -54,9 +55,9 @@ public class UI {
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UI(Repository<Long, User> repoUsers, Repository<Tuple<Long, Long>, Friendship> repoFriends,
-              Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository,
-              Repository<Long, FriendRequest> requestRepository, Repository<String, Login> loginRepository) {
+    public UI(PagingRepository<Long, User> repoUsers, PagingRepository<Tuple<Long, Long>, Friendship> repoFriends,
+              PagingRepository<Long, Message> messageRepository, PagingRepository<Long, Chat> chatRepository,
+              PagingRepository<Long, FriendRequest> requestRepository, PagingRepository<String, Login> loginRepository) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
         this.messageRepository = messageRepository;

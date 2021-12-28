@@ -2,12 +2,17 @@ package main.service;
 
 import main.domain.*;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.PageableImplementation;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 import main.service.serviceExceptions.FindException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -18,15 +23,15 @@ public class FriendRequestService {
     /**
      * Repository for Friendship entities
      */
-    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long>, Friendship> repoFriends;
     /**
      * Repository for User entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
     /**
      * Repository for FriendRequest entities
      */
-    private Repository<Long, FriendRequest> repoRequests;
+    private PagingRepository<Long, FriendRequest> repoRequests;
 
     /**
      * Overloaded constructor that takes arguments 3 repositories
@@ -34,9 +39,9 @@ public class FriendRequestService {
      * @param repoUsers Repo for Users
      * @param repoRequests Repo for Requests
      */
-    public FriendRequestService(Repository<Tuple<Long, Long>, Friendship> repoFriends,
-                                Repository<Long, User> repoUsers,
-                                Repository<Long, FriendRequest> repoRequests) {
+    public FriendRequestService(PagingRepository<Tuple<Long, Long>, Friendship> repoFriends,
+                                PagingRepository<Long, User> repoUsers,
+                                PagingRepository<Long, FriendRequest> repoRequests) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
         this.repoRequests = repoRequests;
@@ -187,5 +192,34 @@ public class FriendRequestService {
             return friendRequest;
         else
             throw new FindException("There is no friend request between these users");
+    }
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<FriendRequest> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getFriendRequestsOnPage(this.page);
+    }
+
+    public Set<FriendRequest> getFriendRequestsOnPage(int page) {
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<FriendRequest> friendRequestsPage = repoRequests.findAll(pageable);
+        return friendRequestsPage.getContent().collect(Collectors.toSet());
     }
 }

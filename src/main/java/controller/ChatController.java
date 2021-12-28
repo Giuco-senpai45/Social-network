@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -19,8 +20,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -29,13 +35,18 @@ import main.service.FriendRequestService;
 import main.service.FriendshipService;
 import main.service.MessageService;
 import main.service.UserService;
+import main.service.serviceExceptions.RemoveException;
 import main.utils.Observer;
 import main.utils.events.MessageEvent;
 import sn.socialnetwork.MainApp;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatController implements Observer<MessageEvent> {
 
@@ -55,19 +66,23 @@ public class ChatController implements Observer<MessageEvent> {
     private Label chatNameLabel;
 
     @FXML
-    private ListView<ChatDTO> messagesListView;
-
-    @FXML
     private TableColumn<Chat, String> userChats;
 
     @FXML
     private ComboBox chatMenu;
+
+    @FXML
+    private VBox conversationPane;
+
+    @FXML
+    private ScrollPane scroller;
 
     private Chat currentSelectedChat;
     private MessageService messageService;
     private UserService userService;
     private FriendshipService friendshipService;
     private User loggedUser;
+    private LocalDateTime currentMessageDate;
 
     public void setServicesChat(MessageService messageService, UserService userService,User loggedUser,FriendshipService friendshipService){
         this.messageService = messageService;
@@ -75,6 +90,8 @@ public class ChatController implements Observer<MessageEvent> {
         this.friendshipService = friendshipService;
         this.userService = userService;
         this.loggedUser = loggedUser;
+        currentMessageDate = null;
+        scroller.setContent(conversationPane);
     }
 
     public void initChatView(){
@@ -200,46 +217,79 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayCurrentChat(MouseEvent event){
+        conversationPane.getChildren().clear();
         currentSelectedChat = chatsList.getSelectionModel().getSelectedItem();
         updatePicsForPrivateChats();
         chatNameLabel.setText(currentSelectedChat.getName());
         List<ChatDTO> chatMessages = messageService.getConversation(currentSelectedChat.getId());
+        for(ChatDTO chat: chatMessages){
+            showMessages(chat);
+        }
+    }
 
-        messagesListView.setItems(FXCollections.observableArrayList(chatMessages));
-        messagesListView.setCellFactory(lv -> {
-            ListCell<ChatDTO> cell = new ListCell<ChatDTO>() {
+    private void showMessages(ChatDTO chatDTO){
+        LocalDateTime localDate = chatDTO.getTimestamp().toLocalDateTime();
+        Integer day = localDate.getDayOfMonth();
+        String month = localDate.getMonth().toString();
+        if(currentMessageDate == null || (day != currentMessageDate.getDayOfMonth())){
+            currentMessageDate = chatDTO.getTimestamp().toLocalDateTime();
+            Label date = new Label(currentMessageDate.getDayOfMonth() + " " + currentMessageDate.getMonth() + " " + currentMessageDate.getYear());
+            VBox showDate = new VBox();
+            showDate.getChildren().add(date);
+            showDate.setAlignment(Pos.CENTER);
+            conversationPane.getChildren().add(showDate);
+        }
 
-                private Label label = new Label();
-                {
-                    label.setWrapText(true);
-                    label.maxWidthProperty().bind(Bindings.createDoubleBinding(
-                            () -> getWidth() - getPadding().getLeft() - getPadding().getRight() - 1,
-                            widthProperty(), paddingProperty()));
-                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                }
+        User sender = userService.findUserById(chatDTO.getUserID());
+        VBox photoAndHour = new VBox();
+        Circle circle = new Circle();
+        circle.setRadius(20);
+        Image image = new Image(sender.getImageURL(), false);
+        circle.setFill(new ImagePattern(image));
+        LocalDateTime localDateTime = chatDTO.getTimestamp().toLocalDateTime();
+        Label hour = new Label(localDateTime.getHour()+":"+ localDateTime.getMinute());
+        photoAndHour.getChildren().addAll(circle, hour);
 
-                @Override
-                protected void updateItem(ChatDTO item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        label.setText(item.toString());
-                        if(item.getUserID().equals(loggedUser.getId())){
-                            label.setAlignment(Pos.CENTER_RIGHT);
-                            label.setTranslateX(-5);
-                            label.getStyleClass().clear();
-                            label.getStyleClass().add("message-logged-user");
-                        }
-                        else {
-                            label.setAlignment(Pos.CENTER_LEFT);
-                        }
-                        setGraphic(label);
-                    }
-                }
-            };
-            return cell ;
-        });
+        HBox icons = new HBox();
+        ImageView imageView1 = new ImageView();
+        imageView1.setFitWidth(20);
+        imageView1.setFitHeight(20);
+        imageView1.setImage(new Image("/imgs/bin.png"));
+
+        ImageView imageView2 = new ImageView();
+        imageView2.setFitWidth(20);
+        imageView2.setFitHeight(20);
+        imageView2.setImage(new Image("/imgs/reply.png"));
+        icons.getChildren().addAll(imageView1, imageView2);
+        icons.setVisible(false);
+
+        HBox convo = new HBox();
+        Label label = new Label(chatDTO.getMessage());
+        {
+            label.setPrefWidth(250);
+            label.setWrapText(true);
+            label.setStyle("-fx-background-color: ddbea9; -fx-cursor: hand;");
+            label.setOnMouseClicked((MouseEvent event) -> {
+                icons.setVisible(true);
+            });
+        }
+        Text text = new Text();
+        text.setText(chatDTO.getMessage());
+        if(text.getLayoutBounds().getWidth() < 250)
+            label.setPrefWidth(text.getLayoutBounds().getWidth());
+        if(Objects.equals(chatDTO.getUserID(), loggedUser.getId())) {
+            label.setAlignment(Pos.CENTER_RIGHT);
+            convo.setMargin(label, new Insets(0, 0, 0, 0));
+            convo.setMargin(icons, new Insets(18, 0, 0, 0));
+            convo.getChildren().addAll(icons, label, photoAndHour);
+            convo.setAlignment(Pos.CENTER_RIGHT);
+        }
+        else{
+            convo.setMargin(icons, new Insets(10, 0, 0, 0));
+            convo.setMargin(label, new Insets(15, 0, 0, 0));
+            convo.getChildren().addAll(photoAndHour, label, icons);
+        }
+        conversationPane.getChildren().add(convo);
     }
 
     public void sendMessageAction(ActionEvent actionEvent) {

@@ -2,6 +2,7 @@ package controller;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -18,9 +19,11 @@ import main.service.FriendRequestService;
 import main.service.FriendshipService;
 import main.service.UserService;
 import main.service.serviceExceptions.RemoveException;
+import main.utils.Observer;
+import main.utils.events.FriendDeletionEvent;
 
 
-public class FriendsController{
+public class FriendsController implements Observer<FriendDeletionEvent> {
 
     @FXML
     private TableView friendsList;
@@ -40,22 +43,26 @@ public class FriendsController{
     private FriendshipService friendshipService;
     private FriendRequestService friendRequestService;
     private User loggedUser;
+    private ObservableList<UserFriendshipsDTO> model = FXCollections.observableArrayList();
 
     public void setController(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, User loggedUser){
         this.userService = userService;
         this.friendshipService = friendshipService;
+        friendshipService.addObserver(this);
         this.friendRequestService = friendRequestService;
         this.loggedUser = loggedUser;
     }
 
     public void start(){
-        friendsList.getColumns().clear();
-        friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(loggedUser.getId())));
+        //friendsList.getColumns().clear();
+        model.setAll(userService.getUserFriendList(loggedUser.getId()));
+//        friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(loggedUser.getId())));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendshipDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        friendsList.getColumns().addAll(fullName, friendshipDate);
+        //friendsList.getColumns().addAll(fullName, friendshipDate);
         addButtonToTable();
+        friendsList.setItems(model);
     }
 
     private void addButtonToTable() {
@@ -99,7 +106,7 @@ public class FriendsController{
         };
 
         action.setCellFactory(cellFactory);
-        friendsList.getColumns().add(action);
+       // friendsList.getColumns().add(action);
     }
 
     private void addImageToTable(){
@@ -123,7 +130,11 @@ public class FriendsController{
             }
         });
         avatar.setCellValueFactory(new PropertyValueFactory<UserFriendshipsDTO, String>("imageURL"));
+        //friendsList.getColumns().add(avatar);
+    }
 
-        friendsList.getColumns().add(avatar);
+    @Override
+    public void update(FriendDeletionEvent friendDeletionEvent) {
+        start();
     }
 }

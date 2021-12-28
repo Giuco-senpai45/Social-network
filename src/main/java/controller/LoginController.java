@@ -121,10 +121,9 @@ public class LoginController {
             e.printStackTrace();
         }
 
-        Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
-        stage.initOwner(window);
+        //Window window = ((Node) actionEvent.getSource()).getScene().getWindow();
+        //stage.initOwner(window);
         stage.sizeToScene();
-
         stage.setScene(scene);
         stage.setTitle("Blooming");
         stage.setResizable(false);

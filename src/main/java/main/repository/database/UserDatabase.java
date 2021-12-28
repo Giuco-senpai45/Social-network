@@ -4,6 +4,10 @@ import main.domain.User;
 import main.domain.validators.Validator;
 import main.repository.Repository;
 import main.repository.memory.InMemoryRepository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 
 import java.sql.*;
@@ -13,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UserDatabase implements Repository<Long, User> {
+public class UserDatabase implements PagingRepository<Long, User> {
     private String url;
     private String username;
     private String password;
@@ -157,4 +161,9 @@ public class UserDatabase implements Repository<Long, User> {
         return user;
     }
 
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        Paginator<User> paginator = new Paginator<User>(pageable, this.findAll());
+        return paginator.paginate();
+    }
 }

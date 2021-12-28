@@ -6,12 +6,16 @@ import main.domain.Friendship;
 import main.domain.Message;
 import main.domain.validators.Validator;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRequestDatabase implements Repository<Long, FriendRequest> {
+public class FriendRequestDatabase implements PagingRepository<Long, FriendRequest> {
 
     private String url;
     private String username;
@@ -127,5 +131,11 @@ public class FriendRequestDatabase implements Repository<Long, FriendRequest> {
             return entity;
         }
         return null;
+    }
+
+    @Override
+    public Page<FriendRequest> findAll(Pageable pageable) {
+        Paginator<FriendRequest> paginator = new Paginator<FriendRequest>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

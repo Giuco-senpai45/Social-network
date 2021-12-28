@@ -13,6 +13,7 @@ import main.domain.*;
 import main.domain.validators.*;
 import main.repository.Repository;
 import main.repository.database.*;
+import main.repository.paging.PagingRepository;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
 import main.service.MessageService;
@@ -29,12 +30,12 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loginLoader = new FXMLLoader(MainApp.class.getResource("/views/login-view.fxml"));
 
-        Repository<Long, User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new UserValidator());
-        Repository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendshipValidator());
-        Repository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
-        Repository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
-        Repository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
-        Repository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+        PagingRepository<Long, User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new UserValidator());
+        PagingRepository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendshipValidator());
+        PagingRepository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
+        PagingRepository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
+        PagingRepository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
+        PagingRepository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
         UserService userService = new UserService(repoUser, repoFriends, repoLogin);
         FriendshipService friendsService = new FriendshipService(repoFriends, repoUser);
         MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat,"jdbc:postgresql://localhost:5432/social","postgres","postgres");

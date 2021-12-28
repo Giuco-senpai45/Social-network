@@ -4,13 +4,17 @@ import main.domain.Chat;
 import main.domain.Tuple;
 import main.domain.validators.Validator;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ChatDatabase implements Repository<Long, Chat> {
+public class ChatDatabase implements PagingRepository<Long, Chat> {
 
     private String url;
     private String username;
@@ -154,5 +158,11 @@ public class ChatDatabase implements Repository<Long, Chat> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Page<Chat> findAll(Pageable pageable) {
+        Paginator<Chat> paginator = new Paginator<Chat>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

@@ -1,16 +1,16 @@
 package main.repository.database;
 
 import main.domain.Login;
-import main.domain.User;
-import main.domain.validators.Validator;
-import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoginDatabase implements Repository<String, Login> {
+public class LoginDatabase implements PagingRepository<String, Login> {
     private String url;
     private String username;
     private String password;
@@ -126,5 +126,11 @@ public class LoginDatabase implements Repository<String, Login> {
             e.printStackTrace();
         }
         return loginData;
+    }
+
+    @Override
+    public Page<Login> findAll(Pageable pageable) {
+        Paginator<Login> paginator = new Paginator<Login>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

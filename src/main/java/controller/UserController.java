@@ -74,7 +74,10 @@ public class UserController {
         usernameLabel.setText("Truth Rose | @" + login.getId());
 
         loadUserProfile();
+        getFocusFromFirstTextField();
+    }
 
+    private void getFocusFromFirstTextField(){
         final BooleanProperty firstTime = new SimpleBooleanProperty(true);
         searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
             if (newValue) {
@@ -85,6 +88,8 @@ public class UserController {
             }
         });
     }
+
+
     private void loadUserProfile(){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/user-profile-view.fxml"));

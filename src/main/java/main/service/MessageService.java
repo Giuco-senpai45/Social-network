@@ -2,6 +2,10 @@ package main.service;
 
 import main.domain.*;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.PageableImplementation;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.FindException;
 import main.utils.Observable;
 import main.utils.Observer;
@@ -13,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -25,19 +30,19 @@ public class MessageService implements Observable<MessageEvent> {
     /**
      * repository for Friendship entities
      */
-    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long>, Friendship> repoFriends;
     /**
      * repository for User entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
     /**
      * repository for Message entities
      */
-    private Repository<Long, Message> repoMessages;
+    private PagingRepository<Long, Message> repoMessages;
     /**
      * repository for Chat entities
      */
-    private Repository<Long, Chat> repoChats;
+    private PagingRepository<Long, Chat> repoChats;
 
     private String username;
     private  String password;
@@ -50,14 +55,14 @@ public class MessageService implements Observable<MessageEvent> {
      * @param messageRepository repository for Message entities
      * @param chatRepository repository for Chat entitites
      */
-    public MessageService(Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, User> repoUsers, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
+    public MessageService(PagingRepository<Tuple<Long, Long>, Friendship> repoFriends, PagingRepository<Long, User> repoUsers, PagingRepository<Long, Message> messageRepository, PagingRepository<Long, Chat> chatRepository) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
         this.repoMessages = messageRepository;
         this.repoChats = chatRepository;
     }
 
-    public MessageService(Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, User> repoUsers, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository,String url,String username,String password) {
+    public MessageService(PagingRepository<Tuple<Long, Long>, Friendship> repoFriends, PagingRepository<Long, User> repoUsers, PagingRepository<Long, Message> messageRepository, PagingRepository<Long, Chat> chatRepository,String url,String username,String password) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
         this.repoMessages = messageRepository;
@@ -314,4 +319,35 @@ public class MessageService implements Observable<MessageEvent> {
     public void notifyObservers(MessageEvent t) {
         observers.stream().forEach(x -> x.update(t));
     }
+
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<Message> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getMessagesOnPage(this.page);
+    }
+
+    public Set<Message> getMessagesOnPage(int page) {
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<Message> messagesPage = repoMessages.findAll(pageable);
+        return messagesPage.getContent().collect(Collectors.toSet());
+    }
+
 }

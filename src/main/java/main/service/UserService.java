@@ -3,6 +3,10 @@ package main.service;
 import main.domain.*;
 import main.domain.validators.ValidationException;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.PageableImplementation;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
@@ -11,10 +15,7 @@ import main.utils.AES256;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,13 +27,13 @@ public class UserService {
     /**
      * Repository for user entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
     /**
      * Repository for friendship entities
      */
-    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long>, Friendship> repoFriends;
 
-    private Repository<String, Login> repoLogin;
+    private PagingRepository<String, Login> repoLogin;
 
     /**
      * Represents an automated id.
@@ -45,7 +46,7 @@ public class UserService {
      * @param repoUsers repository for user entities
      * @param repoFriends repository for friendship entities
      */
-    public UserService(Repository<Long, User> repoUsers, Repository<Tuple<Long,Long>, Friendship> repoFriends, Repository<String, Login> repoLogin) {
+    public UserService(PagingRepository<Long, User> repoUsers, PagingRepository<Tuple<Long,Long>, Friendship> repoFriends, PagingRepository<String, Login> repoLogin) {
         this.repoUsers = repoUsers;
         this.repoFriends = repoFriends;
         this.repoLogin = repoLogin;
@@ -252,5 +253,35 @@ public class UserService {
      */
     public Iterable<User> getUsers(){
         return repoUsers.findAll();
+    }
+
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<User> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getUsersOnPage(this.page);
+    }
+
+    public Set<User> getUsersOnPage(int page) {
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<User> userPage = repoUsers.findAll(pageable);
+        return userPage.getContent().collect(Collectors.toSet());
     }
 }

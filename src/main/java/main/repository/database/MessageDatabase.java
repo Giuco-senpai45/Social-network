@@ -1,16 +1,17 @@
 package main.repository.database;
 
 import main.domain.Message;
-import main.domain.User;
 import main.domain.validators.Validator;
-import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageDatabase implements Repository<Long, Message> {
+public class MessageDatabase implements PagingRepository<Long, Message> {
 
     private String url;
     private String username;
@@ -119,5 +120,11 @@ public class MessageDatabase implements Repository<Long, Message> {
     @Override
     public Message update(Message entity) {
         return null;
+    }
+
+    @Override
+    public Page<Message> findAll(Pageable pageable) {
+        Paginator<Message> paginator = new Paginator<Message>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }
