@@ -50,7 +50,7 @@
                   <Image url="@../imgs/lock.png" />
                </image>
             </ImageView>
-            <Hyperlink layoutX="204.0" layoutY="212.0" style="-fx-text-fill: black;" text="Forgot password?">
+            <Hyperlink layoutX="204.0" layoutY="212.0" onAction="#forgotPasswordAction" style="-fx-text-fill: black;" text="Forgot password?">
                <font>
                   <Font name="System Bold Italic" size="12.0" />
                </font></Hyperlink>

@@ -149,4 +149,22 @@ public class LoginController {
         stage.getIcons().add(new Image("imgs/app_icon.png"));
         stage.show();
     }
+
+    public void forgotPasswordAction(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/forgot-password-view.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene(fxmlLoader.load());
+            ForgotPasswordController forgotPasswordController = fxmlLoader.getController();
+            forgotPasswordController.setRegisterController(userService, stage);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        stage.setTitle("Forgot Password");
+        stage.setScene(scene);
+        stage.getIcons().add(new Image("imgs/app_icon.png"));
+        stage.show();
+    }
 }
