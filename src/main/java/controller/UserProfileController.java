@@ -18,6 +18,7 @@ import javafx.scene.shape.Circle;
 import main.domain.*;
 import main.service.FriendRequestService;
 import main.service.FriendshipService;
+import main.service.MessageService;
 import main.service.UserService;
 import main.service.serviceExceptions.FindException;
 import sn.socialnetwork.MainApp;
@@ -74,12 +75,14 @@ public class UserProfileController {
     private UserService userService;
     private FriendshipService friendshipService;
     private FriendRequestService friendRequestService;
+    private MessageService messageService;
 
 
-    public void initUserProfileController(UserService userService, User loggedUser, User currentUser, FriendshipService friendshipService, FriendRequestService friendRequestService, Pane changingPane){
+    public void initUserProfileController(UserService userService, User loggedUser, User currentUser, FriendshipService friendshipService, FriendRequestService friendRequestService,MessageService messageService, Pane changingPane){
         this.loggedUser = loggedUser;
         this.currentUser = currentUser;
         this.userService = userService;
+        this.messageService = messageService;
         this.changingPane = changingPane;
         root.setLayoutX(changingPane.getLayoutX());
         root.setLayoutY(changingPane.getLayoutY());
@@ -140,19 +143,6 @@ public class UserProfileController {
         funFactCompleted.setText(currentUser.getFunFact());
     }
 
-    @FXML
-    public void handleFriendsListClick(MouseEvent mouseEvent) {
-//       // int index = friendsList.getSelectionModel().getSelectedIndex();
-//        try {
-//            UserFriendshipsDTO userFriendshipsDTO = userService.getUserFriendList(currentUser.getId()).get(index);
-//            User newUser = userService.findUserById(userFriendshipsDTO.getFriendID());
-//            setNewUserProfile(newUser);
-//        }
-//        catch (IndexOutOfBoundsException e){
-//
-//        }
-    }
-
     public void setNewUserProfile(User newUser) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/user-profile-view.fxml"));
@@ -161,7 +151,7 @@ public class UserProfileController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, changingPane);
+            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, messageService, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -191,7 +181,20 @@ public class UserProfileController {
 
     @FXML
     public void handleMessagesButton(ActionEvent actionEvent) {
+        Long chatId =  messageService.createPrivateChatWithUser(loggedUser.getId(), currentUser.getId());
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/chat-view.fxml"));
+            if (changingPane.getChildren() != null) {
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
+            ChatController chatController = fxmlLoader.getController();
+            chatController.setServicesChat(messageService,userService,loggedUser,friendshipService);
+            chatController.initChatView();
+            chatController.selectChatById(chatId);
+        }
+        catch(IOException e) {
+                e.printStackTrace();
+        }
     }
-
-
 }

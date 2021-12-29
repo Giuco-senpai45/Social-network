@@ -98,7 +98,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, changingPane);
+            userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, messageService, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -163,7 +163,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, changingPane);
+            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService,messageService, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();

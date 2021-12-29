@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -71,7 +72,11 @@
                               <Image url="@../imgs/settings.png" />
                            </image>
                         </ImageView>
-                        <ComboBox fx:id="chatMenu" layoutX="469.0" layoutY="7.0" opacity="0.0" prefHeight="38.0" prefWidth="38.0" styleClass="chat-menu" stylesheets="@../css/chat.css" />
+                        <ComboBox fx:id="chatMenu" layoutX="469.0" layoutY="7.0" opacity="0.0" prefHeight="38.0" prefWidth="38.0" styleClass="chat-menu" stylesheets="@../css/chat.css">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></ComboBox>
+                        <TextField fx:id="textFieldGroupName" layoutX="317.0" layoutY="13.0" promptText="New Group Name" visible="false" />
                      </children>
                   </AnchorPane>
                </children>

@@ -235,9 +235,19 @@ public class MessageService implements Observable<MessageEvent> {
                 return user.getFirstName() + " " + user.getLastName();
         };
 
+        Function<Long, String> getRepliedMessage = x ->{
+            Message msg = repoMessages.findOne(x);
+            if(msg == null){
+                return "Message doesn't exist";
+            }
+            else {
+                return msg.getMessage();
+            }
+        };
+
         return messagesList.stream()
                 .filter(testIsInChat)
-                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId(),m.getUser()))
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId(),m.getUser(),getRepliedMessage.apply(m.getReplyId())))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
     }
@@ -302,8 +312,59 @@ public class MessageService implements Observable<MessageEvent> {
         }
     }
 
-    private List<Observer<MessageEvent>> observers=new ArrayList<>();
+    public Long createPrivateChatWithUser(Long loggedUser,Long otherUser){
+        Iterable<Chat> chatsIterable = repoChats.findAll();
+        List<Chat> chatsList = new ArrayList<>();
+        chatsIterable.forEach(chatsList::add);
+        Predicate<Chat> testIsPrivateChat = c -> c.getChatUsers().size() == 2;
+        Predicate<Chat> testIsPrivateChatForUsers = c-> c.getChatUsers().contains(loggedUser) &&c.getChatUsers().contains(otherUser);
+        Predicate<Chat> testChatExists =c -> testIsPrivateChat.and(testIsPrivateChatForUsers).test(c);
+        chatsList =  chatsList.stream()
+                .filter(testChatExists)
+                .collect(Collectors.toList());
+        if(chatsList.size() == 0){
+            System.out.println("Creating new chat");
+            Chat newChat = new Chat();
+            newChat.setId(maximChatId() + 1);
+            newChat.addUserToChat(loggedUser);
+            newChat.addUserToChat(otherUser);
+            newChat.setName("Rose");
+            newChat.setUrl("/imgs/rose3.jpg");
+            repoChats.save(newChat);
+            return newChat.getId();
+        }
+        else {
+            return chatsList.get(0).getId();
+        }
+    }
 
+    public Chat createNewChatGroup(List<Long> chatters){
+        Chat chat = null;
+        for(Chat c: repoChats.findAll()){
+            int count = 0;
+            for(Long chatterID: chatters) {
+                if(c.getChatUsers().contains(chatterID))
+                    count++;
+            }
+            if(count == chatters.size() && chatters.size() == c.getChatUsers().size()){
+                chat = c;
+            }
+        }
+
+        if(chat == null) {
+            chat = new Chat();
+            chat.setId(maximChatId() + 1);
+        }
+        for(Long chatterID: chatters) {
+            chat.addUserToChat(chatterID);
+        }
+        chat.setName("RoseGroup");
+        chat.setUrl("/imgs/rose3.jpg");
+        repoChats.save(chat);
+        return chat;
+    }
+
+    private List<Observer<MessageEvent>> observers=new ArrayList<>();
 
     @Override
     public void addObserver(Observer<MessageEvent> e) {

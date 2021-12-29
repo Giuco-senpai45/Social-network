@@ -1,9 +1,11 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,6 +31,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import main.domain.*;
 import main.service.FriendRequestService;
@@ -45,6 +48,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.security.Key;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,6 +80,9 @@ public class ChatController implements Observer<MessageEvent> {
 
     @FXML
     private ScrollPane scroller;
+
+    @FXML
+    private TextField textFieldGroupName;
 
     private Chat currentSelectedChat;
     private MessageService messageService;
@@ -182,14 +189,23 @@ public class ChatController implements Observer<MessageEvent> {
             }
         }
         else if(option.equals("Create a new group chat")) {
-            Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/friends-groupchat.fxml"));
+            Stage stage = new Stage();
             Scene scene = null;
+            final Chat[] createdChat = {null};
             try {
                 scene = new Scene(fxmlLoader.load());
                 FriendsGroupChatController friendsGroupChatController = fxmlLoader.getController();
-                friendsGroupChatController.setServices(userService,friendshipService,loggedUser);
+                friendsGroupChatController.setServices(userService,friendshipService,messageService,loggedUser);
                 friendsGroupChatController.start();
+                stage.setOnHidden(new EventHandler<WindowEvent>() {
+                    @Override
+                    public void handle(WindowEvent e) {
+                        System.out.println("intru aiceeee");
+                        createdChat[0] = friendsGroupChatController.getCreatedChat();
+                        displayChat(createdChat[0]);
+                    }
+                });
             }
             catch(IOException e) {
                 e.printStackTrace();
@@ -198,10 +214,30 @@ public class ChatController implements Observer<MessageEvent> {
             stage.setScene(scene);
             stage.getIcons().add(new Image("imgs/app_icon.png"));
             stage.show();
+
         }
         else{
             System.out.println("Change group name");
-            //TODO change chat name
+            textFieldGroupName.setVisible(true);
+            textFieldGroupName.getStyleClass().add("change-group-name");
+            textFieldGroupName.setOnKeyPressed((KeyEvent event) -> {
+                if(event.getCode() == KeyCode.ENTER){
+                    if(!textFieldGroupName.getText().equals("")){
+                        Chat updatedChat = new Chat();
+                        updatedChat.setId(currentSelectedChat.getId());
+                        updatedChat.setUrl(currentSelectedChat.getUrl());
+                        updatedChat.setName(textFieldGroupName.getText());
+                        messageService.updateChat(updatedChat);
+                        textFieldGroupName.setText("");
+                        textFieldGroupName.setVisible(false);
+                        displayChatsForUser();
+                        displayChat(updatedChat);
+                    }
+                    else {
+                        textFieldGroupName.setVisible(false);
+                    }
+                }
+            });
         }
     }
 
@@ -219,11 +255,16 @@ public class ChatController implements Observer<MessageEvent> {
     private void displayCurrentChat(MouseEvent event){
         conversationPane.getChildren().clear();
         currentSelectedChat = chatsList.getSelectionModel().getSelectedItem();
+        displayChat(chatsList.getSelectionModel().getSelectedItem());
+    }
+
+    private void displayChat(Chat chat){
+        currentSelectedChat = chat;
         updatePicsForPrivateChats();
         chatNameLabel.setText(currentSelectedChat.getName());
         List<ChatDTO> chatMessages = messageService.getConversation(currentSelectedChat.getId());
-        for(ChatDTO chat: chatMessages){
-            showMessages(chat);
+        for(ChatDTO chatDTO: chatMessages){
+            showMessages(chatDTO);
         }
     }
 
@@ -299,10 +340,19 @@ public class ChatController implements Observer<MessageEvent> {
         }
     }
 
+    public void selectChatById(Long chatId) {
+        for(Chat c : chatsList.getItems()){
+            if(c.getId().equals(chatId)){
+                displayChat(c);
+            }
+        }
+    }
+
     @Override
     public void update(MessageEvent messageEvent) {
-        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
-                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
-                true, true, true, true, true, true, null));
+        displayChat(currentSelectedChat);
+//        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
+//                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
+//                true, true, true, true, true, true, null));
     }
 }

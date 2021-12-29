@@ -2,3 +2,13 @@
     -fx-background-color: #ffe8d6;
     -fx-background-radius: 60px;
 }
+
+.create-friend-btn {
+    -fx-background-color: #6b705c;
+    -fx-background-radius: 60px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.5, 0.1, 0.1);
+}
+
+.table-view {
+    -fx-font-size: 14px;
+}

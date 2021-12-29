@@ -143,6 +143,14 @@ public class UserService {
         }
     }
 
+    public Login findUserByUsername(String username){
+        Login login = repoLogin.findOne(username);
+        if(login == null){
+            throw new FindException("Couldn't find specified user");
+        }
+        return login;
+    }
+
     public User findUserById(Long id){
         User user = repoUsers.findOne(id);
         if(user == null){
@@ -245,7 +253,12 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-
+    public void updateLoginInformation(Login newLogin){
+        Login updatedLogin = repoLogin.update(newLogin);
+        if(updatedLogin != null){
+            throw new UpdateException("Could not update login");
+        }
+    }
 
     /**
      * This function returns all the users present in the repo

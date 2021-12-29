@@ -4,22 +4,27 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Callback;
-import main.domain.FriendRequest;
-import main.domain.Tuple;
+import main.domain.Chat;
 import main.domain.User;
 import main.domain.UserFriendshipsDTO;
-import main.service.FriendRequestService;
 import main.service.FriendshipService;
+import main.service.MessageService;
 import main.service.UserService;
 import main.service.serviceExceptions.RemoveException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsGroupChatController {
     @FXML
@@ -37,11 +42,18 @@ public class FriendsGroupChatController {
     private UserService userService;
     private FriendshipService friendshipService;
     private User loggedUser;
+    private Chat createdChat;
 
-    public void setServices(UserService userService, FriendshipService friendshipService,User loggedUser){
+    private List<Long> usersInNewGroup;
+    private MessageService messageService;
+
+    public void setServices(UserService userService, FriendshipService friendshipService, MessageService messageService,User loggedUser){
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.loggedUser = loggedUser;
+        this.messageService = messageService;
+        usersInNewGroup = new ArrayList<>();
+        this.createdChat = null;
     }
 
     public void start(){
@@ -58,30 +70,26 @@ public class FriendsGroupChatController {
             @Override
             public TableCell<UserFriendshipsDTO, Void> call(final TableColumn<UserFriendshipsDTO, Void> param) {
                 final TableCell<UserFriendshipsDTO, Void> cell = new TableCell<UserFriendshipsDTO, Void>() {
-
-                    private final Button btn = new Button("Add to groupchat");
-
-                    {
-                        btn.getStyleClass().add("add-friend-btn");
-                        btn.setOnAction((ActionEvent event) -> {
-                            UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
-                            try {
-                                System.out.println("Creating gc");
-                            }
-                            catch(RemoveException e){
-                                e.printStackTrace();
-                            }
-                        });
-                    }
+                    private CheckBox checkBox = new CheckBox("Add");
 
                     @Override
                     public void updateItem(Void item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
-                        } else {
-                            btn.setAlignment(Pos.CENTER);
-                            setGraphic(btn);
+                        }
+                        else {
+                            checkBox.setOnAction((ActionEvent event) -> {
+                                UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
+                                if(checkBox.isSelected()){
+                                    usersInNewGroup.add(data.getFriendID());
+                                }
+                                else {
+                                    usersInNewGroup.remove(data.getFriendID());
+                                }
+                            });
+                            checkBox.setAlignment(Pos.CENTER);
+                            setGraphic(checkBox);
                         }
                     }
                 };
@@ -99,23 +107,43 @@ public class FriendsGroupChatController {
             @Override
             public TableCell<UserFriendshipsDTO, String> call(TableColumn<UserFriendshipsDTO, String> param) {
                 ImageView imageView = new ImageView();
-                imageView.setFitWidth(30);
-                imageView.setFitHeight(30);
-                TableCell<UserFriendshipsDTO, String> cell = new TableCell<UserFriendshipsDTO, String>() {
+                Circle circle = new Circle(40);
+                imageView.setFitWidth(80);
+                imageView.setFitHeight(80);
+                imageView.setPreserveRatio(true);
+                TableCell<UserFriendshipsDTO, String> cell =  new TableCell<UserFriendshipsDTO, String>() {
+
+                    @Override
                     public void updateItem(String item, boolean empty) {
-                        if (item != null) {
+                        super.updateItem(item, empty);
+                        if (!empty) {
                             Image image = new Image(item, false);
                             imageView.setImage(image);
+                            circle.setFill(new ImagePattern(image));
+                            setCursor(Cursor.HAND);
+                            setGraphic(circle);
+                            setAlignment(Pos.CENTER);
+                        }
+                        else{
+                            setGraphic(null);
                         }
                     }
                 };
-                cell.setGraphic(imageView);
-                cell.setAlignment(Pos.CENTER);
                 return cell;
             }
         });
         avatar.setCellValueFactory(new PropertyValueFactory<UserFriendshipsDTO, String>("imageURL"));
-
         friendsList.getColumns().add(avatar);
+    }
+
+    public Chat getCreatedChat() {
+        return createdChat;
+    }
+
+    public void handleCreateGroupAction(ActionEvent actionEvent) {
+        usersInNewGroup.add(loggedUser.getId());
+        createdChat = messageService.createNewChatGroup(usersInNewGroup);
+        Stage stage =(Stage) friendsList.getScene().getWindow();
+        stage.close();
     }
 }

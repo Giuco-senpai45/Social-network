@@ -9,6 +9,14 @@
     -fx-padding:0;
 }
 
+.table-view .scroll-bar:vertical {
+    -fx-background-color: #a5a58d;
+}
+
+.table-view .thumb {
+    -fx-background-color: #737362;
+}
+
 .table-view .scroll-bar:horizontal .increment-arrow,
 .table-view .scroll-bar:horizontal .decrement-arrow,
 .table-view .scroll-bar:horizontal .increment-button,
@@ -62,4 +70,9 @@
 
 .combo-box .arrow, .combo-box .arrow-button{
     -fx-background-color: transparent;
+}
+
+.change-group-name {
+    -fx-background-color: #6b705c;
+    -fx-prompt-text-fill: #ffe8d6;
 }
