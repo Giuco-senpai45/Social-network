@@ -22,7 +22,7 @@
    <left>
       <VBox prefHeight="504.0" prefWidth="128.0" style="-fx-border-color: #000000;" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="chatsList" prefHeight="602.0" prefWidth="126.0" style="-fx-control-inner-background: a5a58d; -fx-background-color: a5a58d;">
+            <TableView fx:id="chatsList" prefHeight="611.0" prefWidth="126.0" style="-fx-control-inner-background: a5a58d; -fx-background-color: a5a58d;">
               <columns>
                 <TableColumn fx:id="userChats" prefWidth="125.59998770952225" style="-fx-control-inner-background: a5a58d; -fx-background-color: a5a58d;" text="Chats" />
               </columns>
@@ -30,15 +30,15 @@
          </children></VBox>
    </left>
    <center>
-      <AnchorPane prefHeight="598.0" prefWidth="531.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="569.0" prefWidth="531.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox layoutY="62.0" prefHeight="542.0" prefWidth="531.0" style="-fx-background-color: a5a58d; -fx-border-color: #000000;">
+            <VBox layoutX="-1.0" layoutY="62.0" prefHeight="542.0" prefWidth="532.0" style="-fx-background-color: a5a58d; -fx-border-color: #000000;">
                <children>
                   <ScrollPane fx:id="scroller" prefHeight="469.0" prefWidth="529.0" style="-fx-background-color: b7b7a4;">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="467.0" prefWidth="514.0" style="-fx-background-color: b7b7a4;">
                            <children>
-                              <VBox fx:id="conversationPane" prefHeight="467.0" prefWidth="512.0" style="-fx-background-color: b7b7a4;"> </VBox>
+                              <VBox fx:id="conversationPane" layoutX="-2.0" prefHeight="467.0" prefWidth="514.0" style="-fx-background-color: b7b7a4;"> </VBox>
                            </children>
                         </AnchorPane>
                     </content>
@@ -60,9 +60,9 @@
             </VBox>
             <HBox layoutX="1.0" layoutY="1.0" prefHeight="51.0" prefWidth="530.0">
                <children>
-                  <AnchorPane prefHeight="86.0" prefWidth="544.0">
+                  <AnchorPane prefHeight="47.0" prefWidth="530.0">
                      <children>
-                        <Label fx:id="chatNameLabel" layoutX="1.0" layoutY="1.0" prefHeight="50.0" prefWidth="320.0">
+                        <Label fx:id="chatNameLabel" layoutX="1.0" layoutY="6.0" prefHeight="45.0" prefWidth="320.0">
                            <font>
                               <Font size="24.0" />
                            </font>
@@ -81,6 +81,23 @@
                   </AnchorPane>
                </children>
             </HBox>
+            <Label fx:id="replyLabel" prefHeight="17.0" prefWidth="509.0" style="-fx-background-color: ffe8d6;" text="Label" translateY="515.0" wrapText="true">
+               <font>
+                  <Font name="System Bold Italic" size="12.0" />
+               </font>
+            </Label>
+            <AnchorPane fx:id="closeReply" layoutX="-6.0" prefHeight="17.0" prefWidth="21.0" style="-fx-background-color: ffe8d6;" translateX="515.0" translateY="515.0">
+               <children>
+                  <ImageView fitHeight="17.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true" translateX="4.0">
+                     <image>
+                        <Image url="@../imgs/close.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+            </AnchorPane>
          </children>
       </AnchorPane>
    </center>

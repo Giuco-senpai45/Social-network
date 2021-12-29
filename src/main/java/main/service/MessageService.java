@@ -247,9 +247,13 @@ public class MessageService implements Observable<MessageEvent> {
 
         return messagesList.stream()
                 .filter(testIsInChat)
-                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId(),m.getUser(),getRepliedMessage.apply(m.getReplyId())))
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getId(), m.getReplyId(),m.getUser(),getRepliedMessage.apply(m.getReplyId())))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
+    }
+
+    private static int compareByLastMessage(List<ChatDTO> a, List<ChatDTO> b){
+        return (int) a.get(a.size()-1).getTimestamp().compareTo(b.get(b.size()-1).getTimestamp());
     }
 
     public List<Chat> getChatsForUser(Long id){
@@ -272,8 +276,23 @@ public class MessageService implements Observable<MessageEvent> {
                 userChats.add(c);
             }
         }
+
+        Predicate<Chat> testIfChatNotEmpty = x -> getConversation(x.getId()).size() != 0;
+
+        return userChats.stream()
+                .filter(testIfChatNotEmpty)
+                .sorted((y, x) -> compareByLastMessage(getConversation(x.getId()), getConversation(y.getId())))
+                .toList();
+    }
+
+    public List<Chat> getAllChatsForUser(Long id, Long chatID){
+        List<Chat> userChats = new ArrayList<>(getChatsForUser(id));
+        Chat emptyChat = repoChats.findOne(chatID);
+        userChats.add(0, emptyChat);
         return userChats;
     }
+
+
 
     public Tuple<String,String> getPrivateChatData(Long loggedUser,Chat chat){
         if(chat.getChatUsers().size() !=2){
@@ -362,6 +381,16 @@ public class MessageService implements Observable<MessageEvent> {
         chat.setUrl("/imgs/rose3.jpg");
         repoChats.save(chat);
         return chat;
+    }
+
+    public void deleteMessage(Long messageID){
+        Message deletedMessage = repoMessages.delete(messageID);
+        if(deletedMessage != null)
+            notifyObservers(new MessageEvent(ChangeEventType.DELETE, deletedMessage));
+    }
+
+    public Message findOneMessage(Long messageID){
+        return repoMessages.findOne(messageID);
     }
 
     private List<Observer<MessageEvent>> observers=new ArrayList<>();

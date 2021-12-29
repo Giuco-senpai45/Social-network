@@ -54,13 +54,10 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
     }
 
     public void start(){
-        //friendsList.getColumns().clear();
         model.setAll(userService.getUserFriendList(loggedUser.getId()));
-//        friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(loggedUser.getId())));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendshipDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        //friendsList.getColumns().addAll(fullName, friendshipDate);
         addButtonToTable();
         friendsList.setItems(model);
     }

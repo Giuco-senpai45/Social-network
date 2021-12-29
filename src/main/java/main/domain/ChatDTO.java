@@ -30,13 +30,14 @@ public class ChatDTO {
      */
     private Long replyID;
     private Long userID;
-
+    private Long messageID;
     private String repliedMessage;
 
-    public ChatDTO(String userName, String message, Timestamp timestamp, Long replyID, Long userID, String repliedMessage) {
+    public ChatDTO(String userName, String message, Timestamp timestamp, Long messageID, Long replyID, Long userID, String repliedMessage) {
         this.userName = userName;
         this.message = message;
         this.timestamp = timestamp;
+        this.messageID = messageID;
         this.replyID = replyID;
         this.userID = userID;
         this.repliedMessage = repliedMessage;
@@ -92,6 +93,14 @@ public class ChatDTO {
      */
     public Timestamp getTimestamp() {
         return timestamp;
+    }
+
+    public Long getReplyID() {
+        return replyID;
+    }
+
+    public Long getMessageID() {
+        return messageID;
     }
 
     /**
