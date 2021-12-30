@@ -1,30 +1,18 @@
 package controller;
 
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.transform.Scale;
-import javafx.stage.Stage;
 import main.domain.*;
 import javafx.scene.input.MouseEvent;
-import main.service.FriendRequestService;
-import main.service.FriendshipService;
-import main.service.MessageService;
-import main.service.UserService;
+import main.service.*;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
@@ -59,13 +47,15 @@ public class UserController {
     private FriendRequestService friendRequestService;
     private FriendshipService friendshipService;
     private MessageService messageService;
+    private PostService postService;
 
-    public void loadAppLoggedUser(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, User user) {
+    public void loadAppLoggedUser(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService, User user) {
         this.friendshipService = friendshipService;
         this.loggedUser = user;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
         this.messageService = messageService;
+        this.postService = postService;
 
         Login login = null;
         for(Login l: userService.allRegisteredUsers())
@@ -98,7 +88,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, messageService, changingPane);
+            userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, messageService, postService, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -163,7 +153,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService,messageService, changingPane);
+            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, messageService, postService, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -197,7 +187,7 @@ public class UserController {
             changingPane.getChildren().add(fxmlLoader.load());
             ChatController chatController = fxmlLoader.getController();
             chatController.setServicesChat(messageService,userService,loggedUser,friendshipService);
-            chatController.initChatView();
+            chatController.initChatView(-1L);
         }
         catch(IOException e) {
             e.printStackTrace();

@@ -97,6 +97,8 @@ public class ChatController implements Observer<MessageEvent> {
         this.loggedUser = loggedUser;
         currentMessageDate = null;
         scroller.setContent(conversationPane);
+        scroller.setVvalue(scroller.getVmax());
+        scroller.setHvalue(scroller.getHmax());
     }
 
     public void initChatView(Long chatID){
@@ -110,6 +112,7 @@ public class ChatController implements Observer<MessageEvent> {
         ObservableList<String> choicesList = FXCollections.observableArrayList("Change group picture","Change group name","Create a new group chat");
         chatMenu.setItems(choicesList);
         chatMenu.getSelectionModel().selectedItemProperty().addListener((x,y,z)-> handleClickChatMenu());
+        //TODO: deselecteaza optiunile dupa ce sunt apasate pls puiiii <3
         textMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -203,7 +206,11 @@ public class ChatController implements Observer<MessageEvent> {
                     public void handle(WindowEvent e) {
                         System.out.println("intru aiceeee");
                         createdChat[0] = friendsGroupChatController.getCreatedChat();
-                        displayChat(createdChat[0]);
+                        System.out.println(createdChat[0].getId());
+                        if(messageService.testIfChatEmpty(loggedUser.getId(), createdChat[0].getId()))
+                            initChatView(createdChat[0].getId());
+                        else
+                            initChatView(-1L);
                     }
                 });
             }
@@ -259,6 +266,7 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayChat(Chat chat){
+        conversationPane.getChildren().clear();
         currentSelectedChat = chat;
         updatePicsForPrivateChats();
         chatNameLabel.setText(currentSelectedChat.getName());
@@ -401,7 +409,11 @@ public class ChatController implements Observer<MessageEvent> {
 //            HBox.setMargin(messageAndReply, new Insets(15, 0, 0, 0));
             convo.getChildren().addAll(photoAndHour, messageAndReply, icons);
         }
+        scroller.setVvalue(scroller.getVmax());
+        scroller.setHvalue(scroller.getHmax());
         conversationPane.getChildren().add(convo);
+        scroller.setVvalue(scroller.getVmax());
+        scroller.setHvalue(scroller.getHmax());
     }
 
     private void showEmptyChat(Chat chat){

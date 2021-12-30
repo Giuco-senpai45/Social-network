@@ -14,10 +14,7 @@ import main.domain.validators.*;
 import main.repository.Repository;
 import main.repository.database.*;
 import main.repository.paging.PagingRepository;
-import main.service.FriendRequestService;
-import main.service.FriendshipService;
-import main.service.MessageService;
-import main.service.UserService;
+import main.service.*;
 
 import java.io.IOException;
 
@@ -36,14 +33,17 @@ public class MainApp extends Application {
         PagingRepository<Long, Chat> repoChat = new ChatDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new ChatValidator());
         PagingRepository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
         PagingRepository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+        PagingRepository<Long, Post> repoPost = new PostDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+
         UserService userService = new UserService(repoUser, repoFriends, repoLogin);
         FriendshipService friendsService = new FriendshipService(repoFriends, repoUser);
         MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat,"jdbc:postgresql://localhost:5432/social","postgres","postgres");
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;
+        PostService postService = new PostService(repoUser, repoPost);
 
         BorderPane loginLayout = loginLoader.load();
         LoginController loginController =  loginLoader.getController();
-        loginController.setServicesLogin(userService, friendsService, friendRequestService,messageService);
+        loginController.setServicesLogin(userService, friendsService, friendRequestService, messageService, postService);
 
         Iterable<Chat> chats = repoChat.findAll();
         chats.forEach(System.out::println);

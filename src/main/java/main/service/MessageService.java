@@ -292,6 +292,13 @@ public class MessageService implements Observable<MessageEvent> {
         return userChats;
     }
 
+    public boolean testIfChatEmpty(Long userID, Long chatID){
+        Chat checkEmptyChat = repoChats.findOne(chatID);
+        if(getChatsForUser(userID).contains(checkEmptyChat))
+            return false;
+        return true;
+    }
+
 
 
     public Tuple<String,String> getPrivateChatData(Long loggedUser,Chat chat){

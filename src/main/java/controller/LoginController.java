@@ -24,10 +24,7 @@ import javafx.stage.Window;
 import main.domain.FriendRequest;
 import main.domain.Login;
 import main.domain.User;
-import main.service.FriendRequestService;
-import main.service.FriendshipService;
-import main.service.MessageService;
-import main.service.UserService;
+import main.service.*;
 import main.service.serviceExceptions.FindException;
 import main.utils.AES256;
 import sn.socialnetwork.MainApp;
@@ -55,12 +52,14 @@ public class LoginController {
     private FriendRequestService friendRequestService;
     private FriendshipService friendshipService;
     private MessageService messageService;
+    private PostService postService;
 
-    public void setServicesLogin(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService,MessageService messageService){
+    public void setServicesLogin(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService){
         this.userService = userService;
         this.friendRequestService = friendRequestService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
+        this.postService = postService;
         getFocusFromFirstTextfield();
     }
 
@@ -115,7 +114,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             UserController userController = fxmlLoader.getController();
-            userController.loadAppLoggedUser(userService, friendshipService, friendRequestService, messageService, connectedUser);
+            userController.loadAppLoggedUser(userService, friendshipService, friendRequestService, messageService, postService, connectedUser);
         }
         catch(IOException e) {
             e.printStackTrace();

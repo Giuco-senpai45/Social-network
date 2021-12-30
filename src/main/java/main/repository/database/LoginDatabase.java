@@ -44,19 +44,6 @@ public class LoginDatabase implements PagingRepository<String, Login> {
 
     @Override
     public Login delete(String id) {
-//        String sql = "delete from users where user_id = ?";
-//
-//        User removedUser = findOne(id);
-//        try (Connection connection = DriverManager.getConnection(url, username, password);
-//             PreparedStatement ps = connection.prepareStatement(sql)) {
-//
-//            ps.setLong(1,id);
-//
-//            ps.executeUpdate();
-//        } catch (SQLException e) {
-//            return null;
-//        }
-//        return removedUser;
         return null;
     }
 
