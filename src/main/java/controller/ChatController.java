@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -97,8 +99,6 @@ public class ChatController implements Observer<MessageEvent> {
         this.loggedUser = loggedUser;
         currentMessageDate = null;
         scroller.setContent(conversationPane);
-        scroller.setVvalue(scroller.getVmax());
-        scroller.setHvalue(scroller.getHmax());
     }
 
     public void initChatView(Long chatID){
@@ -208,9 +208,9 @@ public class ChatController implements Observer<MessageEvent> {
                         createdChat[0] = friendsGroupChatController.getCreatedChat();
                         System.out.println(createdChat[0].getId());
                         if(messageService.testIfChatEmpty(loggedUser.getId(), createdChat[0].getId()))
-                            initChatView(createdChat[0].getId());
+                            start(createdChat[0].getId());
                         else
-                            initChatView(-1L);
+                            start(-1L);
                     }
                 });
             }
@@ -399,21 +399,20 @@ public class ChatController implements Observer<MessageEvent> {
 
         HBox.setMargin(icons, new Insets(15, 0, 0, 0));
         if(Objects.equals(chatDTO.getUserID(), loggedUser.getId())) {
-//            HBox.setMargin(messageAndReply, new Insets(10, 0, 0, 0));
-//            HBox.setMargin(icons, new Insets(18, 0, 0, 0));
             convo.getChildren().addAll(icons, messageAndReply, photoAndHour);
             convo.setAlignment(Pos.CENTER_RIGHT);
         }
         else{
-//            HBox.setMargin(icons, new Insets(0, 0, 0, 0));
-//            HBox.setMargin(messageAndReply, new Insets(15, 0, 0, 0));
             convo.getChildren().addAll(photoAndHour, messageAndReply, icons);
         }
-        scroller.setVvalue(scroller.getVmax());
-        scroller.setHvalue(scroller.getHmax());
         conversationPane.getChildren().add(convo);
-        scroller.setVvalue(scroller.getVmax());
-        scroller.setHvalue(scroller.getHmax());
+        conversationPane.heightProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldvalue, Object newValue) {
+
+                scroller.setVvalue((Double)newValue );
+            }
+        });
     }
 
     private void showEmptyChat(Chat chat){

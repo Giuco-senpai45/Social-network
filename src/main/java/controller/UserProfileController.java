@@ -273,7 +273,7 @@ public class UserProfileController {
             AnchorPane emptyPosts = new AnchorPane();
             emptyPosts.setPrefHeight(260);
             emptyPosts.setPrefWidth(660);
-            BackgroundImage myBI = new BackgroundImage(new Image("/imgs/roses_bkg.png", 660, 260, false, true),
+            BackgroundImage myBI = new BackgroundImage(new Image("/imgs/roses_bkg.png", 660, 250, true, true),
                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                     BackgroundSize.DEFAULT);
             emptyPosts.setBackground(new Background(myBI));
