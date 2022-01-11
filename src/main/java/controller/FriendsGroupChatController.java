@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import main.domain.Chat;
 import main.domain.User;
 import main.domain.UserFriendshipsDTO;
 import main.service.FriendshipService;
+import main.service.MasterService;
 import main.service.MessageService;
 import main.service.UserService;
 import main.service.serviceExceptions.RemoveException;
@@ -39,26 +41,19 @@ public class FriendsGroupChatController {
     @FXML
     private TableColumn<UserFriendshipsDTO, Void> action;
 
-    private UserService userService;
-    private FriendshipService friendshipService;
-    private User loggedUser;
+    private PageObject pageObject;
     private Chat createdChat;
-
     private List<Long> usersInNewGroup;
-    private MessageService messageService;
 
-    public void setServices(UserService userService, FriendshipService friendshipService, MessageService messageService,User loggedUser){
-        this.userService = userService;
-        this.friendshipService = friendshipService;
-        this.loggedUser = loggedUser;
-        this.messageService = messageService;
+    public void setServices(PageObject pageObject){
+        this.pageObject = pageObject;
         usersInNewGroup = new ArrayList<>();
         this.createdChat = null;
     }
 
     public void start(){
         friendsList.getColumns().clear();
-        friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(loggedUser.getId())));
+        friendsList.setItems(FXCollections.observableArrayList(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId())));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendsList.getColumns().addAll(fullName);
@@ -141,8 +136,8 @@ public class FriendsGroupChatController {
     }
 
     public void handleCreateGroupAction(ActionEvent actionEvent) {
-        usersInNewGroup.add(loggedUser.getId());
-        createdChat = messageService.createNewChatGroup(usersInNewGroup);
+        usersInNewGroup.add(pageObject.getLoggedUser().getId());
+        createdChat = pageObject.getService().getMessageService().createNewChatGroup(usersInNewGroup);
         Stage stage =(Stage) friendsList.getScene().getWindow();
         stage.close();
     }

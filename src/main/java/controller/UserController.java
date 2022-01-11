@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -8,11 +9,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import main.domain.*;
 import javafx.scene.input.MouseEvent;
-import main.service.*;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
@@ -40,25 +41,17 @@ public class UserController {
     @FXML
     private Label usernameLabel;
 
+    @FXML
+    private ImageView report_image;
 
-    private FriendRequestsControll friendRequestsControll;
-    private User loggedUser;
-    private UserService userService;
-    private FriendRequestService friendRequestService;
-    private FriendshipService friendshipService;
-    private MessageService messageService;
-    private PostService postService;
+    private PageObject pageObject;
 
-    public void loadAppLoggedUser(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService, User user) {
-        this.friendshipService = friendshipService;
-        this.loggedUser = user;
-        this.userService = userService;
-        this.friendRequestService = friendRequestService;
-        this.messageService = messageService;
-        this.postService = postService;
+    public void loadAppLoggedUser(PageObject pageObject) {
+        this.pageObject = pageObject;
+        User loggedUser = pageObject.getLoggedUser();
 
         Login login = null;
-        for(Login l: userService.allRegisteredUsers())
+        for(Login l: pageObject.getService().getUserService().allRegisteredUsers())
             if(Objects.equals(l.getUserID(), loggedUser.getId()))
                 login = l;
         usernameLabel.setText("Truth Rose | @" + login.getId());
@@ -88,7 +81,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, loggedUser, friendshipService, friendRequestService, messageService, postService, changingPane);
+            userProfileController.initUserProfileController(pageObject, pageObject.getLoggedUser(), changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -107,7 +100,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             FriendRequestsControll friendRequestsControll = fxmlLoader.getController();
-            friendRequestsControll.initialise(userService, friendRequestService, loggedUser);
+            friendRequestsControll.initialise(pageObject);
             friendRequestsControll.showCurrentFriendRequests();
         }
         catch(IOException e) {
@@ -121,7 +114,7 @@ public class UserController {
             searchList.setVisible(false);
         }
         else {
-            List<Tuple<String, Long>> tupleList = userService.allUsersByCharacters(searchBar.getText());
+            List<Tuple<String, Long>> tupleList = pageObject.getService().getUserService().allUsersByCharacters(searchBar.getText());
             List<String> foundList = new ArrayList<>();
             foundList = tupleList.stream()
                     .map(Tuple::getE1)
@@ -135,8 +128,8 @@ public class UserController {
     public void handleSearchListClick(MouseEvent mouseEvent) {
         int index = searchList.getSelectionModel().getSelectedIndex();
         try {
-            Tuple<String, Long> tupleList = userService.allUsersByCharacters(searchBar.getText()).get(index);
-            User newUser = userService.findUserById(tupleList.getE2());
+            Tuple<String, Long> tupleList = pageObject.getService().getUserService().allUsersByCharacters(searchBar.getText()).get(index);
+            User newUser = pageObject.getService().getUserService().findUserById(tupleList.getE2());
             setSearchedUserProfile(newUser);
             searchList.setVisible(false);
             searchBar.setText(null);
@@ -153,7 +146,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, messageService, postService, changingPane);
+            userProfileController.initUserProfileController(pageObject, newUser, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -170,7 +163,7 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             FriendsController friendsController = fxmlLoader.getController();
-            friendsController.setController(userService, friendshipService, friendRequestService, loggedUser);
+            friendsController.setController(pageObject);
             friendsController.start();
         }
         catch(IOException e) {
@@ -186,8 +179,25 @@ public class UserController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             ChatController chatController = fxmlLoader.getController();
-            chatController.setServicesChat(messageService,userService,loggedUser,friendshipService);
+            chatController.setServicesChat(pageObject);
             chatController.initChatView(-1L);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleReportsImageClicked(MouseEvent mouseEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/report-view.fxml"));
+            if(changingPane.getChildren() != null){
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
+            ReportController reportController = fxmlLoader.getController();
+            reportController.init(pageObject);
+//            friendRequestsControll.initialise(pageObject);
+//            friendRequestsControll.showCurrentFriendRequests();
         }
         catch(IOException e) {
             e.printStackTrace();

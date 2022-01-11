@@ -84,6 +84,8 @@ public class FriendshipService implements Observable<FriendDeletionEvent> {
             if (addedFriendship != null) {
                 throw new AddException("This friendship already exists");
             }
+            else
+                notifyObservers(new FriendDeletionEvent(ChangeEventType.ADD, friendship));
             updateFriendList();
         }
         else {

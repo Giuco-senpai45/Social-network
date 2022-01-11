@@ -12,9 +12,20 @@ import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
 import main.service.serviceExceptions.UpdateException;
 import main.utils.AES256;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -260,6 +271,16 @@ public class UserService {
         }
     }
 
+    public List<UserFriendshipsDTO> report11(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
+        List<UserFriendshipsDTO> friends = getUserFriendList(loggedUser);
+        List<UserFriendshipsDTO> report = new ArrayList<>();
+        for(UserFriendshipsDTO friendshipsDTO: friends){
+            if((friendshipsDTO.getDate().compareTo(beginningDate.toLocalDate()))>0 && (friendshipsDTO.getDate().compareTo(endDate.toLocalDate()))<0)
+                report.add(friendshipsDTO);
+        }
+        return report;
+    }
+
     /**
      * This function returns all the users present in the repo
      * @return iterable representing all users
@@ -267,6 +288,8 @@ public class UserService {
     public Iterable<User> getUsers(){
         return repoUsers.findAll();
     }
+
+
 
 
     private int page = 0;

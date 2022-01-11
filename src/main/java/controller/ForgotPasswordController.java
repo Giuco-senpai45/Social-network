@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -28,12 +29,12 @@ public class ForgotPasswordController {
     @FXML
     private Label passwordError;
 
-    private UserService userService;
+    private PageObject pageObject;
     private Stage stage;
     private Login newLogin;
 
-    public void setRegisterController(UserService userService, Stage stage) {
-        this.userService = userService;
+    public void setRegisterController(PageObject pageObject, Stage stage) {
+        this.pageObject = pageObject;
         this.stage = stage;
         newLogin = null;
     }
@@ -42,7 +43,7 @@ public class ForgotPasswordController {
         if(keyEvent.getCode() == KeyCode.ENTER){
             passwordError.setVisible(false);
             try {
-                newLogin = userService.findUserByUsername(usernameField.getText());
+                newLogin = pageObject.getService().getUserService().findUserByUsername(usernameField.getText());
                 if(newLogin != null){
                     passwordField.setVisible(true);
                     retypedPasswordField.setVisible(true);
@@ -70,7 +71,7 @@ public class ForgotPasswordController {
                     String encryptedPassword = encrypter.encrypt(passwordField.getText());
                     newLogin.setPassword(encryptedPassword);
                     try {
-                        userService.updateLoginInformation(newLogin);
+                        pageObject.getService().getUserService().updateLoginInformation(newLogin);
                         stage.close();
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Password Changed");

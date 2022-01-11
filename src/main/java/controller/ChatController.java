@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,7 +22,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -32,9 +32,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import main.domain.*;
-import main.service.FriendshipService;
-import main.service.MessageService;
-import main.service.UserService;
+import main.service.MasterService;
 import main.utils.Observer;
 import main.utils.events.MessageEvent;
 import sn.socialnetwork.MainApp;
@@ -83,20 +81,14 @@ public class ChatController implements Observer<MessageEvent> {
     @FXML
     private AnchorPane closeReply;
 
+    private PageObject pageObject;
     private Chat currentSelectedChat;
-    private MessageService messageService;
-    private UserService userService;
-    private FriendshipService friendshipService;
-    private User loggedUser;
     private LocalDateTime currentMessageDate;
     private Long messageToReplyID;
 
-    public void setServicesChat(MessageService messageService, UserService userService,User loggedUser,FriendshipService friendshipService){
-        this.messageService = messageService;
-        this.messageService.addObserver(this);
-        this.friendshipService = friendshipService;
-        this.userService = userService;
-        this.loggedUser = loggedUser;
+    public void setServicesChat(PageObject pageObject){
+        this.pageObject = pageObject;
+        this.pageObject.getService().getMessageService().addObserver(this);
         currentMessageDate = null;
         scroller.setContent(conversationPane);
     }
@@ -125,8 +117,9 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     public void start(Long chatID){
+        System.out.println("aici");
         displayChatsForUser(chatID);
-        currentSelectedChat = messageService.getChatsForUser(loggedUser.getId()).get(0);
+        currentSelectedChat = pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId()).get(0);
         chatsList.getSelectionModel().selectFirst();            //in the beginning we select the first chat
         displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
                 0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
@@ -134,15 +127,18 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayChatsForUser(Long chatID){
+        System.out.println("aici2");
         chatsList.getColumns().clear();
         if(chatID == -1)
-            chatsList.setItems(FXCollections.observableArrayList(messageService.getChatsForUser(loggedUser.getId())));
+            chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId())));
         else
-            chatsList.setItems(FXCollections.observableArrayList(messageService.getAllChatsForUser(loggedUser.getId(), chatID)));
+            chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getAllChatsForUser(pageObject.getLoggedUser().getId(), chatID)));
+        System.out.println("aici3");
         addChatImages();
     }
 
     private void addChatImages(){
+        System.out.println("aici4");
         userChats.setCellFactory(new Callback<>() {
             @Override
             public TableCell<Chat, String> call(TableColumn<Chat, String> param) {
@@ -174,6 +170,7 @@ public class ChatController implements Observer<MessageEvent> {
         });
         userChats.setCellValueFactory(new PropertyValueFactory<>("url"));
         chatsList.getColumns().add(userChats);
+        System.out.println("aici5");
     }
 
     private void handleClickChatMenu(){
@@ -187,7 +184,7 @@ public class ChatController implements Observer<MessageEvent> {
                 updatedChat.setId(currentSelectedChat.getId());
                 updatedChat.setUrl(file.getAbsolutePath());
                 updatedChat.setName(currentSelectedChat.getName());
-                messageService.updateChat(updatedChat);
+                pageObject.getService().getMessageService().updateChat(updatedChat);
                 displayChatsForUser(-1L);
             }
         }
@@ -199,7 +196,7 @@ public class ChatController implements Observer<MessageEvent> {
             try {
                 scene = new Scene(fxmlLoader.load());
                 FriendsGroupChatController friendsGroupChatController = fxmlLoader.getController();
-                friendsGroupChatController.setServices(userService,friendshipService,messageService,loggedUser);
+                friendsGroupChatController.setServices(pageObject);
                 friendsGroupChatController.start();
                 stage.setOnHidden(new EventHandler<>() {
                     @Override
@@ -207,7 +204,7 @@ public class ChatController implements Observer<MessageEvent> {
                         System.out.println("intru aiceeee");
                         createdChat[0] = friendsGroupChatController.getCreatedChat();
                         System.out.println(createdChat[0].getId());
-                        if(messageService.testIfChatEmpty(loggedUser.getId(), createdChat[0].getId()))
+                        if(pageObject.getService().getMessageService().testIfChatEmpty(pageObject.getLoggedUser().getId(), createdChat[0].getId()))
                             start(createdChat[0].getId());
                         else
                             start(-1L);
@@ -234,7 +231,7 @@ public class ChatController implements Observer<MessageEvent> {
                         updatedChat.setId(currentSelectedChat.getId());
                         updatedChat.setUrl(currentSelectedChat.getUrl());
                         updatedChat.setName(textFieldGroupName.getText());
-                        messageService.updateChat(updatedChat);
+                        pageObject.getService().getMessageService().updateChat(updatedChat);
                         textFieldGroupName.setText("");
                         textFieldGroupName.setVisible(false);
                         displayChatsForUser(-1L);
@@ -250,33 +247,37 @@ public class ChatController implements Observer<MessageEvent> {
 
     private void updatePicsForPrivateChats(){
         for (Chat c : chatsList.getItems()) {
-            Tuple<String,String> privateChat = messageService.getPrivateChatData(loggedUser.getId(),c);
+            Tuple<String,String> privateChat = pageObject.getService().getMessageService().getPrivateChatData(pageObject.getLoggedUser().getId(),c);
             if(privateChat!= null){
                 c.setName(privateChat.getE1());
                 c.setUrl(privateChat.getE2());
-                messageService.updateChatForUser(c, loggedUser.getId());
+                pageObject.getService().getMessageService().updateChatForUser(c, pageObject.getLoggedUser().getId());
             }
         }
     }
 
     private void displayCurrentChat(MouseEvent event){
+        System.out.println("aici6");
         conversationPane.getChildren().clear();
         currentSelectedChat = chatsList.getSelectionModel().getSelectedItem();
         displayChat(chatsList.getSelectionModel().getSelectedItem());
     }
 
     private void displayChat(Chat chat){
+        System.out.println("aici7");
         conversationPane.getChildren().clear();
         currentSelectedChat = chat;
         updatePicsForPrivateChats();
         chatNameLabel.setText(currentSelectedChat.getName());
-        List<ChatDTO> chatMessages = messageService.getConversation(currentSelectedChat.getId());
+        List<ChatDTO> chatMessages = pageObject.getService().getMessageService().getConversation(currentSelectedChat.getId());
+        System.out.println("aici8");
         if(chatMessages.size() == 0)
             showEmptyChat(chat);
         else
             for(ChatDTO chatDTO: chatMessages){
                 showMessages(chatDTO);
             }
+        System.out.println("aici9");
     }
 
     private void showMessages(ChatDTO chatDTO){
@@ -291,7 +292,7 @@ public class ChatController implements Observer<MessageEvent> {
             conversationPane.getChildren().add(showDate);
         }
 
-        User sender = userService.findUserById(chatDTO.getUserID());
+        User sender = pageObject.getService().getUserService().findUserById(chatDTO.getUserID());
         VBox photoAndHour = new VBox();
         Circle circle = new Circle();
         circle.setRadius(20);
@@ -313,7 +314,7 @@ public class ChatController implements Observer<MessageEvent> {
             imageView1.setStyle("-fx-cursor: hand;");
             imageView1.setOnMouseClicked(event -> {
                 Long messageID = chatDTO.getMessageID();
-                messageService.deleteMessage(messageID);
+                pageObject.getService().getMessageService().deleteMessage(messageID);
             });
         }
 
@@ -378,7 +379,7 @@ public class ChatController implements Observer<MessageEvent> {
 
         VBox messageAndReply = new VBox();
         if(chatDTO.getReplyID() != -1){
-            Message repliedTo = messageService.findOneMessage(chatDTO.getReplyID());
+            Message repliedTo = pageObject.getService().getMessageService().findOneMessage(chatDTO.getReplyID());
             Label replied = new Label("Reply to: " + repliedTo.getMessage());
             replied.setPrefWidth(240);
             replied.setPadding(new Insets(3, 5, 3, 5));
@@ -398,7 +399,7 @@ public class ChatController implements Observer<MessageEvent> {
         }
 
         HBox.setMargin(icons, new Insets(15, 0, 0, 0));
-        if(Objects.equals(chatDTO.getUserID(), loggedUser.getId())) {
+        if(Objects.equals(chatDTO.getUserID(), pageObject.getLoggedUser().getId())) {
             convo.getChildren().addAll(icons, messageAndReply, photoAndHour);
             convo.setAlignment(Pos.CENTER_RIGHT);
         }
@@ -429,13 +430,13 @@ public class ChatController implements Observer<MessageEvent> {
             Long id1 = chat.getChatUsers().get(0);
             Circle circle1 = new Circle();
             circle1.setRadius(40);
-            Image image1 = new Image(userService.findUserById(id1).getImageURL(), false);
+            Image image1 = new Image(pageObject.getService().getUserService().findUserById(id1).getImageURL(), false);
             circle1.setFill(new ImagePattern(image1));
 
             Long id2 = chat.getChatUsers().get(1);
             Circle circle2 = new Circle();
             circle2.setRadius(40);
-            Image image2 = new Image(userService.findUserById(id2).getImageURL(), false);
+            Image image2 = new Image(pageObject.getService().getUserService().findUserById(id2).getImageURL(), false);
             circle2.setFill(new ImagePattern(image2));
             usersPhoto.getChildren().addAll(circle1, circle2);
         }
@@ -457,12 +458,12 @@ public class ChatController implements Observer<MessageEvent> {
     public void sendMessageAction(ActionEvent actionEvent) {
         if(!textMessage.getText().isBlank()){
             if(replyLabel.isVisible()) {
-                messageService.replyMessage(loggedUser.getId(), textMessage.getText(), messageToReplyID);
+                pageObject.getService().getMessageService().replyMessage(pageObject.getLoggedUser().getId(), textMessage.getText(), messageToReplyID);
                 replyLabel.setVisible(false);
                 closeReply.setVisible(false);
             }
             else
-                messageService.sendMessage(loggedUser.getId(), textMessage.getText(),currentSelectedChat.getChatUsers());
+                pageObject.getService().getMessageService().sendMessage(pageObject.getLoggedUser().getId(), textMessage.getText(),currentSelectedChat.getChatUsers());
             textMessage.setText(null);
         }
     }
@@ -477,9 +478,9 @@ public class ChatController implements Observer<MessageEvent> {
 
     @Override
     public void update(MessageEvent messageEvent) {
-//        displayChat(currentSelectedChat);
-        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
-                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
-                true, true, true, true, true, true, null));
+        displayChat(currentSelectedChat);
+//        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
+//                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
+//                true, true, true, true, true, true, null));
     }
 }

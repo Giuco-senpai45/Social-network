@@ -82,5 +82,7 @@
             <Font name="Calibri Italic" size="14.0" />
          </font>
       </Label>
+      <Button fx:id="updateProfileButton" layoutX="549.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleUpdateProfileClicked" style="-fx-background-color: ddbea9;" text="Update profile" />
+      <Button fx:id="addPostButton" layoutX="549.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleAddPostClicked" prefHeight="25.0" prefWidth="93.0" style="-fx-background-color: ddbea9;" text="Add new post" />
    </children>
 </AnchorPane>

@@ -6,6 +6,7 @@ import main.repository.paging.Page;
 import main.repository.paging.Pageable;
 import main.repository.paging.PageableImplementation;
 import main.repository.paging.PagingRepository;
+import main.service.serviceExceptions.AddException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -17,10 +18,34 @@ public class PostService {
 
     private PagingRepository<Long, User> repoUsers;
     private PagingRepository<Long, Post> repoPosts;
+    private Long currentPostID;
 
     public PostService(PagingRepository<Long, User> repoUsers, PagingRepository<Long, Post> repoPosts) {
         this.repoUsers = repoUsers;
         this.repoPosts = repoPosts;
+    }
+
+    public void addNewPost(String url, Long userID){
+        Post newPost = new Post(url, userID);
+        findMaximumId();
+        newPost.setId(currentPostID);
+        Post addedPost = repoPosts.save(newPost);
+        if(addedPost != null){
+            throw new AddException("Failed saving the post.");
+        }
+        else{
+            //System.out.println("Post added successfully");
+        }
+    }
+
+    private void findMaximumId(){
+        currentPostID = 0L;
+        for(Post p: repoPosts.findAll())
+        {
+            if(currentPostID < p.getId())
+                currentPostID = p.getId();
+        }
+        currentPostID++;
     }
 
     public int numberOfPagesForPosts(Long loggedUser){

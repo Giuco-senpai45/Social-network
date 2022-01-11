@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -42,7 +43,7 @@ public class ExtraInfoController {
     @FXML
     private ComboBox relationshipStatus;
 
-    private UserService userService;
+    private PageObject pageObject;
     private Stage stage;
     private String s = null;
     private String f = null;
@@ -58,11 +59,10 @@ public class ExtraInfoController {
     private String passwd;
     private String imageURL;
 
-    public void setController(UserService userService, Stage stage, String firstN, String lastN, String addr, String gender, LocalDate date, String e, String usrn, String passwd){
+    public void setController(PageObject pageObject, Stage stage, String firstN, String lastN, String addr, String gender, LocalDate date, String e, String usrn, String passwd){
         funFactError.setText("");
         schoolError.setText("");
         relationshipError.setText("");
-        this.userService = userService;
         this.stage = stage;
         this.firstN = firstN;
         this.lastN = lastN;
@@ -93,6 +93,7 @@ public class ExtraInfoController {
         status.add("Single");
         status.add("In a relationship");
         status.add("Engaged");
+        status.add("It's complicated");
         status.add("Married");
         status.add("Something else");
         status.add("I prefer not to say");
@@ -115,8 +116,8 @@ public class ExtraInfoController {
         }
         if(validateFields()){
             generateAvatar();
-            userService.addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL);
-            userService.loginUser(usrn, passwd, userService.getCurrentUserID());
+            pageObject.getService().getUserService().addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL);
+            pageObject.getService().getUserService().loginUser(usrn, passwd, pageObject.getService().getUserService().getCurrentUserID());
             stage.close();
         }
     }

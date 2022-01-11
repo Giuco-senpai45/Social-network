@@ -8,6 +8,11 @@ import main.repository.paging.PageableImplementation;
 import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 import main.service.serviceExceptions.FindException;
+import main.utils.Observable;
+import main.utils.Observer;
+import main.utils.events.ChangeEventType;
+import main.utils.events.FriendDeletionEvent;
+import main.utils.events.FriendRequestEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Service class for handling friend requests
  */
-public class FriendRequestService {
+public class FriendRequestService implements Observable<FriendRequestEvent> {
     /**
      * Repository for Friendship entities
      */
@@ -75,10 +80,12 @@ public class FriendRequestService {
             }
             if(foundRequest == null){
                 repoRequests.save(request);
+                notifyObservers(new FriendRequestEvent(ChangeEventType.ADD, request));
                 return true;
             }
             else if (foundRequest.getStatus().equals("rejected") || foundRequest.getStatus().equals("deleted")){
                 processRequest(foundRequest.getId(),"pending");
+                notifyObservers(new FriendRequestEvent(ChangeEventType.UPDATE, request));
                 return true;
             }
             else {
@@ -104,9 +111,9 @@ public class FriendRequestService {
         if(request != null){
             request.setStatus(newStatus);
             repoRequests.update(request);
-            Friendship friendship = new Friendship(request.getFrom(), request.getTo());
+//            Friendship friendship = new Friendship(request.getFrom(), request.getTo());
             if(newStatus.equals("approved")) {
-                repoFriends.save(friendship);
+//                repoFriends.save(friendship);
                 return true;
             }
             else if(newStatus.equals("rejected") || newStatus.equals("deleted")){
@@ -171,10 +178,22 @@ public class FriendRequestService {
         for(FriendRequest fRequest: friendRequestIterable)
             if(Objects.equals(fRequest.getFrom(), fromID) && Objects.equals(fRequest.getTo(), toID))
                 friendRequest = fRequest;
-        if (friendRequest != null)
-            repoRequests.delete(friendRequest.getId());
-        else
-            throw new FindException("There is no friend request between these users");
+        if (friendRequest != null) {
+                repoRequests.delete(friendRequest.getId());
+                notifyObservers(new FriendRequestEvent(ChangeEventType.DELETE, friendRequest));
+        }
+        else{
+            for(FriendRequest fRequest: friendRequestIterable)
+                if(Objects.equals(fRequest.getFrom(), toID) && Objects.equals(fRequest.getTo(), fromID))
+                    friendRequest = fRequest;
+            if (friendRequest != null) {
+                repoRequests.delete(friendRequest.getId());
+                notifyObservers(new FriendRequestEvent(ChangeEventType.DELETE, friendRequest));
+            }
+            else
+                throw new FindException("There is no friend request between these users");
+        }
+
     }
 
     public FriendRequest findFriendRequest(Long fromID, Long toID){
@@ -221,5 +240,22 @@ public class FriendRequestService {
         Pageable pageable = new PageableImplementation(page, this.size);
         Page<FriendRequest> friendRequestsPage = repoRequests.findAll(pageable);
         return friendRequestsPage.getContent().collect(Collectors.toSet());
+    }
+
+    private List<Observer<FriendRequestEvent>> observers=new ArrayList<>();
+
+    @Override
+    public void addObserver(Observer<FriendRequestEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<FriendRequestEvent> e) {
+
+    }
+
+    @Override
+    public void notifyObservers(FriendRequestEvent t) {
+        observers.stream().forEach(x->x.update(t));
     }
 }

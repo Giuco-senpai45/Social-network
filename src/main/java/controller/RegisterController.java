@@ -1,5 +1,6 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -99,7 +100,7 @@ public class RegisterController {
     private Label generalError;
 
 
-    private UserService userService;
+    private PageObject pageObject;
     private UserValidator userValidator;
     private String d;
     private String m;
@@ -107,8 +108,8 @@ public class RegisterController {
     private Stage stage;
     private String gender = null;
 
-    public void setRegisterController(UserService userService, Stage stage){
-        this.userService = userService;
+    public void setRegisterController(PageObject pageObject, Stage stage){
+        this.pageObject = pageObject;
         this.userValidator = new UserValidator();
         this.stage = stage;
         getFocusFromFirstTextField();
@@ -171,7 +172,7 @@ public class RegisterController {
         String reTyped = retypedPasswd.getText();
         if(validateData()) {
             boolean found = false;
-            for(Login login: userService.allRegisteredUsers())
+            for(Login login: pageObject.getService().getUserService().allRegisteredUsers())
                 if(Objects.equals(login.getId(), username.getText()) && Objects.equals(login.getPassword(), password.getText()))
                     found = true;
             if(found) {
@@ -202,7 +203,7 @@ public class RegisterController {
             genderError.setText("Please select one of the options above!");
         if (!userValidator.validateEmail(email.getText()))
             emailError.setText("Invalid email address!");
-        for(Login login: userService.allRegisteredUsers())
+        for(Login login: pageObject.getService().getUserService().allRegisteredUsers())
             if(Objects.equals(login.getId(), username.getText()))
                 usernameError.setText("Unavailable username!");
         if(!userValidator.validatePassword(password.getText()))
@@ -270,7 +271,7 @@ public class RegisterController {
         try {
             scene = new Scene(fxmlLoader.load());
             ExtraInfoController extraInfoController = fxmlLoader.getController();
-            extraInfoController.setController(userService, newStage, firstN, lastN, addr, gender, date, e, usrn, passwd);
+            extraInfoController.setController(pageObject, newStage, firstN, lastN, addr, gender, date, e, usrn, passwd);
         }
         catch(IOException exception) {
             exception.printStackTrace();

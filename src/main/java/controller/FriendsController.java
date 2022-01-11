@@ -1,6 +1,6 @@
 package controller;
 
-import javafx.beans.binding.Bindings;
+import controller.pages.PageObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,14 +10,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import main.domain.*;
-import main.service.FriendRequestService;
-import main.service.FriendshipService;
-import main.service.UserService;
+import main.service.MasterService;
 import main.service.serviceExceptions.RemoveException;
 import main.utils.Observer;
 import main.utils.events.FriendDeletionEvent;
@@ -39,22 +34,16 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
     @FXML
     private TableColumn<UserFriendshipsDTO, Void> action;
 
-    private UserService userService;
-    private FriendshipService friendshipService;
-    private FriendRequestService friendRequestService;
-    private User loggedUser;
+    private PageObject pageObject;
     private ObservableList<UserFriendshipsDTO> model = FXCollections.observableArrayList();
 
-    public void setController(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, User loggedUser){
-        this.userService = userService;
-        this.friendshipService = friendshipService;
-        friendshipService.addObserver(this);
-        this.friendRequestService = friendRequestService;
-        this.loggedUser = loggedUser;
+    public void setController(PageObject pageObject){
+        this.pageObject = pageObject;
+        this.pageObject.getService().getFriendshipService().addObserver(this);
     }
 
     public void start(){
-        model.setAll(userService.getUserFriendList(loggedUser.getId()));
+        model.setAll(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId()));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendshipDate.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -75,10 +64,11 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
                         btn.setOnAction((ActionEvent event) -> {
                             UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
                             try {
-                                friendshipService.removeFriendship(new Tuple<>(loggedUser.getId(), data.getFriendID()));
-                                FriendRequest friendRequest = friendRequestService.findFriendRequest(loggedUser.getId(), data.getFriendID());
-                                friendRequestService.processRequest(friendRequest.getId(), "deleted");
-                                friendsList.getItems().remove(data);
+                                pageObject.getService().getFriendshipService().removeFriendship(new Tuple<>(pageObject.getLoggedUser().getId(), data.getFriendID()));
+                                FriendRequest friendRequest = pageObject.getService().getFriendRequestService().findFriendRequest(pageObject.getLoggedUser().getId(), data.getFriendID());
+                                //masterService.getFriendRequestService().processRequest(friendRequest.getId(), "deleted");
+                                //friendsList.getItems().remove(data);
+                                pageObject.getService().getFriendRequestService().deleteFriendRequest(pageObject.getLoggedUser().getId(), data.getFriendID());
                             }
                             catch(RemoveException e){
                                 e.printStackTrace();

@@ -1,33 +1,30 @@
 package controller;
 
-import javafx.collections.FXCollections;
+import controller.pages.PageObject;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Pagination;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import main.domain.*;
-import main.service.*;
 import main.service.serviceExceptions.FindException;
 import sn.socialnetwork.MainApp;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +32,9 @@ import java.util.Set;
 
 
 public class UserProfileController {
+
+    @FXML
+    private AnchorPane root;
 
     @FXML
     private Label profileNameLabel;
@@ -70,34 +70,30 @@ public class UserProfileController {
     private Label funFactCompleted;
 
     @FXML
-    private AnchorPane root;
-
-    @FXML
     private Circle circleAvatar;
 
     @FXML
     private GridPane postsPane;
 
-    private User loggedUser;
+    @FXML
+    private Button updateProfileButton;
+
+    @FXML
+    private Button addPostButton;
+
+    private Pagination pagination;
+
+    private PageObject pageObject;
     private User currentUser;
-    private UserService userService;
-    private FriendshipService friendshipService;
-    private FriendRequestService friendRequestService;
-    private MessageService messageService;
-    private PostService postService;
 
 
-    public void initUserProfileController(UserService userService, User loggedUser, User currentUser, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService, Pane changingPane){
+
+    public void initUserProfileController(PageObject pageObject, User currentUser, Pane changingPane){
+        this.pageObject = pageObject;
         this.changingPane = changingPane;
         root.setLayoutX(changingPane.getLayoutX());
         root.setLayoutY(changingPane.getLayoutY());
-        this.loggedUser = loggedUser;
         this.currentUser = currentUser;
-        this.userService = userService;
-        this.messageService = messageService;
-        this.friendshipService = friendshipService;
-        this.friendRequestService = friendRequestService;
-        this.postService = postService;
         setUserProfile();
     }
 
@@ -106,17 +102,21 @@ public class UserProfileController {
         profileNameLabel.setText(currentUser.getLastName() + "  "  + currentUser.getFirstName());
         setInfo();
         setPosts();
-        if(Objects.equals(currentUser.getId(), loggedUser.getId())) {
+        if(Objects.equals(currentUser.getId(), pageObject.getLoggedUser().getId())) {
             friendshipStatus.setVisible(false);
             sendMessageButton.setVisible(false);
             friendshipButton.setVisible(false);
+            updateProfileButton.setVisible(true);
+            addPostButton.setVisible(true);
         }
         else{
+            updateProfileButton.setVisible(false);
+            addPostButton.setVisible(false);
             sendMessageButton.setVisible(true);
-            List<FriendRequest> friendRequests = friendRequestService.findPendingRequestsForUser(currentUser.getId());
+            List<FriendRequest> friendRequests = pageObject.getService().getFriendRequestService().findPendingRequestsForUser(currentUser.getId());
             boolean found = false;
             for(FriendRequest fr: friendRequests)
-                if (Objects.equals(fr.getFrom(), loggedUser.getId())) {
+                if (Objects.equals(fr.getFrom(), pageObject.getLoggedUser().getId())) {
                     found = true;
                     break;
                 }
@@ -127,7 +127,7 @@ public class UserProfileController {
             }
             else {
                 try {
-                    Friendship friendship = friendshipService.findFriendshipById(new Tuple(loggedUser.getId(), currentUser.getId()));
+                    Friendship friendship = pageObject.getService().getFriendshipService().findFriendshipById(new Tuple(pageObject.getLoggedUser().getId(), currentUser.getId()));
                     friendshipStatus.setText("Friends since " + friendship.getDate());
                     friendshipStatus.setVisible(true);
                     friendshipButton.setText("Remove friend");
@@ -162,7 +162,7 @@ public class UserProfileController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             UserProfileController userProfileController = fxmlLoader.getController();
-            userProfileController.initUserProfileController(userService, loggedUser, newUser, friendshipService, friendRequestService, messageService, postService, changingPane);
+            userProfileController.initUserProfileController(pageObject, newUser, changingPane);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -173,18 +173,19 @@ public class UserProfileController {
     public void handleFriendshipButton(ActionEvent actionEvent) {
         String text = friendshipButton.getText();
         if (Objects.equals(text, "Remove friend")){
-            friendshipService.removeFriendship(new Tuple<>(loggedUser.getId(), currentUser.getId()));
+            pageObject.getService().getFriendshipService().removeFriendship(new Tuple<>(pageObject.getLoggedUser().getId(), currentUser.getId()));
 //            friendsList.setItems(FXCollections.observableArrayList(userService.getUserFriendList(currentUser.getId())));
+            pageObject.getService().getFriendRequestService().deleteFriendRequest(pageObject.getLoggedUser().getId(), currentUser.getId());
             friendshipStatus.setVisible(false);
             friendshipButton.setText("Add new friend");
         }
         else if (Objects.equals(text, "Add new friend")){
-            friendRequestService.sendRequest(loggedUser.getId(), currentUser.getId());
+            pageObject.getService().getFriendRequestService().sendRequest(pageObject.getLoggedUser().getId(), currentUser.getId());
             friendshipStatus.setVisible(false);
             friendshipButton.setText("Cancel friend request");
         }
         else if (Objects.equals(text, "Cancel friend request")){
-            friendRequestService.deleteFriendRequest(loggedUser.getId(), currentUser.getId());
+            pageObject.getService().getFriendRequestService().deleteFriendRequest(pageObject.getLoggedUser().getId(), currentUser.getId());
             friendshipStatus.setVisible(false);
             friendshipButton.setText("Add new friend");
         }
@@ -192,7 +193,7 @@ public class UserProfileController {
 
     @FXML
     public void handleMessagesButton(ActionEvent actionEvent) {
-        Long chatId =  messageService.createPrivateChatWithUser(loggedUser.getId(), currentUser.getId());
+        Long chatId = pageObject.getService().getMessageService().createPrivateChatWithUser(pageObject.getLoggedUser().getId(), currentUser.getId());
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/chat-view.fxml"));
             if (changingPane.getChildren() != null) {
@@ -200,8 +201,8 @@ public class UserProfileController {
             }
             changingPane.getChildren().add(fxmlLoader.load());
             ChatController chatController = fxmlLoader.getController();
-            chatController.setServicesChat(messageService,userService,loggedUser,friendshipService);
-            if(messageService.testIfChatEmpty(loggedUser.getId(), chatId))
+            chatController.setServicesChat(pageObject);
+            if(pageObject.getService().getMessageService().testIfChatEmpty(pageObject.getLoggedUser().getId(), chatId))
                 chatController.initChatView(chatId);
             else
                 chatController.initChatView(-1L);
@@ -213,7 +214,7 @@ public class UserProfileController {
     }
 
     private GridPane createPage(Integer pageIndex){
-        Set<Post> posts = postService.getPostsOnPage(pageIndex, currentUser.getId());
+        Set<Post> posts = pageObject.getService().getPostService().getPostsOnPage(pageIndex, currentUser.getId());
         GridPane postsPane = new GridPane();
         postsPane.setPrefHeight(250);
         postsPane.setPrefWidth(659);
@@ -264,8 +265,9 @@ public class UserProfileController {
     }
 
     private void setPosts(){
-        postService.setPageSize(3);
-        int pageNumber = postService.numberOfPagesForPosts(currentUser.getId());
+        root.getChildren().remove(pagination);
+        pageObject.getService().getPostService().setPageSize(3);
+        int pageNumber = pageObject.getService().getPostService().numberOfPagesForPosts(currentUser.getId());
         if(pageNumber == 0){
             VBox emptyPage = new VBox();
             emptyPage.setLayoutY(270);
@@ -284,7 +286,7 @@ public class UserProfileController {
             root.getChildren().add(emptyPage);
         }
         else {
-            Pagination pagination = new Pagination(pageNumber, 0);
+            pagination = new Pagination(pageNumber, 0);
             pagination.setLayoutY(270);
             BackgroundImage myBI = new BackgroundImage(new Image("/imgs/roses_bkg.png", 660, 260, false, true),
                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -301,6 +303,32 @@ public class UserProfileController {
                 }
             });
             root.getChildren().add(pagination);
+        }
+    }
+
+    public void handleUpdateProfileClicked(ActionEvent actionEvent) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/update-profile-view.fxml"));
+            if(changingPane.getChildren() != null){
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
+            UpdateProfileController updateProfileController = fxmlLoader.getController();
+            updateProfileController.setController(pageObject);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleAddPostClicked(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        Stage stage = (Stage) root.getScene().getWindow();
+        File file = fileChooser.showOpenDialog(stage);
+        if(file != null){
+            String url = file.getAbsolutePath();
+            pageObject.getService().getPostService().addNewPost(url, pageObject.getLoggedUser().getId());
+            setPosts();
         }
     }
 }

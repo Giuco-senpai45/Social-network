@@ -7,16 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import main.Main;
 import main.domain.*;
 import main.domain.validators.*;
-import main.repository.Repository;
 import main.repository.database.*;
 import main.repository.paging.PagingRepository;
 import main.service.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class MainApp extends Application {
     public static void main(String[] args) {
@@ -25,8 +23,27 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        //TODO page ✔
+        //TODO repara friend requesturile - send request -> accept request -> friends
+        // -> remove friend -> send request again !!!exista deja cerere!!!
+        //TODO generare rapoarte ✔
+        //TODO pagination la friend list, search list, friend requests, chat
+        //TODO logout
+        //TODO update profile *bonus*
+        MasterService masterService = setMasterService();
         FXMLLoader loginLoader = new FXMLLoader(MainApp.class.getResource("/views/login-view.fxml"));
+        BorderPane loginLayout = loginLoader.load();
+        LoginController loginController = loginLoader.getController();
+        loginController.setServiceLogin(masterService);
 
+        primaryStage.setScene(new Scene(loginLayout));
+        primaryStage.setTitle("Truth Rose");
+        primaryStage.getIcons().add(new Image("imgs/app_icon.png"));
+        primaryStage.show();
+        primaryStage.setWidth(800);
+    }
+
+    private MasterService setMasterService(){
         PagingRepository<Long, User> repoUser = new UserDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new UserValidator());
         PagingRepository<Tuple<Long,Long>, Friendship> repoFriends = new FriendshipDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendshipValidator());
         PagingRepository<Long, Message> repoMessage = new MessageDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new MessageValidator());
@@ -41,17 +58,7 @@ public class MainApp extends Application {
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;
         PostService postService = new PostService(repoUser, repoPost);
 
-        BorderPane loginLayout = loginLoader.load();
-        LoginController loginController =  loginLoader.getController();
-        loginController.setServicesLogin(userService, friendsService, friendRequestService, messageService, postService);
-
-        Iterable<Chat> chats = repoChat.findAll();
-        chats.forEach(System.out::println);
-
-        primaryStage.setScene(new Scene(loginLayout));
-        primaryStage.setTitle("Truth Rose");
-        primaryStage.getIcons().add(new Image("imgs/app_icon.png"));
-        primaryStage.show();
-        primaryStage.setWidth(800);
+        MasterService masterService = new MasterService(userService, friendsService, friendRequestService, messageService, postService);
+        return masterService;
     }
 }

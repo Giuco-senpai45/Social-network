@@ -121,15 +121,23 @@
                   <Image url="@../imgs/search-icon.png" />
                </image>
             </ImageView>
-            <Label fx:id="usernameLabel" layoutX="435.0" layoutY="16.0" text="Truth Rose | @username">
+            <Label fx:id="usernameLabel" layoutX="455.0" layoutY="16.0" text="Truth Rose | @username">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
             </Label>
-            <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="409.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="429.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../imgs/4139427.png" />
                </image>
+            </ImageView>
+            <ImageView fx:id="report_image" fitHeight="31.0" fitWidth="28.0" layoutX="344.0" layoutY="12.0" onMouseClicked="#handleReportsImageClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/report.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </ImageView>
          </children>
       </AnchorPane>

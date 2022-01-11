@@ -1,31 +1,22 @@
 package controller;
 
+import controller.pages.PageObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import main.domain.FriendRequest;
 import main.domain.Login;
 import main.domain.User;
 import main.service.*;
-import main.service.serviceExceptions.FindException;
 import main.utils.AES256;
 import sn.socialnetwork.MainApp;
 
@@ -48,18 +39,11 @@ public class LoginController {
     @FXML
     private BorderPane root;
 
-    private UserService userService;
-    private FriendRequestService friendRequestService;
-    private FriendshipService friendshipService;
-    private MessageService messageService;
-    private PostService postService;
+    private PageObject pageObject;
+    private MasterService masterService;
 
-    public void setServicesLogin(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService){
-        this.userService = userService;
-        this.friendRequestService = friendRequestService;
-        this.friendshipService = friendshipService;
-        this.messageService = messageService;
-        this.postService = postService;
+    public void setServiceLogin(MasterService masterService){
+        this.masterService = masterService;
         getFocusFromFirstTextfield();
     }
 
@@ -82,7 +66,7 @@ public class LoginController {
         else {
             String username = textUsername.getText();
             String password = textPassword.getText();
-            Login loginData = userService.findRegisteredUser(username);
+            Login loginData = masterService.getUserService().findRegisteredUser(username);
             if(loginData == null) {
                 loginErrorLabel.setText("We couldn't find that username!");
                 textUsername.setText(null);
@@ -98,7 +82,7 @@ public class LoginController {
                 return;
             }
             else {
-                User connectedUser= userService.findUserById(loginData.getUserID());
+                User connectedUser= masterService.getUserService().findUserById(loginData.getUserID());
                 connectUser(connectedUser, event);
             }
         }
@@ -113,8 +97,11 @@ public class LoginController {
         Scene scene = null;
         try {
             scene = new Scene(fxmlLoader.load());
+
+            pageObject = new PageObject(masterService, connectedUser);
+
             UserController userController = fxmlLoader.getController();
-            userController.loadAppLoggedUser(userService, friendshipService, friendRequestService, messageService, postService, connectedUser);
+            userController.loadAppLoggedUser(pageObject);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -137,7 +124,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             RegisterController registerController = fxmlLoader.getController();
-            registerController.setRegisterController(userService, stage);
+            registerController.setRegisterController(pageObject, stage);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -155,7 +142,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             ForgotPasswordController forgotPasswordController = fxmlLoader.getController();
-            forgotPasswordController.setRegisterController(userService, stage);
+            forgotPasswordController.setRegisterController(pageObject, stage);
         }
         catch(IOException e) {
             e.printStackTrace();

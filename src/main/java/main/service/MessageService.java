@@ -1,7 +1,6 @@
 package main.service;
 
 import main.domain.*;
-import main.repository.Repository;
 import main.repository.paging.Page;
 import main.repository.paging.Pageable;
 import main.repository.paging.PageableImplementation;
@@ -11,8 +10,17 @@ import main.utils.Observable;
 import main.utils.Observer;
 import main.utils.events.ChangeEventType;
 import main.utils.events.MessageEvent;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -376,7 +384,11 @@ public class MessageService implements Observable<MessageEvent> {
                 chat = c;
             }
         }
-
+/*
+select * from messages
+where messages.chat_id = 1
+order by messages.date_time;
+ */
         if(chat == null) {
             chat = new Chat();
             chat.setId(maximChatId() + 1);
@@ -398,6 +410,43 @@ public class MessageService implements Observable<MessageEvent> {
 
     public Message findOneMessage(Long messageID){
         return repoMessages.findOne(messageID);
+    }
+
+    /* Activitatile unui utilizator dintr-o perioada calendaristica, referitor la
+    prietenii noi creati si mesajele primite in acea perioada*/
+
+     public List<ChatDTO> report12(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
+         Iterable<Message> messgs = repoMessages.findAll();
+         List<Message> messageList = new ArrayList<>();
+         messgs.forEach(messageList::add);
+         List<Chat> chats = getChatsForUser(loggedUser);
+         List<ChatDTO> messages = new ArrayList<>();
+         for(Chat chat: chats){
+             for(ChatDTO chatDTO: getConversation(chat.getId())){
+                 if((chatDTO.getTimestamp().compareTo(Timestamp.valueOf(beginningDate)))>0 && (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(endDate)))<0 && !Objects.equals(chatDTO.getUserID(), loggedUser))
+                    messages.add(chatDTO);
+             }
+         }
+         return messages;
+    }
+
+    public List<ChatDTO> report2(Long loggedUser, Long fromID, LocalDateTime beginningDate, LocalDateTime endDate){
+         Iterable<Message> messgs = repoMessages.findAll();
+         List<Message> messageList = new ArrayList<>();
+         messgs.forEach(messageList::add);
+         List<Chat> chats = getChatsForUser(loggedUser);
+         List<ChatDTO> messages = new ArrayList<>();
+         for(Chat chat: chats){
+            for(ChatDTO chatDTO: getConversation(chat.getId())){
+                if(Objects.equals(chatDTO.getUserID(), fromID) && ( (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(beginningDate)))>0 && (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(endDate)))<0))
+                    messages.add(chatDTO);
+            }
+         }
+         return messages;
+    }
+
+    public Iterable<Message> getMessages(){
+        return repoMessages.findAll();
     }
 
     private List<Observer<MessageEvent>> observers=new ArrayList<>();

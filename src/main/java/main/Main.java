@@ -24,7 +24,7 @@ public class Main {
         PagingRepository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
         PagingRepository<String, Login> loginRepository = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
         UI ui = new UI(repoUser,repoFriends, repoMessage, repoChat,repoRequests, loginRepository);
-        ui.run();
+       // ui.run();
 
 
     }
