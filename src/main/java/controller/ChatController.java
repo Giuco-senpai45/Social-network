@@ -49,6 +49,9 @@ public class ChatController implements Observer<MessageEvent> {
     private BorderPane chatPane;
 
     @FXML
+    private AnchorPane anchorSettings;
+
+    @FXML
     private Button sendMessageButton;
 
     @FXML
@@ -85,6 +88,7 @@ public class ChatController implements Observer<MessageEvent> {
     private Chat currentSelectedChat;
     private LocalDateTime currentMessageDate;
     private Long messageToReplyID;
+    private boolean selectedPreviously = false;
 
     public void setServicesChat(PageObject pageObject){
         this.pageObject = pageObject;
@@ -101,9 +105,7 @@ public class ChatController implements Observer<MessageEvent> {
         view.setFitHeight(50);
         view.setPreserveRatio(true);
         sendMessageButton.setGraphic(view);
-        ObservableList<String> choicesList = FXCollections.observableArrayList("Change group picture","Change group name","Create a new group chat");
-        chatMenu.setItems(choicesList);
-        chatMenu.getSelectionModel().selectedItemProperty().addListener((x,y,z)-> handleClickChatMenu());
+        createChatMenuBox();
         //TODO: deselecteaza optiunile dupa ce sunt apasate pls puiiii <3
         textMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -114,6 +116,21 @@ public class ChatController implements Observer<MessageEvent> {
             }
         });
         start(chatID);
+    }
+
+    private void createChatMenuBox(){
+        ObservableList<String> choicesList = FXCollections.observableArrayList("Change group picture","Change group name","Create a new group chat");
+        chatMenu.setItems(choicesList);
+        chatMenu.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(selectedPreviously){
+                    chatMenu.getSelectionModel().clearSelection();
+                    selectedPreviously = false;
+                }
+            }
+        });
+        chatMenu.getSelectionModel().selectedItemProperty().addListener((x,y,z)-> handleClickChatMenu());
     }
 
     public void start(Long chatID){
@@ -174,7 +191,13 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void handleClickChatMenu(){
-        String option = chatMenu.getSelectionModel().getSelectedItem().toString();
+        String option = "";
+        if(selectedPreviously == false) {
+            option = chatMenu.getSelectionModel().getSelectedItem().toString();
+        }
+        if(textFieldGroupName.isVisible()){
+            textFieldGroupName.setVisible(false);
+        }
         if(option.equals("Change group picture")){
             FileChooser fileChooser = new FileChooser();
             Stage stage =(Stage) chatPane.getScene().getWindow();
@@ -187,6 +210,7 @@ public class ChatController implements Observer<MessageEvent> {
                 pageObject.getService().getMessageService().updateChat(updatedChat);
                 displayChatsForUser(-1L);
             }
+            selectedPreviously = true;
         }
         else if(option.equals("Create a new group chat")) {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/friends-groupchat.fxml"));
@@ -201,7 +225,6 @@ public class ChatController implements Observer<MessageEvent> {
                 stage.setOnHidden(new EventHandler<>() {
                     @Override
                     public void handle(WindowEvent e) {
-                        System.out.println("intru aiceeee");
                         createdChat[0] = friendsGroupChatController.getCreatedChat();
                         System.out.println(createdChat[0].getId());
                         if(pageObject.getService().getMessageService().testIfChatEmpty(pageObject.getLoggedUser().getId(), createdChat[0].getId()))
@@ -218,9 +241,9 @@ public class ChatController implements Observer<MessageEvent> {
             stage.setScene(scene);
             stage.getIcons().add(new Image("imgs/app_icon.png"));
             stage.show();
-
+            selectedPreviously = true;
         }
-        else{
+        else if(option.equals("Change group name")){
             System.out.println("Change group name");
             textFieldGroupName.setVisible(true);
             textFieldGroupName.getStyleClass().add("change-group-name");
@@ -237,11 +260,22 @@ public class ChatController implements Observer<MessageEvent> {
                         displayChatsForUser(-1L);
                         displayChat(updatedChat);
                     }
-                    else {
+                    else{
                         textFieldGroupName.setVisible(false);
                     }
                 }
             });
+            textFieldGroupName.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent t) {
+                    if(t.getCode()==KeyCode.ESCAPE)
+                    {
+                        textFieldGroupName.setText("");
+                        textFieldGroupName.setVisible(false);
+                    }
+                }
+            });
+            selectedPreviously = true;
         }
     }
 

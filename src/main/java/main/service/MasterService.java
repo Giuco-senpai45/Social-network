@@ -19,19 +19,20 @@ import java.util.stream.Collectors;
 
 public class MasterService {
 
+    private RoseEventService eventService;
     private UserService userService;
     private FriendshipService friendshipService;
     private FriendRequestService friendRequestService;
     private MessageService messageService;
     private PostService postService;
-    private Iterable<Message> messages;
 
-    public MasterService(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService) {
+    public MasterService(UserService userService, FriendshipService friendshipService, FriendRequestService friendRequestService, MessageService messageService, PostService postService, RoseEventService eventService) {
         this.userService = userService;
         this.friendshipService = friendshipService;
         this.friendRequestService = friendRequestService;
         this.messageService = messageService;
         this.postService = postService;
+        this.eventService = eventService;
     }
 
     private void generatePDF(String fileName, String title1, String title2, String title3, List<String> messages, Boolean append){
@@ -205,5 +206,9 @@ public class MasterService {
 
     public PostService getPostService() {
         return postService;
+    }
+
+    public RoseEventService getEventService() {
+        return eventService;
     }
 }

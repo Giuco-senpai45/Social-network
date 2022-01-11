@@ -60,7 +60,7 @@
             </VBox>
             <HBox layoutX="1.0" layoutY="1.0" prefHeight="51.0" prefWidth="530.0">
                <children>
-                  <AnchorPane prefHeight="47.0" prefWidth="530.0">
+                  <AnchorPane fx:id="anchorSettings" prefHeight="47.0" prefWidth="530.0">
                      <children>
                         <Label fx:id="chatNameLabel" layoutX="1.0" layoutY="6.0" prefHeight="45.0" prefWidth="320.0">
                            <font>

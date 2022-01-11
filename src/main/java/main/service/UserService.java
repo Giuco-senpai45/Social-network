@@ -145,7 +145,7 @@ public class UserService {
         User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
-        System.out.println(user);
+//        System.out.println(user);
         if(user != null){
             throw new UpdateException("This user doesn't exist");
         }

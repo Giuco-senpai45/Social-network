@@ -43,7 +43,6 @@ public class UserController {
 
     @FXML
     private ImageView report_image;
-
     private PageObject pageObject;
 
     public void loadAppLoggedUser(PageObject pageObject) {
@@ -190,16 +189,24 @@ public class UserController {
     public void handleReportsImageClicked(MouseEvent mouseEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/report-view.fxml"));
-            if(changingPane.getChildren() != null){
+            ReportController reportController = fxmlLoader.getController();
+            reportController.init(pageObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void eventsClicked(MouseEvent mouseEvent){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/events-view.fxml"));
+            if (changingPane.getChildren() != null) {
                 changingPane.getChildren().clear();
             }
             changingPane.getChildren().add(fxmlLoader.load());
-            ReportController reportController = fxmlLoader.getController();
-            reportController.init(pageObject);
-//            friendRequestsControll.initialise(pageObject);
-//            friendRequestsControll.showCurrentFriendRequests();
-        }
-        catch(IOException e) {
+            EventsController eventsController = fxmlLoader.getController();
+            eventsController.init(pageObject);
+            eventsController.initEventsView();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

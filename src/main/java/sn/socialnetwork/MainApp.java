@@ -51,14 +51,16 @@ public class MainApp extends Application {
         PagingRepository<Long, FriendRequest> repoRequests = new FriendRequestDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres", new FriendRequestValidator());
         PagingRepository<String, Login> repoLogin = new LoginDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
         PagingRepository<Long, Post> repoPost = new PostDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
+        PagingRepository<Long, RoseEvent> repoEvents = new RoseEventsDatabase("jdbc:postgresql://localhost:5432/social","postgres","postgres");
 
         UserService userService = new UserService(repoUser, repoFriends, repoLogin);
         FriendshipService friendsService = new FriendshipService(repoFriends, repoUser);
         MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat,"jdbc:postgresql://localhost:5432/social","postgres","postgres");
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;
         PostService postService = new PostService(repoUser, repoPost);
+        RoseEventService eventService = new RoseEventService(repoUser,repoEvents);
 
-        MasterService masterService = new MasterService(userService, friendsService, friendRequestService, messageService, postService);
+        MasterService masterService = new MasterService(userService, friendsService, friendRequestService, messageService, postService, eventService);
         return masterService;
     }
 }

@@ -67,7 +67,7 @@ public class FriendRequestService implements Observable<FriendRequestEvent> {
         if(repoUsers.findOne(from) != null && repoUsers.findOne(to) !=null){
             FriendRequest request = new FriendRequest(from,to,"pending");
             request.setId(nextID);
-            System.out.println(request.getId());
+//            System.out.println(request.getId());
             Iterable<FriendRequest> requests = repoRequests.findAll();
             FriendRequest foundRequest = null;
             for(FriendRequest friendRequest : requests){
