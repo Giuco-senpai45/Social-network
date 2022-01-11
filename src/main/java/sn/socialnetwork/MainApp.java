@@ -26,10 +26,11 @@ public class MainApp extends Application {
         //TODO page ✔
         //TODO repara friend requesturile - send request -> accept request -> friends
         // -> remove friend -> send request again !!!exista deja cerere!!!
-        //TODO generare rapoarte ✔
-        //TODO pagination la friend list, search list, friend requests, chat
-        //TODO logout
-        //TODO update profile *bonus*
+        //TODO generare rapoarte ✔ + catch errors ✖
+        //TODO pagination la friend list ✔, search list ✔, friend requests, chat ?
+        //TODO logout + fereastra de are you sure ✔
+        //TODO update profile picture
+        //TODO reverificare chat * 1000000
         MasterService masterService = setMasterService();
         FXMLLoader loginLoader = new FXMLLoader(MainApp.class.getResource("/views/login-view.fxml"));
         BorderPane loginLayout = loginLoader.load();

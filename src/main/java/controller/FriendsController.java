@@ -6,10 +6,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import main.domain.*;
 import main.service.MasterService;
@@ -19,6 +24,9 @@ import main.utils.events.FriendDeletionEvent;
 
 
 public class FriendsController implements Observer<FriendDeletionEvent> {
+
+    @FXML
+    private AnchorPane root;
 
     @FXML
     private TableView friendsList;
@@ -34,6 +42,9 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
     @FXML
     private TableColumn<UserFriendshipsDTO, Void> action;
 
+    @FXML
+    private Pagination friendsPage;
+
     private PageObject pageObject;
     private ObservableList<UserFriendshipsDTO> model = FXCollections.observableArrayList();
 
@@ -43,12 +54,40 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
     }
 
     public void start(){
-        model.setAll(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId()));
+        //int pageNumber = pageObject.getService().getPostService().numberOfPagesForPosts(currentUser.getId());
+        root.getChildren().remove(friendsPage);
+        int pageNumber = 2;
+        friendsPage = new Pagination(pageNumber, 0);
+        friendsPage.setPrefHeight(600);
+        friendsPage.setPrefWidth(659);
+        friendsPage.setPageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer pageIndex) {
+                if (pageIndex >= pageNumber) {
+                    return null;
+                } else {
+                    return createPage(pageIndex);
+                }
+            }
+        });
+        root.getChildren().add(friendsPage);
+    }
+
+    private TableView createPage(int pageIndex){
+        model.setAll(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), pageIndex, 2));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        fullName.setStyle("-fx-alignment: CENTER; -fx-background-color: a5a58d;");
+        avatar.prefWidthProperty().bind(friendsList.widthProperty().multiply(0.19));
+        fullName.prefWidthProperty().bind(friendsList.widthProperty().multiply(0.40));
+        friendshipDate.prefWidthProperty().bind(friendsList.widthProperty().multiply(0.18));
+        action.prefWidthProperty().bind(friendsList.widthProperty().multiply(0.223));
         friendshipDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        friendshipDate.setStyle("-fx-alignment: CENTER; -fx-background-color: a5a58d;");
         addButtonToTable();
         friendsList.setItems(model);
+        friendsList.setStyle("-fx-font-size: 16;");
+        return friendsList;
     }
 
     private void addButtonToTable() {
@@ -101,23 +140,33 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
             @Override
             public TableCell<UserFriendshipsDTO, String> call(TableColumn<UserFriendshipsDTO, String> param) {
                 ImageView imageView = new ImageView();
-                imageView.setFitWidth(30);
-                imageView.setFitHeight(30);
-                TableCell<UserFriendshipsDTO, String> cell = new TableCell<UserFriendshipsDTO, String>() {
+                Circle circle = new Circle(20);
+                imageView.setFitWidth(40);
+                imageView.setFitHeight(40);
+                imageView.setPreserveRatio(true);
+                TableCell<UserFriendshipsDTO, String> cell = new TableCell<>() {
+
+                    @Override
                     public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
                         if (item != null) {
                             Image image = new Image(item, false);
                             imageView.setImage(image);
+                            circle.setFill(new ImagePattern(image));
+                            //setCursor(Cursor.HAND);
+                            setGraphic(circle);
+                            //setOnMouseClicked(ChatController.this::displayCurrentChat);
+                            //setAlignment(Pos.CENTER);
+                        } else {
+                            setGraphic(null);
                         }
                     }
                 };
-                cell.setGraphic(imageView);
                 cell.setAlignment(Pos.CENTER);
                 return cell;
             }
         });
         avatar.setCellValueFactory(new PropertyValueFactory<UserFriendshipsDTO, String>("imageURL"));
-        //friendsList.getColumns().add(avatar);
     }
 
     @Override

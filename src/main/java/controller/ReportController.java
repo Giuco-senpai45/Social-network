@@ -47,7 +47,7 @@ public class ReportController {
     }
 
     private void setComboBox(){
-        List<UserFriendshipsDTO> friends = pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId());
+        List<UserFriendshipsDTO> friends = pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), -1, -1);
         List<String> users = friends.stream()
                 .map( f -> f.getFriendLastName() + " " + f.getFriendFirstName())
                 .collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class ReportController {
         LocalDate localDate2 = toDate.getValue();
         LocalDateTime localDateTime2 = localDate2.atStartOfDay();
         int index = friendList.getSelectionModel().getSelectedIndex();
-        UserFriendshipsDTO user = pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId()).get(index);
+        UserFriendshipsDTO user = pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), -1, -1).get(index);
         pageObject.getService().generateSecondPDF(pageObject.getLoggedUser().getId(), user.getFriendID(), localDateTime1, localDateTime2);
         messageLabel.setVisible(true);
     }

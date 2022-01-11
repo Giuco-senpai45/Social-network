@@ -53,7 +53,7 @@ public class FriendsGroupChatController {
 
     public void start(){
         friendsList.getColumns().clear();
-        friendsList.setItems(FXCollections.observableArrayList(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId())));
+        friendsList.setItems(FXCollections.observableArrayList(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), -1, -1)));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         friendsList.getColumns().addAll(fullName);

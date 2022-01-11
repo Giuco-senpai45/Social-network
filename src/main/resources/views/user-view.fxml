@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -17,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="647.0" prefWidth="874.0" stylesheets="@../css/user.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserController">
+<BorderPane fx:id="userRoot" prefHeight="647.0" prefWidth="874.0" stylesheets="@../css/user.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserController">
    <left>
       <VBox prefHeight="649.0" prefWidth="233.0" style="-fx-background-color: ffe8d6;" BorderPane.alignment="CENTER">
          <children>
@@ -50,7 +51,7 @@
                   </AnchorPane>
                   <AnchorPane fx:id="friendRequestsAnchor" prefHeight="122.0" prefWidth="224.0" GridPane.rowIndex="1">
                      <children>
-                        <ImageView fitHeight="83.0" fitWidth="96.0" layoutX="80.0" layoutY="27.0" onMouseClicked="#friendsClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="80.0" fitWidth="77.0" layoutX="78.0" layoutY="33.0" onMouseClicked="#friendsClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rose-friends.png" />
                            </image>
@@ -61,13 +62,13 @@
                               <DropShadow />
                            </effect>
                         </ImageView>
-                        <Label layoutX="102.0" layoutY="150.0" text="Friends" translateY="-40.0" />
+                        <Label layoutX="97.0" layoutY="150.0" text="Friends" translateY="-40.0" />
                         <Label layoutX="100.0" layoutY="6.0" text="Profile" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="110.0" prefWidth="224.0" GridPane.rowIndex="2">
                      <children>
-                        <ImageView fitHeight="89.0" fitWidth="111.0" layoutX="78.0" layoutY="14.0" onMouseClicked="#friendrequestClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="80.0" fitWidth="76.0" layoutX="79.0" layoutY="14.0" onMouseClicked="#friendrequestClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rose-friend-requests.png" />
                            </image>
@@ -78,13 +79,13 @@
                               <DropShadow />
                            </effect>
                         </ImageView>
-                        <Label layoutX="82.0" layoutY="125.0" text="Friend requests" translateY="-20.0" />
+                        <Label layoutX="76.0" layoutY="110.0" text="Friend requests" translateY="-20.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="110.0" prefWidth="224.0" GridPane.rowIndex="3">
                      <children>
-                        <Label layoutX="103.0" layoutY="88.0" text="Chats" />
-                        <ImageView fitHeight="89.0" fitWidth="130.0" layoutX="65.0" onMouseClicked="#chatsClicked" pickOnBounds="true" preserveRatio="true">
+                        <Label layoutX="102.0" layoutY="88.0" text="Chats" />
+                        <ImageView fitHeight="82.0" fitWidth="108.0" layoutX="63.0" layoutY="8.0" onMouseClicked="#chatsClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rchats.png" />
                            </image>
@@ -99,7 +100,7 @@
                   </AnchorPane>
                   <AnchorPane prefHeight="152.0" prefWidth="233.0" GridPane.rowIndex="4">
                      <children>
-                        <ImageView fitHeight="107.0" fitWidth="154.0" layoutX="63.0" layoutY="3.0" onMouseClicked="#eventsClicked" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="88.0" fitWidth="83.0" layoutX="75.0" layoutY="13.0" onMouseClicked="#eventsClicked" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../imgs/rosevents.png" />
                            </image>
@@ -115,7 +116,18 @@
                   </AnchorPane>
                </children>
             </GridPane>
-            <Label alignment="CENTER" prefHeight="116.0" prefWidth="224.0" text="Logout " />
+            <ImageView fitHeight="62.0" fitWidth="65.0" onMouseClicked="#handleLogoutClicked" pickOnBounds="true" preserveRatio="true" translateX="85.0">
+               <image>
+                  <Image url="@../imgs/open-gate-icon-16-0.png" />
+               </image>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+            <Label alignment="CENTER" prefHeight="52.0" prefWidth="52.0" text="Logout " translateX="90.0" translateY="-10.0" />
          </children>
       </VBox>
    </left>
@@ -131,7 +143,7 @@
                   <Pane fx:id="changingPane" prefHeight="604.0" prefWidth="659.0" />
                </children></StackPane>
             <TextField fx:id="searchBar" layoutX="31.0" layoutY="13.0" onKeyTyped="#handleChangeSearchBar" prefHeight="25.0" prefWidth="243.0" promptText="Search user" style="-fx-background-color: ffe8d6;" />
-            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onMouseClicked="#handleSearchListClick" prefHeight="48.0" prefWidth="243.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" visible="false" />
+            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#handleSearchListClick"  onScroll="#handleScroll" prefHeight="47.0" prefWidth="243.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" visible="false" />
             <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="254.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../imgs/search-icon.png" />

@@ -101,7 +101,7 @@ public class LoginController {
             pageObject = new PageObject(masterService, connectedUser);
 
             UserController userController = fxmlLoader.getController();
-            userController.loadAppLoggedUser(pageObject);
+            userController.loadAppLoggedUser(pageObject, stage);
         }
         catch(IOException e) {
             e.printStackTrace();

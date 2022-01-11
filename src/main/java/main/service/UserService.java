@@ -170,7 +170,7 @@ public class UserService {
         return user;
     }
 
-    public List<UserFriendshipsDTO> getUserFriendList(Long id){
+    public List<UserFriendshipsDTO> getUserFriendList(Long id, int pageNumber, int pageSize){
         Iterable<Friendship> friendships = repoFriends.findAll();
         ArrayList<Friendship> listFriendships = new ArrayList<>();
         friendships.forEach(listFriendships::add);
@@ -182,18 +182,34 @@ public class UserService {
 
         Predicate<Friendship> testIsFriendshipForUser = f -> f.getBuddy1().equals(id) || f.getBuddy2().equals(id);
 
-        return listFriendships.stream()
-                .filter(testIsFriendshipForUser)
-                .map((friendship) -> {
-                    User friend;
-                    if(friendship.getBuddy1().equals(id)){
-                        friend = repoUsers.findOne(friendship.getBuddy2());
+        if(pageNumber > -1 )
+            return listFriendships.stream()
+                    .filter(testIsFriendshipForUser)
+                    .map((friendship) -> {
+                        User friend;
+                        if(friendship.getBuddy1().equals(id)){
+                            friend = repoUsers.findOne(friendship.getBuddy2());
+                            return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
+                        }
+                        friend = repoUsers.findOne(friendship.getBuddy1());
                         return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
-                    }
-                    friend = repoUsers.findOne(friendship.getBuddy1());
-                    return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
-                })
-                .collect(Collectors.toList());
+                    })
+                    .skip(pageNumber * pageSize)
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+        else
+            return listFriendships.stream()
+                    .filter(testIsFriendshipForUser)
+                    .map((friendship) -> {
+                        User friend;
+                        if(friendship.getBuddy1().equals(id)){
+                            friend = repoUsers.findOne(friendship.getBuddy2());
+                            return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
+                        }
+                        friend = repoUsers.findOne(friendship.getBuddy1());
+                        return new UserFriendshipsDTO(friend.getFirstName(),friend.getLastName(),friendship.getDate(), friend.getId(), friend.getImageURL());
+                    })
+                    .collect(Collectors.toList());
     }
 
     /**
@@ -238,7 +254,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public List<Tuple<String, Long>> allUsersByCharacters(String searchString) {
+    public List<Tuple<String, Long>> allUsersByCharacters(String searchString, int pageIndex) {
         List<User> users = new ArrayList<>();
         repoUsers.findAll().forEach(users::add);
 
@@ -257,11 +273,18 @@ public class UserService {
             return null;
         };
 
-
-        return users.stream()
-                .filter(testFirstName.or(testLastName))
-                .map(getFriendName)
-                .collect(Collectors.toList());
+        if(pageIndex > -1)
+            return users.stream()
+                    .filter(testFirstName.or(testLastName))
+                    .map(getFriendName)
+                    .skip(pageIndex)
+                    .limit(2)
+                    .collect(Collectors.toList());
+        else
+            return users.stream()
+                    .filter(testFirstName.or(testLastName))
+                    .map(getFriendName)
+                    .collect(Collectors.toList());
     }
 
     public void updateLoginInformation(Login newLogin){
@@ -272,7 +295,7 @@ public class UserService {
     }
 
     public List<UserFriendshipsDTO> report11(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
-        List<UserFriendshipsDTO> friends = getUserFriendList(loggedUser);
+        List<UserFriendshipsDTO> friends = getUserFriendList(loggedUser, -1, -1);
         List<UserFriendshipsDTO> report = new ArrayList<>();
         for(UserFriendshipsDTO friendshipsDTO: friends){
             if((friendshipsDTO.getDate().compareTo(beginningDate.toLocalDate()))>0 && (friendshipsDTO.getDate().compareTo(endDate.toLocalDate()))<0)
