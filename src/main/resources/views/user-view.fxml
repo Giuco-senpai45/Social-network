@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
@@ -16,6 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="userRoot" prefHeight="647.0" prefWidth="874.0" stylesheets="@../css/user.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserController">
@@ -143,13 +145,14 @@
                   <Pane fx:id="changingPane" prefHeight="604.0" prefWidth="659.0" />
                </children></StackPane>
             <TextField fx:id="searchBar" layoutX="31.0" layoutY="13.0" onKeyTyped="#handleChangeSearchBar" prefHeight="25.0" prefWidth="243.0" promptText="Search user" style="-fx-background-color: ffe8d6;" />
-            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#handleSearchListClick"  onScroll="#handleScroll" prefHeight="47.0" prefWidth="243.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" visible="false" />
+            <ListView fx:id="notificationList" layoutY="1.0" prefHeight="49.0" prefWidth="185.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" translateX="302.0" translateY="40.0" visible="false" />
+            <ListView fx:id="searchList" layoutX="31.0" layoutY="37.0" onKeyPressed="#handleKeyPressed" onMouseClicked="#handleSearchListClick" onScroll="#handleScroll" prefHeight="47.0" prefWidth="243.0" style="-fx-background-color: ffe8d6; -fx-control-inner-background: ffe8d6;" visible="false" />
             <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="254.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../imgs/search-icon.png" />
                </image>
             </ImageView>
-            <Label fx:id="usernameLabel" layoutX="455.0" layoutY="16.0" text="Truth Rose | @username">
+            <Label fx:id="usernameLabel" layoutX="455.0" layoutY="16.0" text="Truth Rose | @username" textFill="WHITE">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -167,6 +170,22 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
+            <ImageView fx:id="notificationImage" fitHeight="29.0" fitWidth="31.0" layoutX="302.0" layoutY="12.0" onMouseClicked="#handleNotificationClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/notification.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
+            <Rectangle fx:id="notifiesBkg" arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="17.0" layoutX="316.0" layoutY="6.0" stroke="RED" strokeType="INSIDE" width="17.0" />
+            <Label fx:id="notifiesLabel" layoutX="320.0" layoutY="4.0" prefHeight="20.0" prefWidth="4.0" text="0" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="unsubscribeButton" layoutX="5.0" layoutY="28.0" mnemonicParsing="false" onAction="#handleUnsubscribeClicked" prefHeight="26.0" prefWidth="185.0" style="-fx-background-color: ffe8d6;" text="Unsubscribe" translateX="297.0" translateY="61.0" visible="false" />
+            <Button fx:id="subscribeButton" layoutX="303.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleSubscribeClicked" prefHeight="25.0" prefWidth="95.0" style="-fx-background-color: ffe8d6;" text="Subscribe" visible="false" />
          </children>
       </AnchorPane>
    </center>

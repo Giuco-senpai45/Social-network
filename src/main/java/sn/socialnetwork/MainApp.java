@@ -24,13 +24,14 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         //TODO page ✔
-        //TODO repara friend requesturile - send request -> accept request -> friends
-        // -> remove friend -> send request again !!!exista deja cerere!!!
+        //TODO repara friend requesturile ✔
         //TODO generare rapoarte ✔ + catch errors ✖
         //TODO pagination la friend list ✔, search list ✔, friend requests, chat ?
         //TODO logout + fereastra de are you sure ✔
         //TODO update profile picture
-        //TODO reverificare chat * 1000000
+        //TODO adaugare nume la chat
+        //TODO schimbare culoare text dreapta sus ✔
+        //TODO realiniere reply cu mesaj
         MasterService masterService = setMasterService();
         FXMLLoader loginLoader = new FXMLLoader(MainApp.class.getResource("/views/login-view.fxml"));
         BorderPane loginLayout = loginLoader.load();

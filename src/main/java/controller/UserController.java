@@ -7,24 +7,27 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import main.domain.*;
 import javafx.scene.input.MouseEvent;
+import org.controlsfx.control.Notifications;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
@@ -53,10 +56,28 @@ public class UserController {
     private ListView searchList;
 
     @FXML
+    private ListView notificationList;
+
+    @FXML
     private Label usernameLabel;
 
     @FXML
     private ImageView report_image;
+
+    @FXML
+    private Label notifiesLabel;
+
+    @FXML
+    private Rectangle notifiesBkg;
+
+    @FXML
+    private ImageView notificationImage;
+
+    @FXML
+    private Button unsubscribeButton;
+
+    @FXML
+    private Button subscribeButton;
 
     private Stage mainStage;
     private Integer searchListNumber;
@@ -78,6 +99,7 @@ public class UserController {
 
         loadUserProfile();
         getFocusFromFirstTextField();
+        setNotificationTab();
     }
 
     private void getFocusFromFirstTextField(){
@@ -140,15 +162,6 @@ public class UserController {
                 .collect(Collectors.toList());
         searchList.setItems(FXCollections.observableArrayList(foundList));
         searchList.setVisible(true);
-        final BooleanProperty firstTime = new SimpleBooleanProperty(true);
-        searchBar.focusedProperty().addListener((o, oldValue, newValue) -> {
-            if (newValue) {
-                if(newValue && firstTime.get()){
-                    searchList.requestFocus();
-                    firstTime.setValue(false);
-                }
-            }
-        });
     }
 
     @FXML
@@ -249,6 +262,10 @@ public class UserController {
     public void handleReportsImageClicked(MouseEvent mouseEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/report-view.fxml"));
+            if (changingPane.getChildren() != null) {
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
             ReportController reportController = fxmlLoader.getController();
             reportController.init(pageObject);
         } catch (Exception e) {
@@ -290,5 +307,107 @@ public class UserController {
         stage.setResizable(false);
         stage.getIcons().add(new Image("imgs/app_icon.png"));
         stage.show();
+    }
+
+    private void setNotificationTab(){
+        if(Objects.equals(pageObject.getLoggedUser().getNotificationSubscription(), "yes")) {
+            notificationImage.setImage(new Image("imgs/notification.png"));
+            int eventsNumber = 5; //numarul de evenimente la care participa si pt care trebuie notificari
+            if (eventsNumber > 0) {
+                notifiesBkg.setVisible(true);
+                notifiesLabel.setVisible(true);
+                notifiesLabel.setText(String.valueOf(eventsNumber));
+            } else {
+                notifiesLabel.setVisible(false);
+                notifiesBkg.setVisible(false);
+            }
+        }
+        else{
+            notificationImage.setImage(new Image("imgs/no-notification.png"));
+            notifiesLabel.setVisible(false);
+            notifiesBkg.setVisible(false);
+        }
+    }
+
+    public void handleNotificationClicked(MouseEvent mouseEvent) {
+        if(Objects.equals(pageObject.getLoggedUser().getNotificationSubscription(), "yes"))
+            setNotificationList();
+        else {
+            subscribeButton.setVisible(true);
+            subscribeButton.onMouseExitedProperty().set(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    subscribeButton.setVisible(false);
+                }
+            });
+        }
+    }
+
+    private void setNotificationList(){
+        //searchListNumber = pageObject.getService().getUserService().allUsersByCharacters(searchBar.getText(), -1).size();
+        //System.out.println(searchListNumber);
+        //int nr = leftLimit + 2;
+//        if(nr > searchListNumber)
+//            nr = searchListNumber;
+       // List<Tuple<String, Long>> tupleList = pageObject.getService().getUserService().allUsersByCharacters(searchBar.getText(), leftLimit);
+//        List<String> foundList = tupleList.stream()
+//                .map(Tuple::getE1)
+//                .collect(Collectors.toList());
+       // searchList.setItems(FXCollections.observableArrayList(foundList));
+        //TODO functie care returneaza evenimentele din urmatoarele 7 zile
+        List<String> demo = new ArrayList<>();
+        demo.add("Event1");
+        demo.add("Event2");
+        demo.add("Event3");
+        demo.add("Event4");
+        demo.add("Event5");
+        notificationList.setItems(FXCollections.observableArrayList(demo));
+        notificationList.setVisible(true);
+        unsubscribeButton.setVisible(true);
+        unsubscribeButton.onMouseEnteredProperty().set(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                notificationList.setVisible(true);
+                unsubscribeButton.setVisible(true);
+            }
+        });
+//        unsubscribeButton.onMouseExitedProperty().set(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent mouseEvent) {
+//                notificationList.setVisible(false);
+//            }
+//        });
+        notificationList.onMouseEnteredProperty().set(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                notificationList.setVisible(true);
+            }
+        });
+        notificationList.onMouseExitedProperty().set(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                notificationList.setVisible(false);
+                unsubscribeButton.setVisible(false);
+            }
+        });
+        notifiesBkg.setVisible(false);
+        notifiesLabel.setVisible(false);
+    }
+
+    public void handleUnsubscribeClicked(ActionEvent actionEvent) {
+        notificationList.setVisible(false);
+        unsubscribeButton.setVisible(false);
+        pageObject.getLoggedUser().setNotificationSubscription("no");
+        User user = pageObject.getLoggedUser();
+        pageObject.getService().getUserService().updateUser(user.getId(), user.getFirstName(), user.getLastName(), user.getAddress(), user.getBirthDate(), user.getGender(), user.getEmail(), user.getLastGraduatedSchool(), user.getRelationshipStatus(), user.getFunFact(), user.getImageURL(), "no");
+        setNotificationTab();
+    }
+
+    public void handleSubscribeClicked(ActionEvent actionEvent) {
+        pageObject.getLoggedUser().setNotificationSubscription("yes");
+        subscribeButton.setVisible(false);
+        User user = pageObject.getLoggedUser();
+        pageObject.getService().getUserService().updateUser(user.getId(), user.getFirstName(), user.getLastName(), user.getAddress(), user.getBirthDate(), user.getGender(), user.getEmail(), user.getLastGraduatedSchool(), user.getRelationshipStatus(), user.getFunFact(), user.getImageURL(), "yes");
+        setNotificationTab();
     }
 }

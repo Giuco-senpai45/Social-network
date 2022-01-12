@@ -116,7 +116,7 @@ public class ExtraInfoController {
         }
         if(validateFields()){
             generateAvatar();
-            pageObject.getService().getUserService().addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL);
+            pageObject.getService().getUserService().addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL, "yes");
             pageObject.getService().getUserService().loginUser(usrn, passwd, pageObject.getService().getUserService().getCurrentUserID());
             stage.close();
         }

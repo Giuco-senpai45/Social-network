@@ -36,7 +36,7 @@ public class UserDatabase implements PagingRepository<Long, User> {
 
     @Override
     public User save(User entity) {
-        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url) " +
+        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url, notification_subscription) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -52,7 +52,7 @@ public class UserDatabase implements PagingRepository<Long, User> {
             ps.setString(8, entity.getRelationshipStatus());
             ps.setString(9, entity.getFunFact());
             ps.setString(10, entity.getImageURL());
-
+            ps.setString(11, entity.getNotificationSubscription());
 
             ps.executeUpdate();
         } catch (SQLException  e) {
@@ -81,14 +81,15 @@ public class UserDatabase implements PagingRepository<Long, User> {
     @Override
     public User update(User entity) {
 
-        String sql = "update users set first_name=? , last_name=?  where user_id=?";
+        String sql = "update users set first_name=? , last_name=?, notification_subscription = ? where user_id=?";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
-            ps.setInt(3,entity.getId().intValue());
+            ps.setString(3, entity.getNotificationSubscription());
+            ps.setInt(4,entity.getId().intValue());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -117,8 +118,9 @@ public class UserDatabase implements PagingRepository<Long, User> {
                 String relationshipStatus = resultSet.getString("relationship_status");
                 String funFact = resultSet.getString("fun_fact");
                 String imageURL = resultSet.getString("image_url");
+                String notificationSubscription = resultSet.getString("notification_subscription");
 
-                User user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL);
+                User user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL, notificationSubscription);
                 user.setId(id);
                 users.add(user);
             }
@@ -150,8 +152,9 @@ public class UserDatabase implements PagingRepository<Long, User> {
                 String relationshipStatus = resultSet.getString("relationship_status");
                 String funFact = resultSet.getString("fun_fact");
                 String imageURL = resultSet.getString("image_url");
+                String notificationSubscription = resultSet.getString("notification_subscription");
 
-                user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL);
+                user = new User(firstName, lastName, birthDate, address, gender, email, lastSchool, relationshipStatus, funFact, imageURL, notificationSubscription);
                 user.setId(user_id);
             }
 
