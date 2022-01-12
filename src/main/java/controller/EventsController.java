@@ -1,17 +1,22 @@
 package controller;
 
 import controller.pages.PageObject;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import main.domain.RoseEvent;
 import main.domain.User;
@@ -32,6 +37,15 @@ public class EventsController {
     private User loggedUser;
     private PageObject pageObject;
 
+    @FXML
+    private Button createEventBtn;
+
+    @FXML
+    private DatePicker filterToDate;
+
+    @FXML
+    private DatePicker filterFromDate;
+
     public void init(PageObject pageObject)
     {
         this.pageObject = pageObject;
@@ -47,9 +61,6 @@ public class EventsController {
     public GridPane createPage(Integer pageIndex)
     {
         Set<RoseEvent> events = eventService.getEventsOnPage(pageIndex, loggedUser.getId());
-        for(RoseEvent event : events){
-            System.out.println(event);
-        }
         GridPane eventsPane = new GridPane();
         eventsPane.setPrefHeight(540);
         eventsPane.setPrefWidth(600);
@@ -78,7 +89,7 @@ public class EventsController {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/views/event-mini-view.fxml"));
             firstPane = loader.load();
             eventMiniController = loader.getController();
-            eventMiniController.setServices(eventService,userService);
+            eventMiniController.setServices(eventService,userService,loggedUser);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -90,7 +101,7 @@ public class EventsController {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/views/event-mini-view.fxml"));
             secondPane = loader.load();
             eventMiniController2 = loader.getController();
-            eventMiniController2.setServices(eventService,userService);
+            eventMiniController2.setServices(eventService,userService,loggedUser);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -102,7 +113,7 @@ public class EventsController {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/views/event-mini-view.fxml"));
             thirdPane = loader.load();
             eventMiniController3 = loader.getController();
-            eventMiniController3.setServices(eventService,userService);
+            eventMiniController3.setServices(eventService,userService,loggedUser);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -116,16 +127,17 @@ public class EventsController {
             LocalDateTime date =event.getDate();
             String location = "Location: " + event.getLocation();
             String eventName = event.getEventName();
+            String description = event.getDescription();
             if(count == 0) {
                 eventsPane.add(firstPane, 0, 0, 1, 1);
-                eventMiniController.setContent(imageUrl,organiser,location,eventName,date);
+                eventMiniController.setContent(event);
             }
             else if(count == 1) {
                 eventsPane.add(secondPane, 0, 1, 1, 1);
-                eventMiniController2.setContent(imageUrl,organiser,location,eventName,date);
+                eventMiniController2.setContent(event);
             }
             else if(count == 2) {
-                eventMiniController3.setContent(imageUrl,organiser,location,eventName,date);
+                eventMiniController3.setContent(event);
                 eventsPane.add(thirdPane, 0, 2, 1, 1);
             }
             count++;
@@ -165,4 +177,23 @@ public class EventsController {
         }
     }
 
+    public void createEventBtnAction(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        Scene scene = null;
+        try {
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/views/createEvent-view.fxml"));
+            scene = new Scene(loader.load());
+            CreateEventController createEventController = loader.getController();
+            createEventController.init(pageObject,loggedUser);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        stage.sizeToScene();
+        stage.setScene(scene);
+        stage.setTitle("Blooming");
+        stage.setResizable(false);
+        stage.getIcons().add(new Image("imgs/app_icon.png"));
+        stage.show();
+    }
 }

@@ -106,7 +106,6 @@ public class ChatController implements Observer<MessageEvent> {
         view.setPreserveRatio(true);
         sendMessageButton.setGraphic(view);
         createChatMenuBox();
-        //TODO: deselecteaza optiunile dupa ce sunt apasate pls puiiii <3
         textMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {

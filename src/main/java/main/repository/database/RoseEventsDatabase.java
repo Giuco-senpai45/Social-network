@@ -50,12 +50,14 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
                 String url = resultSet.getString("event_url");
                 String name = resultSet.getString("name");
                 String location = resultSet.getString("location");
+                String description = resultSet.getString("description");
                 Long organiser = resultSet.getLong("organiser");
                 LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
                 event.setEventUrl(url);
                 event.setEventName(name);
                 event.setLocation(location);
                 event.setOrganiser(organiser);
+                event.setDescription(description);
                 event.setDate(date);
                 while (resultSet.next()){
                     event.addParticipant(resultSet2.getLong("participant_id"));
@@ -83,6 +85,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
                 String name = resultSet.getString("name");
                 String location = resultSet.getString("location");
                 Long organiser = resultSet.getLong("organiser");
+                String description = resultSet.getString("description");
                 LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
 
                 RoseEvent event = new RoseEvent();
@@ -92,6 +95,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
                 event.setLocation(location);
                 event.setOrganiser(organiser);
                 event.setDate(date);
+                event.setDescription(description);
 
                 events.add(event);
            }
@@ -115,7 +119,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
 
     @Override
     public RoseEvent save(RoseEvent entity) {
-        String sql = "insert into events (event_id, organiser, location, date, event_url, name) " +
+        String sql = "insert into events (event_id, organiser, location, date, event_url, name, description) " +
                 "values (?, ?, ?, ?, ?, ?)";
 //        String sql2 = "SELECT * from events where events_id = ? and participant_id = ?";
         String sql2 = "insert into event_participants (event_id, participant_id) values (?, ?)";
@@ -137,6 +141,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
             ps.setDate(4, Date.valueOf(entity.getDate().toLocalDate()));
             ps.setString(5,entity.getEventUrl());
             ps.setString(6,entity.getEventName());
+            ps.setString(7,entity.getDescription());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -165,7 +170,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
 
     @Override
     public RoseEvent update(RoseEvent entity) {
-        String sql = "update events set event_url = ?, name = ?, location = ?, date = ?, organiser = ? ,where event_id = ?";
+        String sql = "update events set event_url = ?, name = ?, location = ?, date = ?, organiser = ?, description = ?,where event_id = ?";
 
         try(Connection connection = DriverManager.getConnection(url,username,password);
             PreparedStatement ps = connection.prepareStatement(sql)){
@@ -175,7 +180,8 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
             ps.setString(3,entity.getLocation());
             ps.setDate(4, Date.valueOf(entity.getDate().toLocalDate()));
             ps.setLong(5,entity.getOrganiser());
-            ps.setLong(6, entity.getId());
+            ps.setString(6,entity.getDescription());
+            ps.setLong(7, entity.getId());
 
             ps.executeUpdate();
         } catch (SQLException e) {

@@ -106,11 +106,9 @@ public class UserService {
     }
 
     public void loginUser(String username, String password, Long userID){
-        //TODO encripting
         AES256 passwordEncrypter = new AES256();
         String encryptedPassword = passwordEncrypter.encrypt(password);
         Login loginData = new Login(encryptedPassword, userID);
-//        Login loginData = new Login(password, userID);
         loginData.setId(username);
         repoLogin.save(loginData);
     }
@@ -145,7 +143,6 @@ public class UserService {
         User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
-//        System.out.println(user);
         if(user != null){
             throw new UpdateException("This user doesn't exist");
         }

@@ -98,7 +98,7 @@ public class MasterService {
     }
 
     public void generateFirstPDF(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
-        String fileName = "E:\\FMI\\Anul II\\Semestrul I\\MAP\\Lab5\\Social-network\\reports\\report1.pdf";
+        String fileName = "D:\\Proiecte Java\\SocialNetwork\\reports\\report1.pdf";
         try {
             PDDocument document = new PDDocument();
             document.save(fileName);
@@ -129,7 +129,7 @@ public class MasterService {
     }
 
     public void generateSecondPDF(Long loggedUser, Long fromID, LocalDateTime beginningDate, LocalDateTime endDate){
-        String filename = "E:\\FMI\\Anul II\\Semestrul I\\MAP\\Lab5\\Social-network\\reports\\report2.pdf";
+        String filename = "D:\\Proiecte Java\\SocialNetwork\\reports\\report2.pdf";
         try {
             PDDocument document = new PDDocument();
             document.save(filename);

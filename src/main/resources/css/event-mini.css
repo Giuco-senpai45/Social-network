@@ -2,3 +2,33 @@
     -fx-background-radius: 70px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.5, 0.1, 0.1);
 }
+
+.text-area .scroll-bar {
+    -fx-opacity: 0;
+}
+
+.date-filter {
+    -fx-control-inner-background:  #ddbea9;
+}
+
+
+.date-picker:editable > .arrow-button > *{
+    -fx-background-color: #ddbea9;
+    -fx-control-inner-background:  #ddbea9;
+    -fx-opacity: 0;
+}
+
+.date-picker > .arrow-button{
+    -fx-background-color: #ddbea9;
+    -fx-control-inner-background:  #ddbea9;
+    -fx-background-image: url("/imgs/calendar.png");
+    -fx-background-size: 60% 60%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.create-event-btn {
+    -fx-background-color: #ddbea9;
+    -fx-background-radius: 70px;
+    /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.5, 0.1, 0.1);*/
+}

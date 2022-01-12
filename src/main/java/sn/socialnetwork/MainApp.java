@@ -59,7 +59,7 @@ public class MainApp extends Application {
         MessageService messageService=new MessageService(repoFriends, repoUser, repoMessage, repoChat,"jdbc:postgresql://localhost:5432/social","postgres","postgres");
         FriendRequestService friendRequestService = new FriendRequestService(repoFriends,repoUser,repoRequests);;
         PostService postService = new PostService(repoUser, repoPost);
-        RoseEventService eventService = new RoseEventService(repoUser,repoEvents);
+        RoseEventService eventService = new RoseEventService(repoUser,repoEvents,"jdbc:postgresql://localhost:5432/social","postgres","postgres");
 
         MasterService masterService = new MasterService(userService, friendsService, friendRequestService, messageService, postService, eventService);
         return masterService;

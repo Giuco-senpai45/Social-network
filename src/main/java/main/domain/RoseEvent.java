@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoseEvent extends Entity<Long>{
+    private String description;
     private String eventName;
     private Long organiser;
     private String location;
@@ -12,12 +13,13 @@ public class RoseEvent extends Entity<Long>{
     private LocalDateTime date;
     private List<Long> participants;
 
-    public RoseEvent(String eventName, Long organiser, String location, String eventUrl, LocalDateTime date) {
+    public RoseEvent(String eventName, Long organiser, String location, String eventUrl, LocalDateTime date,String description) {
         this.eventName = eventName;
         this.organiser = organiser;
         this.location = location;
         this.eventUrl = eventUrl;
         this.date = date;
+        this.description = description;
         this.participants = new ArrayList<>();
     }
 
@@ -51,6 +53,14 @@ public class RoseEvent extends Entity<Long>{
 
     public String getEventUrl() {
         return eventUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setEventName(String eventName) {

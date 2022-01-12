@@ -249,6 +249,10 @@ public class UserController {
     public void handleReportsImageClicked(MouseEvent mouseEvent) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/report-view.fxml"));
+            if (changingPane.getChildren() != null) {
+                changingPane.getChildren().clear();
+            }
+            changingPane.getChildren().add(fxmlLoader.load());
             ReportController reportController = fxmlLoader.getController();
             reportController.init(pageObject);
         } catch (Exception e) {
