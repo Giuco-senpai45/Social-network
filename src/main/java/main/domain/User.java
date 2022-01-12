@@ -31,12 +31,13 @@ public class User extends Entity<Long>{
     private String relationshipStatus;
     private String funFact;
     private String imageURL;
+    private String notificationSubscription;
 
     /**
      * @param firstName String representing the firstname of the user
      * @param lastName String representing the lastname of the user
      */
-    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email, String lastGraduatedSchool, String relationshipStatus, String funFact, String imageURL) {
+    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email, String lastGraduatedSchool, String relationshipStatus, String funFact, String imageURL, String notificationSubscription) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -47,6 +48,7 @@ public class User extends Entity<Long>{
         this.imageURL = imageURL;
         this.funFact = funFact;
         this.lastGraduatedSchool = lastGraduatedSchool;
+        this.notificationSubscription = notificationSubscription;
     }
 
     public String getAddress() {
@@ -79,6 +81,14 @@ public class User extends Entity<Long>{
 
     public String getImageURL() {
         return imageURL;
+    }
+
+    public String getNotificationSubscription() {
+        return notificationSubscription;
+    }
+
+    public void setNotificationSubscription(String notificationSubscription) {
+        this.notificationSubscription = notificationSubscription;
     }
 
     /**

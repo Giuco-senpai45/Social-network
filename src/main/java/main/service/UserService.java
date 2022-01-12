@@ -91,8 +91,8 @@ public class UserService {
      * @param lastName String representing the last name of the user
      * @throws AddException that user already exists
      */
-    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
-        User user = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
+    public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image, String notificationSubscription){
+        User user = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image, notificationSubscription);
         findMaximumId();
         user.setId(currentUserID);
         User addedUser = repoUsers.save(user);
@@ -139,8 +139,8 @@ public class UserService {
      * @param firstName String representing the new firstName
      * @param lastName String representing the new lastName
      */
-    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image){
-        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image);
+    public void updateUser(Long id,String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image, String notificationSubscription){
+        User updatedUser = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image, notificationSubscription);
         updatedUser.setId(id);
         User user = repoUsers.update(updatedUser);
         if(user != null){

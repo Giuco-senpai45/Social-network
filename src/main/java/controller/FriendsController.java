@@ -104,9 +104,6 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
                             UserFriendshipsDTO data = getTableView().getItems().get(getIndex());
                             try {
                                 pageObject.getService().getFriendshipService().removeFriendship(new Tuple<>(pageObject.getLoggedUser().getId(), data.getFriendID()));
-                                FriendRequest friendRequest = pageObject.getService().getFriendRequestService().findFriendRequest(pageObject.getLoggedUser().getId(), data.getFriendID());
-                                //masterService.getFriendRequestService().processRequest(friendRequest.getId(), "deleted");
-                                //friendsList.getItems().remove(data);
                                 pageObject.getService().getFriendRequestService().deleteFriendRequest(pageObject.getLoggedUser().getId(), data.getFriendID());
                             }
                             catch(RemoveException e){
