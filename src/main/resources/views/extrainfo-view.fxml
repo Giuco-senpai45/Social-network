@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ExtraInfoController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="716.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ExtraInfoController">
    <children>
       <Label contentDisplay="TOP" layoutX="113.0" layoutY="54.0" prefHeight="36.0" prefWidth="490.0" text=" from becoming a part of Truth Rose community." textOverrun="CLIP">
          <font>

@@ -14,6 +14,7 @@ public class PageObject {
         this.loggedUser = loggedUser;
     }
 
+
     public MasterService getService() {
         return service;
     }

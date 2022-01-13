@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane fx:id="root" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreateEventController">
    <children>
       <Label layoutX="226.0" layoutY="14.0" prefHeight="54.0" prefWidth="206.0" text="Create Event">
@@ -29,7 +28,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="createEventBtn" layoutX="465.0" layoutY="535.0" mnemonicParsing="false" onAction="#handleCreateEvent" prefHeight="54.0" prefWidth="179.0" style="-fx-background-color: #ddbea9;" text="Create Event">
+      <Button fx:id="createEventBtn" layoutX="433.0" layoutY="535.0" mnemonicParsing="false" onAction="#handleCreateEvent" prefHeight="54.0" prefWidth="206.0" style="-fx-background-color: #ddbea9;" text="Create Event">
          <font>
             <Font size="18.0" />
          </font>
@@ -69,7 +68,7 @@
             <Image url="@../imgs/image.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="40.0" fitWidth="38.0" layoutX="465.0" layoutY="543.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="38.0" fitWidth="111.0" layoutX="446.0" layoutY="543.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imgs/appointment.png" />
          </image>

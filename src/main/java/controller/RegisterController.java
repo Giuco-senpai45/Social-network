@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import main.domain.Login;
 import main.domain.User;
 import main.domain.validators.UserValidator;
+import main.service.MasterService;
 import main.service.UserService;
 import sn.socialnetwork.MainApp;
 
@@ -100,7 +101,7 @@ public class RegisterController {
     private Label generalError;
 
 
-    private PageObject pageObject;
+    private MasterService masterService;
     private UserValidator userValidator;
     private String d;
     private String m;
@@ -108,8 +109,8 @@ public class RegisterController {
     private Stage stage;
     private String gender = null;
 
-    public void setRegisterController(PageObject pageObject, Stage stage){
-        this.pageObject = pageObject;
+    public void setRegisterController(MasterService masterService, Stage stage){
+        this.masterService = masterService;
         this.userValidator = new UserValidator();
         this.stage = stage;
         getFocusFromFirstTextField();
@@ -172,7 +173,7 @@ public class RegisterController {
         String reTyped = retypedPasswd.getText();
         if(validateData()) {
             boolean found = false;
-            for(Login login: pageObject.getService().getUserService().allRegisteredUsers())
+            for(Login login: masterService.getUserService().allRegisteredUsers())
                 if(Objects.equals(login.getId(), username.getText()) && Objects.equals(login.getPassword(), password.getText()))
                     found = true;
             if(found) {
@@ -203,7 +204,7 @@ public class RegisterController {
             genderError.setText("Please select one of the options above!");
         if (!userValidator.validateEmail(email.getText()))
             emailError.setText("Invalid email address!");
-        for(Login login: pageObject.getService().getUserService().allRegisteredUsers())
+        for(Login login: masterService.getUserService().allRegisteredUsers())
             if(Objects.equals(login.getId(), username.getText()))
                 usernameError.setText("Unavailable username!");
         if(!userValidator.validatePassword(password.getText()))
@@ -271,7 +272,7 @@ public class RegisterController {
         try {
             scene = new Scene(fxmlLoader.load());
             ExtraInfoController extraInfoController = fxmlLoader.getController();
-            extraInfoController.setController(pageObject, newStage, firstN, lastN, addr, gender, date, e, usrn, passwd);
+            extraInfoController.setController(masterService, newStage, firstN, lastN, addr, gender, date, e, usrn, passwd);
         }
         catch(IOException exception) {
             exception.printStackTrace();

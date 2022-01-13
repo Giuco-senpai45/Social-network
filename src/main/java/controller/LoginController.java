@@ -124,7 +124,7 @@ public class LoginController {
         try {
             scene = new Scene(fxmlLoader.load());
             RegisterController registerController = fxmlLoader.getController();
-            registerController.setRegisterController(pageObject, stage);
+            registerController.setRegisterController(masterService, stage);
         }
         catch(IOException e) {
             e.printStackTrace();

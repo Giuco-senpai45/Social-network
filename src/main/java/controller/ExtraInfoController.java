@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import main.domain.User;
+import main.service.MasterService;
 import main.service.UserService;
 
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class ExtraInfoController {
     @FXML
     private ComboBox relationshipStatus;
 
-    private PageObject pageObject;
+    private MasterService masterService;
     private Stage stage;
     private String s = null;
     private String f = null;
@@ -59,10 +60,11 @@ public class ExtraInfoController {
     private String passwd;
     private String imageURL;
 
-    public void setController(PageObject pageObject, Stage stage, String firstN, String lastN, String addr, String gender, LocalDate date, String e, String usrn, String passwd){
+    public void setController(MasterService masterService, Stage stage, String firstN, String lastN, String addr, String gender, LocalDate date, String e, String usrn, String passwd){
         funFactError.setText("");
         schoolError.setText("");
         relationshipError.setText("");
+        this.masterService = masterService;
         this.stage = stage;
         this.firstN = firstN;
         this.lastN = lastN;
@@ -78,7 +80,7 @@ public class ExtraInfoController {
 
     private void getFocusFromFirstTextField(){
         final BooleanProperty firstTime = new SimpleBooleanProperty(true);
-        school.focusedProperty().addListener((o, oldValue, newValue) -> {
+        root.focusedProperty().addListener((o, oldValue, newValue) -> {
             if (newValue) {
                 if(newValue && firstTime.get()){
                     root.requestFocus();
@@ -116,8 +118,8 @@ public class ExtraInfoController {
         }
         if(validateFields()){
             generateAvatar();
-            pageObject.getService().getUserService().addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL, "yes");
-            pageObject.getService().getUserService().loginUser(usrn, passwd, pageObject.getService().getUserService().getCurrentUserID());
+            masterService.getUserService().addUser(firstN, lastN, addr, date, gender, e, s, r, f, imageURL, "yes");
+            masterService.getUserService().loginUser(usrn, passwd, masterService.getUserService().getCurrentUserID());
             stage.close();
         }
     }

@@ -71,18 +71,14 @@ public class UserService {
 
     }
 
-    public Long getCurrentUserID(){
-        return currentUserID;
-    }
-
-    private void findMaximumId(){
-        currentUserID = 0L;
-        for(User user : repoUsers.findAll())
-        {
-            if(currentUserID < user.getId())
-                currentUserID = user.getId();
+    private Long maximUserID() {
+        Long maxID = 0L;
+        for(User user: repoUsers.findAll()){
+            if(user.getId() > maxID)
+                maxID = user.getId();
         }
-        currentUserID ++;
+        currentUserID = maxID + 1;
+        return maxID;
     }
 
     /**
@@ -93,11 +89,12 @@ public class UserService {
      */
     public void addUser(String firstName, String lastName, String address, LocalDate birthDate, String gender, String email, String school, String relationship, String funFact, String image, String notificationSubscription){
         User user = new User(firstName, lastName, birthDate, address, gender, email, school, relationship, funFact, image, notificationSubscription);
-        findMaximumId();
-        user.setId(currentUserID);
+        Long nextID = maximUserID() + 1;
+        user.setId(nextID);
         User addedUser = repoUsers.save(user);
         if(addedUser != null){
             System.out.println(addedUser.toString());
+            System.out.println(nextID);
             throw new AddException("User already exists!");
         }
         else{
@@ -111,6 +108,10 @@ public class UserService {
         Login loginData = new Login(encryptedPassword, userID);
         loginData.setId(username);
         repoLogin.save(loginData);
+    }
+
+    public Long getCurrentUserID() {
+        return currentUserID;
     }
 
     public Login findRegisteredUser(String username){

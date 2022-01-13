@@ -143,14 +143,14 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayChatsForUser(Long chatID){
-        System.out.println("aici2");
         chatsList.getColumns().clear();
         if(chatID == -1)
             chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId())));
-        else
+        else {
+            //TODO Aici am schimbat am pus addChatImages in else
             chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getAllChatsForUser(pageObject.getLoggedUser().getId(), chatID)));
-        System.out.println("aici3");
-        addChatImages();
+            addChatImages();
+        }
     }
 
     private void addChatImages(){
@@ -297,20 +297,17 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayChat(Chat chat){
-        System.out.println("aici7");
         conversationPane.getChildren().clear();
         currentSelectedChat = chat;
         updatePicsForPrivateChats();
         chatNameLabel.setText(currentSelectedChat.getName());
         List<ChatDTO> chatMessages = pageObject.getService().getMessageService().getConversation(currentSelectedChat.getId());
-        System.out.println("aici8");
         if(chatMessages.size() == 0)
             showEmptyChat(chat);
         else
             for(ChatDTO chatDTO: chatMessages){
                 showMessages(chatDTO);
             }
-        System.out.println("aici9");
     }
 
     private void showMessages(ChatDTO chatDTO){

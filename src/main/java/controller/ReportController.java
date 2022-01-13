@@ -59,7 +59,6 @@ public class ReportController {
         datePicker.setConverter(new StringConverterWithFormat<LocalDate>() {
             String pattern = "yyyy-MM-dd";
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
-
             {
                 datePicker.setPromptText(pattern.toLowerCase());
             }

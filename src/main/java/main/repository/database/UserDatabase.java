@@ -36,8 +36,8 @@ public class UserDatabase implements PagingRepository<Long, User> {
 
     @Override
     public User save(User entity) {
-        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url, notification_subscription) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url, notification_subscription, user_id) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -53,6 +53,7 @@ public class UserDatabase implements PagingRepository<Long, User> {
             ps.setString(9, entity.getFunFact());
             ps.setString(10, entity.getImageURL());
             ps.setString(11, entity.getNotificationSubscription());
+            ps.setLong(12, entity.getId());
 
             ps.executeUpdate();
         } catch (SQLException  e) {
