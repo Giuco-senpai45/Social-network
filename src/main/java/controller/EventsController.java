@@ -2,6 +2,7 @@ package controller;
 
 import controller.pages.PageObject;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -17,6 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import main.domain.RoseEvent;
 import main.domain.User;
@@ -26,7 +28,10 @@ import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EventsController {
 
@@ -46,6 +51,8 @@ public class EventsController {
     @FXML
     private DatePicker filterFromDate;
 
+    private LocalDateTime present;
+
     public void init(PageObject pageObject)
     {
         this.pageObject = pageObject;
@@ -61,6 +68,7 @@ public class EventsController {
     public GridPane createPage(Integer pageIndex)
     {
         Set<RoseEvent> events = eventService.getEventsOnPage(pageIndex, loggedUser.getId());
+//        List<RoseEvent> events = SetEvents.stream().sorted(Comparator.comparing(RoseEvent::getDate)).collect(Collectors.toList());
         GridPane eventsPane = new GridPane();
         eventsPane.setPrefHeight(540);
         eventsPane.setPrefWidth(600);
@@ -122,12 +130,6 @@ public class EventsController {
 
         int count = 0;
         for(RoseEvent event: events){
-            String imageUrl = event.getEventUrl();
-            User organiser = userService.findUserById(event.getOrganiser());
-            LocalDateTime date =event.getDate();
-            String location = "Location: " + event.getLocation();
-            String eventName = event.getEventName();
-            String description = event.getDescription();
             if(count == 0) {
                 eventsPane.add(firstPane, 0, 0, 1, 1);
                 eventMiniController.setContent(event);
@@ -185,6 +187,13 @@ public class EventsController {
             scene = new Scene(loader.load());
             CreateEventController createEventController = loader.getController();
             createEventController.init(pageObject,loggedUser);
+
+            stage.setOnHidden(new EventHandler<>() {
+                @Override
+                public void handle(WindowEvent e) {
+                    initEventsView();
+                }
+            });
         }
         catch(IOException e) {
             e.printStackTrace();

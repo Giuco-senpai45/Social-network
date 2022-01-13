@@ -312,7 +312,8 @@ public class UserController {
     private void setNotificationTab(){
         if(Objects.equals(pageObject.getLoggedUser().getNotificationSubscription(), "yes")) {
             notificationImage.setImage(new Image("imgs/notification.png"));
-            int eventsNumber = 5; //numarul de evenimente la care participa si pt care trebuie notificari
+            List<RoseEvent> events = pageObject.getService().getEventService().eventsUserParticipates(pageObject.getLoggedUser().getId());
+            int eventsNumber = events.size(); //numarul de evenimente la care participa si pt care trebuie notificari
             if (eventsNumber > 0) {
                 notifiesBkg.setVisible(true);
                 notifiesLabel.setVisible(true);
@@ -355,13 +356,9 @@ public class UserController {
 //                .collect(Collectors.toList());
        // searchList.setItems(FXCollections.observableArrayList(foundList));
         //TODO functie care returneaza evenimentele din urmatoarele 7 zile
-        List<String> demo = new ArrayList<>();
-        demo.add("Event1");
-        demo.add("Event2");
-        demo.add("Event3");
-        demo.add("Event4");
-        demo.add("Event5");
-        notificationList.setItems(FXCollections.observableArrayList(demo));
+        List<RoseEvent> events = pageObject.getService().getEventService().eventsUserParticipates(pageObject.getLoggedUser().getId());
+        List<String> eventNames = events.stream().map(ev -> ev.getEventName()).toList();
+        notificationList.setItems(FXCollections.observableArrayList(eventNames));
         notificationList.setVisible(true);
         unsubscribeButton.setVisible(true);
         unsubscribeButton.onMouseEnteredProperty().set(new EventHandler<MouseEvent>() {

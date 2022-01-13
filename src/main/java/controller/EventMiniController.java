@@ -39,6 +39,9 @@ public class EventMiniController {
     private ImageView participatingImage;
 
     @FXML
+    private ImageView organisingImage;
+
+    @FXML
     private Button participateButton;
 
     @FXML
@@ -68,19 +71,28 @@ public class EventMiniController {
             //Participating in the event
             participatingImage.setVisible(false);
             stopGoingImg.setVisible(true);
+            organisingImage.setVisible(false);
             participateButton.setText("Stop going");
         }
         else{
             participatingImage.setVisible(true);
             stopGoingImg.setVisible(false);
+            organisingImage.setVisible(false);
             participateButton.setText("Interested");
+        }
+
+        if(event.getOrganiser().equals(loggedUser.getId())){
+            participatingImage.setVisible(false);
+            stopGoingImg.setVisible(false);
+            organisingImage.setVisible(true);
+            participateButton.setText("Organising");
         }
 
         Image image = new Image(imageUrl);
         eventImage.setPreserveRatio(true);
         eventImage.setImage(image);
         centerImage();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // 'at' hh:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"); // 'at' hh:mm");
         dateLabel.setText("\uD83D\uDCC5 Date: " + date.format(formatter));
         eventNameLabel.setText(eventName);
         organiserLabel.setText("\uD83D\uDC64 Organiser: " +  organiser.getFirstName() + " " +  organiser.getLastName());

@@ -2,6 +2,7 @@ package main.service;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import main.domain.Chat;
 import main.domain.Post;
 import main.domain.RoseEvent;
 import main.domain.User;
@@ -9,11 +10,12 @@ import main.repository.paging.Page;
 import main.repository.paging.Pageable;
 import main.repository.paging.PageableImplementation;
 import main.repository.paging.PagingRepository;
+import main.service.serviceExceptions.AddException;
 
 import java.sql.*;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,24 @@ public class RoseEventService {
         }
     }
 
+    public void addEvent(String location, String name, LocalDateTime date,String description,String imageUrl,Long organiser){
+        RoseEvent event = new RoseEvent(name,organiser,location,imageUrl,date,description);
+        event.setId(maximEventId() + 1);
+        RoseEvent addedEvent = repoEvents.save(event);
+        if(addedEvent != null){
+            throw new AddException("Couldn't add event!");
+        }
+    }
+
+    private Long maximEventId() {
+        Long maxID = 0L;
+        for(RoseEvent event: repoEvents.findAll()){
+            if(event.getId() > maxID)
+                maxID = event.getId();
+        }
+        return maxID;
+    }
+
     public void removeUserFromEvent(Long userId, RoseEvent event){
         String sql = "delete from event_participants where event_id = ? and participant_id = ?";
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -80,6 +100,14 @@ public class RoseEventService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<RoseEvent> eventsUserParticipates(Long userId){
+        Iterable<RoseEvent> itevents = repoEvents.findAll();
+        ArrayList<RoseEvent> events = new ArrayList<>();
+        itevents.forEach(events::add);
+        Predicate<RoseEvent> testUserIsParticipating = ev -> ev.getParticipants().contains(userId);
+        return events.stream().filter(testUserIsParticipating).collect(Collectors.toList());
     }
 
 

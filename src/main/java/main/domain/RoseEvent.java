@@ -89,12 +89,6 @@ public class RoseEvent extends Entity<Long>{
 
     @Override
     public String toString() {
-        return "RoseEvent{" +
-                "eventName='" + eventName + '\'' +
-                ", organiser=" + organiser +
-                ", location='" + location + '\'' +
-                ", eventUrl='" + eventUrl + '\'' +
-                ", date=" + date +
-                '}';
+        return eventName + " " + location + " on " + date;
     }
 }

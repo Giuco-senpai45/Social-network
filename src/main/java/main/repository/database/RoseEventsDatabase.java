@@ -10,8 +10,10 @@ import main.repository.paging.PagingRepository;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
     private final String url;
@@ -114,13 +116,14 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return events;
+        return  events.stream().sorted((Comparator.comparing(RoseEvent::getDate))).collect(Collectors.toList());
+//        return events;
     }
 
     @Override
     public RoseEvent save(RoseEvent entity) {
         String sql = "insert into events (event_id, organiser, location, date, event_url, name, description) " +
-                "values (?, ?, ?, ?, ?, ?)";
+                "values (?, ?, ?, ?, ?, ?, ?)";
 //        String sql2 = "SELECT * from events where events_id = ? and participant_id = ?";
         String sql2 = "insert into event_participants (event_id, participant_id) values (?, ?)";
 //        validator.validate(entity);
@@ -138,7 +141,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
             ps.setLong(1, entity.getId());
             ps.setLong(2,entity.getOrganiser());
             ps.setString(3,entity.getLocation());
-            ps.setDate(4, Date.valueOf(entity.getDate().toLocalDate()));
+            ps.setTimestamp(4,Timestamp.valueOf(entity.getDate()));
             ps.setString(5,entity.getEventUrl());
             ps.setString(6,entity.getEventName());
             ps.setString(7,entity.getDescription());
@@ -178,7 +181,7 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
             ps.setString(1,entity.getEventUrl());
             ps.setString(2,entity.getEventName());
             ps.setString(3,entity.getLocation());
-            ps.setDate(4, Date.valueOf(entity.getDate().toLocalDate()));
+            ps.setTimestamp(4,Timestamp.valueOf(entity.getDate()));
             ps.setLong(5,entity.getOrganiser());
             ps.setString(6,entity.getDescription());
             ps.setLong(7, entity.getId());
