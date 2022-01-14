@@ -348,6 +348,12 @@ public class UserService implements Observable<UserEvent> {
 
     private List<Observer<UserEvent>> observers=new ArrayList<>();
 
+    public int numberOfPagesForFriends(Long userID){
+        int friendsNumber = getUserFriendList(userID, -1, -1).size();
+        int pagesNumber = friendsNumber % 4 != 0 ? (friendsNumber/4 + 1) : friendsNumber/4;
+        return pagesNumber;
+    }
+
     @Override
     public void addObserver(Observer<UserEvent> e) {
         observers.add(e);

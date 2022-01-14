@@ -496,4 +496,8 @@ order by messages.date_time;
         return messagesPage.getContent().collect(Collectors.toSet());
     }
 
+    public Chat findOneChat(Long chatID){
+        return repoChats.findOne(chatID);
+    }
+
 }

@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -15,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
 import main.domain.*;
 import main.service.MasterService;
@@ -54,27 +56,35 @@ public class FriendsController implements Observer<FriendDeletionEvent> {
     }
 
     public void start(){
-        //int pageNumber = pageObject.getService().getPostService().numberOfPagesForPosts(currentUser.getId());
-        root.getChildren().remove(friendsPage);
-        int pageNumber = 2;
-        friendsPage = new Pagination(pageNumber, 0);
-        friendsPage.setPrefHeight(600);
-        friendsPage.setPrefWidth(659);
-        friendsPage.setPageFactory(new Callback<Integer, Node>() {
-            @Override
-            public Node call(Integer pageIndex) {
-                if (pageIndex >= pageNumber) {
-                    return null;
-                } else {
-                    return createPage(pageIndex);
+        int pageNumber = pageObject.getService().getUserService().numberOfPagesForFriends(pageObject.getLoggedUser().getId());
+        if(pageNumber == 0){
+            Label noFriends = new Label("You don't have any friends. ☹ ");
+            friendsList.setVisible(false);
+            noFriends.setFont(Font.font(26));
+            noFriends.setPadding(new Insets(150, 0, 0, 100));
+            root.getChildren().add(noFriends);
+        }
+        else {
+            root.getChildren().remove(friendsPage);
+            friendsPage = new Pagination(pageNumber, 0);
+            friendsPage.setPrefHeight(600);
+            friendsPage.setPrefWidth(659);
+            friendsPage.setPageFactory(new Callback<Integer, Node>() {
+                @Override
+                public Node call(Integer pageIndex) {
+                    if (pageIndex >= pageNumber) {
+                        return null;
+                    } else {
+                        return createPage(pageIndex);
+                    }
                 }
-            }
-        });
-        root.getChildren().add(friendsPage);
+            });
+            root.getChildren().add(friendsPage);
+        }
     }
 
     private TableView createPage(int pageIndex){
-        model.setAll(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), pageIndex, 2));
+        model.setAll(pageObject.getService().getUserService().getUserFriendList(pageObject.getLoggedUser().getId(), pageIndex, 4));
         addImageToTable();
         fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         fullName.setStyle("-fx-alignment: CENTER; -fx-background-color: a5a58d;");
