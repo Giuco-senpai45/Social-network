@@ -27,6 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -50,6 +51,12 @@ public class ChatController implements Observer<MessageEvent> {
 
     @FXML
     private AnchorPane anchorSettings;
+
+    @FXML
+    private AnchorPane chatAnchor;
+
+    @FXML
+    private HBox sendPane;
 
     @FXML
     private Button sendMessageButton;
@@ -89,12 +96,14 @@ public class ChatController implements Observer<MessageEvent> {
     private LocalDateTime currentMessageDate;
     private Long messageToReplyID;
     private boolean selectedPreviously = false;
+    private int chatsNumber;
 
     public void setServicesChat(PageObject pageObject){
         this.pageObject = pageObject;
         this.pageObject.getService().getMessageService().addObserver(this);
         currentMessageDate = null;
         scroller.setContent(conversationPane);
+        chatsNumber = pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId()).size();;
     }
 
     public void initChatView(Long chatID){
@@ -118,7 +127,11 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void createChatMenuBox(){
-        ObservableList<String> choicesList = FXCollections.observableArrayList("Change group picture","Change group name","Create a new group chat");
+        ObservableList<String> choicesList;
+        if(chatsNumber > 0)
+            choicesList = FXCollections.observableArrayList("Change group picture","Change group name","Create a new group chat");
+        else
+            choicesList = FXCollections.observableArrayList("Create a new group chat");
         chatMenu.setItems(choicesList);
         chatMenu.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -132,14 +145,34 @@ public class ChatController implements Observer<MessageEvent> {
         chatMenu.getSelectionModel().selectedItemProperty().addListener((x,y,z)-> handleClickChatMenu());
     }
 
-    public void start(Long chatID){
-        System.out.println("aici");
-        displayChatsForUser(chatID);
-        currentSelectedChat = pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId()).get(0);
-        chatsList.getSelectionModel().selectFirst();            //in the beginning we select the first chat
-        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
-                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
-                true, true, true, true, true, true, null));
+    public void start(Long chatID) {
+        if (chatsNumber > 0) {
+            displayChatsForUser(chatID);
+            currentSelectedChat = pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId()).get(0);
+            chatsList.getSelectionModel().selectFirst();            //in the beginning we select the first chat
+            displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
+                    0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
+                    true, true, true, true, true, true, null));
+        }
+        else {
+            chatsList.setPlaceholder(new Label("No chats!"));
+            sendPane.setVisible(false);
+            VBox noChats = new VBox();
+            Label noChatLabel = new Label();
+            noChatLabel.setText("Start conversations with your friends and they will apear here!");
+            noChatLabel.setWrapText(true);
+            noChatLabel.setTextAlignment(TextAlignment.CENTER);
+            noChatLabel.setPrefWidth(514);
+            noChatLabel.setFont(Font.font(26));
+            VBox.setMargin(noChatLabel, new Insets(50, 0, 0, 0));
+            Image img = new Image("imgs/rosar.png");
+            ImageView view = new ImageView(img);
+            view.setFitHeight(50);
+            view.setPreserveRatio(true);
+            noChats.getChildren().addAll(noChatLabel, view);
+            noChats.setAlignment(Pos.CENTER);
+            conversationPane.getChildren().add(noChats);
+        }
     }
 
     private void displayChatsForUser(Long chatID){
@@ -147,14 +180,12 @@ public class ChatController implements Observer<MessageEvent> {
         if(chatID == -1)
             chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getChatsForUser(pageObject.getLoggedUser().getId())));
         else {
-            //TODO Aici am schimbat am pus addChatImages in else
             chatsList.setItems(FXCollections.observableArrayList(pageObject.getService().getMessageService().getAllChatsForUser(pageObject.getLoggedUser().getId(), chatID)));
-            addChatImages();
         }
+        addChatImages();
     }
 
     private void addChatImages(){
-        System.out.println("aici4");
         userChats.setCellFactory(new Callback<>() {
             @Override
             public TableCell<Chat, String> call(TableColumn<Chat, String> param) {
@@ -186,12 +217,11 @@ public class ChatController implements Observer<MessageEvent> {
         });
         userChats.setCellValueFactory(new PropertyValueFactory<>("url"));
         chatsList.getColumns().add(userChats);
-        System.out.println("aici5");
     }
 
     private void handleClickChatMenu(){
         String option = "";
-        if(selectedPreviously == false) {
+        if(!selectedPreviously) {
             option = chatMenu.getSelectionModel().getSelectedItem().toString();
         }
         if(textFieldGroupName.isVisible()){
@@ -290,7 +320,6 @@ public class ChatController implements Observer<MessageEvent> {
     }
 
     private void displayCurrentChat(MouseEvent event){
-        System.out.println("aici6");
         conversationPane.getChildren().clear();
         currentSelectedChat = chatsList.getSelectionModel().getSelectedItem();
         displayChat(chatsList.getSelectionModel().getSelectedItem());
@@ -509,8 +538,5 @@ public class ChatController implements Observer<MessageEvent> {
     @Override
     public void update(MessageEvent messageEvent) {
         displayChat(currentSelectedChat);
-//        displayCurrentChat(new MouseEvent(MouseEvent.MOUSE_CLICKED, 0,
-//                0, 0, 0, MouseButton.PRIMARY, 1, true, true, true, true,
-//                true, true, true, true, true, true, null));
     }
 }

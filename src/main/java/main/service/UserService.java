@@ -12,6 +12,11 @@ import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
 import main.service.serviceExceptions.UpdateException;
 import main.utils.AES256;
+import main.utils.Observable;
+import main.utils.Observer;
+import main.utils.events.ChangeEventType;
+import main.utils.events.MessageEvent;
+import main.utils.events.UserEvent;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -34,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * The service for the User entities
  */
-public class UserService {
+public class UserService implements Observable<UserEvent> {
     /**
      * Repository for user entities
      */
@@ -93,8 +98,6 @@ public class UserService {
         user.setId(nextID);
         User addedUser = repoUsers.save(user);
         if(addedUser != null){
-            System.out.println(addedUser.toString());
-            System.out.println(nextID);
             throw new AddException("User already exists!");
         }
         else{
@@ -149,6 +152,7 @@ public class UserService {
         }
         else{
             System.out.println("User updated with success");
+            notifyObservers(new UserEvent(ChangeEventType.UPDATE, user));
         }
     }
 
@@ -340,5 +344,22 @@ public class UserService {
         Pageable pageable = new PageableImplementation(page, this.size);
         Page<User> userPage = repoUsers.findAll(pageable);
         return userPage.getContent().collect(Collectors.toSet());
+    }
+
+    private List<Observer<UserEvent>> observers=new ArrayList<>();
+
+    @Override
+    public void addObserver(Observer<UserEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<UserEvent> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(UserEvent t) {
+        observers.stream().forEach(x -> x.update(t));
     }
 }

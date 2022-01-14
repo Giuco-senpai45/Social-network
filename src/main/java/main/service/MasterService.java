@@ -1,5 +1,7 @@
 package main.service;
 
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import main.domain.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -37,23 +39,20 @@ public class MasterService {
 
     private void generatePDF(String fileName, String title1, String title2, String title3, List<String> messages, Boolean append){
         try {
-            File file = new File(fileName);
-            PDDocument document = PDDocument.load(file);
+            PDDocument document;
             PDPage page;
-            PDPageContentStream contentStream;
             if(!append) {
-                while(document.getNumberOfPages()>0)
-                    document.removePage(0);
-                document.save(fileName);
+                document = new PDDocument();
                 document.addPage(new PDPage());
                 page = document.getPage(0);
-                contentStream = new PDPageContentStream(document, page);
             }
             else{
+                document = PDDocument.load(new File(fileName));
                 document.addPage(new PDPage());
                 page = document.getPage(document.getNumberOfPages()-1);
-                contentStream = new PDPageContentStream(document, page);
+
             }
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
             contentStream.beginText();
             contentStream.setFont( PDType1Font.TIMES_BOLD, 22);
             contentStream.setLeading(14.5f);
@@ -97,15 +96,7 @@ public class MasterService {
         }
     }
 
-    public void generateFirstPDF(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
-        String fileName = "D:\\Proiecte Java\\SocialNetwork\\reports\\report1.pdf";
-        try {
-            PDDocument document = new PDDocument();
-            document.save(fileName);
-            document.close();
-        }catch (IOException e){
-
-        }
+    public void generateFirstPDF(String fileName, Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
         String title1 = "Logged user: " + getUserService().findUserById(loggedUser).getFirstName() + " " + getUserService().findUserById(loggedUser).getLastName();
         String title2 = "Activity: Messages";
         String title3 = beginningDate.toString() + " --- " + endDate.toString();
@@ -128,15 +119,7 @@ public class MasterService {
         generatePDF(fileName, title1, title2, title3, friends, true);
     }
 
-    public void generateSecondPDF(Long loggedUser, Long fromID, LocalDateTime beginningDate, LocalDateTime endDate){
-        String filename = "D:\\Proiecte Java\\SocialNetwork\\reports\\report2.pdf";
-        try {
-            PDDocument document = new PDDocument();
-            document.save(filename);
-            document.close();
-        }catch (IOException e){
-
-        }
+    public void generateSecondPDF(String filename, Long loggedUser, Long fromID, LocalDateTime beginningDate, LocalDateTime endDate){
         String title = "Messages from " + getUserService().findUserById(fromID).getFirstName() + " " + getUserService().findUserById(fromID).getFirstName() + ": ";
         String title2 = beginningDate.toString() + " --- " + endDate.toString();
         List<String> messages = new ArrayList<>();

@@ -30,7 +30,7 @@
          </children></VBox>
    </left>
    <center>
-      <AnchorPane prefHeight="569.0" prefWidth="531.0" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="chatAnchor" prefHeight="569.0" prefWidth="531.0" BorderPane.alignment="CENTER">
          <children>
             <VBox layoutX="-1.0" layoutY="62.0" prefHeight="542.0" prefWidth="532.0" style="-fx-background-color: a5a58d; -fx-border-color: #000000;">
                <children>
@@ -43,7 +43,7 @@
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <HBox prefHeight="71.0" prefWidth="531.0" style="-fx-background-color: a5a58d;">
+                  <HBox fx:id="sendPane" prefHeight="71.0" prefWidth="531.0" style="-fx-background-color: a5a58d;">
                      <children>
                         <TextArea fx:id="textMessage" onKeyPressed="#sendMessageAction" prefHeight="65.0" prefWidth="419.0" promptText="Text message" style="-fx-background-color: ffe8d6; -fx-control-inner-background: #ffe8d6;" />
                         <Button fx:id="sendMessageButton" mnemonicParsing="false" onAction="#sendMessageAction" prefHeight="72.0" prefWidth="113.0" style="-fx-background-color: #6b705c;" text="Button" textFill="#ffe8d6">

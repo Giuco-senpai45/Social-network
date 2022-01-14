@@ -36,7 +36,7 @@ public class UserDatabase implements PagingRepository<Long, User> {
 
     @Override
     public User save(User entity) {
-        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url, notification_subscription, user_id) " +
+        String sql = "insert into users (first_name, last_name, address, birth_date, gender, email, studies, relationship_status, fun_fact, image_url, notification_subscription) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         validator.validate(entity);
         try (Connection connection = DriverManager.getConnection(url, username, password);
@@ -53,11 +53,11 @@ public class UserDatabase implements PagingRepository<Long, User> {
             ps.setString(9, entity.getFunFact());
             ps.setString(10, entity.getImageURL());
             ps.setString(11, entity.getNotificationSubscription());
-            ps.setLong(12, entity.getId());
 
             ps.executeUpdate();
         } catch (SQLException  e) {
-                return entity;
+            e.printStackTrace();
+            return entity;
         }
         return null;
     }
@@ -82,7 +82,7 @@ public class UserDatabase implements PagingRepository<Long, User> {
     @Override
     public User update(User entity) {
 
-        String sql = "update users set first_name=? , last_name=?, notification_subscription = ? where user_id=?";
+        String sql = "update users set first_name=? , last_name=?, notification_subscription = ?, image_url = ? where user_id=?";
 
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -90,7 +90,8 @@ public class UserDatabase implements PagingRepository<Long, User> {
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getNotificationSubscription());
-            ps.setInt(4,entity.getId().intValue());
+            ps.setString(4, entity.getImageURL());
+            ps.setInt(5,entity.getId().intValue());
 
             ps.executeUpdate();
         } catch (SQLException e) {

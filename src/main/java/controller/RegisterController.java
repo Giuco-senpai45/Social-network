@@ -198,7 +198,7 @@ public class RegisterController {
             firstNameError.setText("Invalid first name!");
         if (!userValidator.validateName(lastName.getText()))
             lastNameError.setText("Invalid last name!");
-        if (!userValidator.validateName(address.getText()))
+        if (!userValidator.validateAddress(address.getText()))
             addressError.setText("Invalid address!");
         if (gender == null)
             genderError.setText("Please select one of the options above!");

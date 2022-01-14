@@ -25,13 +25,15 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         //TODO page ✔
         //TODO repara friend requesturile ✔
-        //TODO generare rapoarte ✔ + catch errors ✖
-        //TODO pagination la friend list ✔, search list ✔, friend requests, chat ?
+        //TODO generare rapoarte ✔ - inca merge putin greu tho
+        //TODO pagination la friend list ✔, search list ✔, friend requests, chat
         //TODO logout + fereastra de are you sure ✔
-        //TODO update profile picture
+        //TODO update profile picture ✔
+        //TODO catch: userul nu are niciun chat cu mesaje ✔
+        //TODO fix register ✔
         //TODO adaugare nume la chat
         //TODO schimbare culoare text dreapta sus ✔
-        //TODO realiniere reply cu mesaj
+        //TODO realiniere reply cu mesaj - cred ca las asa
         MasterService masterService = setMasterService();
         FXMLLoader loginLoader = new FXMLLoader(MainApp.class.getResource("/views/login-view.fxml"));
         BorderPane loginLayout = loginLoader.load();

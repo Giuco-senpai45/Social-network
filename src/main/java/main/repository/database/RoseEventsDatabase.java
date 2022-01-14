@@ -1,6 +1,5 @@
 package main.repository.database;
 
-import main.domain.Chat;
 import main.domain.RoseEvent;
 import main.repository.paging.Page;
 import main.repository.paging.Pageable;

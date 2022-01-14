@@ -22,12 +22,17 @@ public class UserValidator implements Validator<User> {
     }
 
     public boolean validateName(String name){
-        String pattern = "^[A-Z]([a-z]+)$";
+        String pattern = "^[A-Z]([A-Za-z- ]+)$";
+        return name.matches(pattern);
+    }
+
+    public boolean validateAddress(String name){
+        String pattern = "^[A-Z]([A-Za-z0-9., -]+)$";
         return name.matches(pattern);
     }
 
     public boolean validateEmail(String name){
-        String pattern = "^([a-z0-9]+)@([a-z]+).([a-z]+)$";
+        String pattern = "^([a-z.0-9_]+)@([a-z]+)[.]([a-z]+)$";
         return name.matches(pattern);
     }
 

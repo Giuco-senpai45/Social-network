@@ -4,7 +4,7 @@ import main.domain.FriendRequest;
 
 public class FriendRequestEvent implements Event{
     private ChangeEventType type;
-    private FriendRequest data,oldData;
+    private FriendRequest data, oldData;
 
     public FriendRequestEvent(ChangeEventType type, FriendRequest data) {
         this.type = type;

@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import main.domain.*;
 import main.service.serviceExceptions.FindException;
+import main.utils.Observer;
+import main.utils.events.UserEvent;
 import sn.socialnetwork.MainApp;
 
 import java.io.File;
@@ -31,7 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 
 
-public class UserProfileController {
+public class UserProfileController implements Observer<UserEvent> {
 
     @FXML
     private AnchorPane root;
@@ -91,6 +93,7 @@ public class UserProfileController {
     public void initUserProfileController(PageObject pageObject, User currentUser, Pane changingPane){
         this.pageObject = pageObject;
         this.changingPane = changingPane;
+        this.pageObject.getService().getUserService().addObserver(this);
         root.setLayoutX(changingPane.getLayoutX());
         root.setLayoutY(changingPane.getLayoutY());
         this.currentUser = currentUser;
@@ -307,17 +310,13 @@ public class UserProfileController {
     }
 
     public void handleUpdateProfileClicked(ActionEvent actionEvent) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/update-profile-view.fxml"));
-            if(changingPane.getChildren() != null){
-                changingPane.getChildren().clear();
-            }
-            changingPane.getChildren().add(fxmlLoader.load());
-            UpdateProfileController updateProfileController = fxmlLoader.getController();
-            updateProfileController.setController(pageObject);
-        }
-        catch(IOException e) {
-            e.printStackTrace();
+        FileChooser fileChooser = new FileChooser();
+        Stage stage = (Stage) root.getScene().getWindow();
+        File file = fileChooser.showOpenDialog(stage);
+        if(file != null){
+            String url = file.getAbsolutePath();
+            User user = pageObject.getLoggedUser();
+            pageObject.getService().getUserService().updateUser(user.getId(), user.getFirstName(), user.getLastName(), user.getAddress(), user.getBirthDate(), user.getGender(), user.getEmail(), user.getLastGraduatedSchool(), user.getRelationshipStatus(), user.getFunFact(), url, user.getNotificationSubscription());
         }
     }
 
@@ -330,5 +329,11 @@ public class UserProfileController {
             pageObject.getService().getPostService().addNewPost(url, pageObject.getLoggedUser().getId());
             setPosts();
         }
+    }
+
+    @Override
+    public void update(UserEvent userEvent) {
+        currentUser = pageObject.getService().getUserService().findUserById(currentUser.getId());
+        setInfo();
     }
 }

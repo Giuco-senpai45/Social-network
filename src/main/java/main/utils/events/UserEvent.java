@@ -1,17 +1,18 @@
 package main.utils.events;
 
-import main.domain.Message;
 
-public class MessageEvent implements Event{
+import main.domain.User;
+
+public class UserEvent implements Event{
     private ChangeEventType type;
-    private Message data, oldData;
+    private User data, oldData;
 
-    public MessageEvent(ChangeEventType type, Message data) {
+    public UserEvent(ChangeEventType type, User data) {
         this.type = type;
         this.data = data;
     }
 
-    public MessageEvent(ChangeEventType type, Message data, Message oldData) {
+    public UserEvent(ChangeEventType type, User data, User oldData) {
         this.type = type;
         this.data = data;
         this.oldData = oldData;
@@ -21,11 +22,11 @@ public class MessageEvent implements Event{
         return type;
     }
 
-    public Message getData() {
+    public User getData() {
         return data;
     }
 
-    public Message getOldData() {
+    public User getOldData() {
         return oldData;
     }
 }
