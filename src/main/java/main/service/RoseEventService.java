@@ -6,13 +6,11 @@ import main.domain.Chat;
 import main.domain.Post;
 import main.domain.RoseEvent;
 import main.domain.User;
-import main.repository.paging.Page;
-import main.repository.paging.Pageable;
-import main.repository.paging.PageableImplementation;
-import main.repository.paging.PagingRepository;
+import main.repository.paging.*;
 import main.service.serviceExceptions.AddException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -47,6 +45,15 @@ public class RoseEventService {
     public int numberOfPagesForEvents(Long loggedUser){
         Collection<RoseEvent> collection = ((Collection<RoseEvent>) repoEvents.findAll())
                 .stream().collect(Collectors.toList());
+        int postsNumber = collection.size();
+        int pagesNumber = postsNumber % 3 != 0 ? (postsNumber/3 + 1) : postsNumber/3;
+        return pagesNumber;
+    }
+
+    public int numberOfPagesForFilteredEvents(LocalDate from,LocalDate to){
+        Predicate<RoseEvent> testIsBetween = x -> x.getDate().isAfter(from.atStartOfDay()) && x.getDate().isBefore(to.atStartOfDay());
+        Collection<RoseEvent> collection = ((Collection<RoseEvent>) repoEvents.findAll())
+                .stream().filter(testIsBetween).collect(Collectors.toList());
         int postsNumber = collection.size();
         int pagesNumber = postsNumber % 3 != 0 ? (postsNumber/3 + 1) : postsNumber/3;
         return pagesNumber;
@@ -115,7 +122,21 @@ public class RoseEventService {
         this.page = page;
         Pageable pageable = new PageableImplementation(page, this.size);
         Page<RoseEvent> eventsPage = repoEvents.findAll(pageable);
-//        Predicate<RoseEvent> testUser = ev -> ev.getParticipants().contains(loggedUser);
+        return eventsPage.getContent().collect(Collectors.toSet());
+    }
+
+    public Set<RoseEvent> getFilteredEventsOnPage(int page, Long loggedUser, LocalDate from, LocalDate to){
+        Iterable<RoseEvent> events = repoEvents.findAll();
+        ArrayList<RoseEvent> filteredEvents = new ArrayList<>();
+        for(RoseEvent event : events){
+            if(event.getDate().isAfter(from.atStartOfDay()) && event.getDate().isBefore(to.atStartOfDay())){
+                filteredEvents.add(event);
+            }
+        }
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Paginator<RoseEvent> paginator = new Paginator<>(pageable, filteredEvents);
+        Page<RoseEvent> eventsPage = paginator.paginate();
         return eventsPage.getContent().collect(Collectors.toSet());
     }
 }

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoseEvent extends Entity<Long>{
+public class RoseEvent extends Entity<Long> implements Comparable<RoseEvent>{
     private String description;
     private String eventName;
     private Long organiser;
@@ -90,5 +90,10 @@ public class RoseEvent extends Entity<Long>{
     @Override
     public String toString() {
         return eventName + " " + location + " on " + date;
+    }
+
+    @Override
+    public int compareTo(RoseEvent o) {
+        return o.getDate().compareTo(date);
     }
 }

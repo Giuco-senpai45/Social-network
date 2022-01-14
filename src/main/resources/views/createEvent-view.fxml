@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: #6b705c;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreateEventController">
+<AnchorPane fx:id="root" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: #6b705c;" stylesheets="@../css/create-event.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreateEventController">
    <children>
       <Label layoutX="226.0" layoutY="14.0" prefHeight="54.0" prefWidth="206.0" text="Create Event">
          <font>
@@ -22,13 +22,16 @@
       <ComboBox fx:id="day" layoutX="52.0" layoutY="183.0" prefHeight="5.0" prefWidth="104.0" promptText="Day" style="-fx-background-color: ffe8d6;" />
       <ComboBox fx:id="month" layoutX="174.0" layoutY="183.0" prefHeight="5.0" prefWidth="104.0" promptText="Month" style="-fx-background-color: ffe8d6;" />
       <ComboBox fx:id="year" layoutX="294.0" layoutY="183.0" prefHeight="5.0" prefWidth="104.0" promptText="Year" style="-fx-background-color: ffe8d6;" />
-      <TextArea fx:id="descriptionArea" layoutX="122.0" layoutY="253.0" prefHeight="200.0" prefWidth="398.0" promptText="Event description" style="-fx-control-inner-background: ffe8d6;" />
-      <Button fx:id="addImageBtn" layoutX="38.0" layoutY="482.0" mnemonicParsing="false" onAction="#handleAddImageEvent" prefHeight="40.0" prefWidth="167.0" style="-fx-background-color: #ddbea9;" text="Add event image" textAlignment="CENTER">
+      <TextArea fx:id="descriptionArea" layoutX="122.0" layoutY="253.0" prefHeight="200.0" prefWidth="398.0" promptText="Event description" style="-fx-control-inner-background: ffe8d6;">
+         <font>
+            <Font size="14.0" />
+         </font></TextArea>
+      <Button fx:id="addImageBtn" layoutX="38.0" layoutY="482.0" mnemonicParsing="false" onAction="#handleAddImageEvent" prefHeight="45.0" prefWidth="188.0" style="-fx-background-color: #ddbea9;" styleClass="add-image-btn" text="Add event image" textAlignment="CENTER">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="createEventBtn" layoutX="433.0" layoutY="535.0" mnemonicParsing="false" onAction="#handleCreateEvent" prefHeight="54.0" prefWidth="206.0" style="-fx-background-color: #ddbea9;" text="Create Event">
+      <Button fx:id="createEventBtn" layoutX="433.0" layoutY="535.0" mnemonicParsing="false" onAction="#handleCreateEvent" prefHeight="54.0" prefWidth="206.0" style="-fx-background-color: #ddbea9;" styleClass="create-event-btn" text="Create Event">
          <font>
             <Font size="18.0" />
          </font>
@@ -63,7 +66,7 @@
             <Image url="@../imgs/pickdate.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="28.0" fitWidth="28.0" layoutX="38.0" layoutY="488.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="28.0" fitWidth="28.0" layoutX="49.0" layoutY="490.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../imgs/image.png" />
          </image>
@@ -75,7 +78,7 @@
       </ImageView>
       <ComboBox fx:id="hour" layoutX="413.0" layoutY="183.0" prefHeight="5.0" prefWidth="104.0" promptText="Hour" style="-fx-background-color: ffe8d6;" />
       <ComboBox fx:id="minute" layoutX="541.0" layoutY="184.0" prefHeight="5.0" prefWidth="104.0" promptText="Miniute" style="-fx-background-color: ffe8d6;" />
-      <Label fx:id="successLabel" layoutX="211.0" layoutY="490.0" prefHeight="27.0" prefWidth="217.0" text="Picture added successfully" visible="false">
+      <Label fx:id="successLabel" layoutX="248.0" layoutY="491.0" prefHeight="27.0" prefWidth="217.0" text="Picture added successfully" visible="false">
          <font>
             <Font size="18.0" />
          </font>

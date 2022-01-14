@@ -8,10 +8,7 @@ import main.repository.paging.PagingRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
@@ -115,8 +112,9 @@ public class RoseEventsDatabase implements PagingRepository<Long, RoseEvent> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  events.stream().sorted((Comparator.comparing(RoseEvent::getDate))).collect(Collectors.toList());
-//        return events;
+        events.sort(Collections.reverseOrder());
+        return events;
+//        return  events.stream().sorted((Comparator.comparing(RoseEvent::getDate))).collect(Collectors.toList());
     }
 
     @Override

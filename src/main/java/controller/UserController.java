@@ -31,10 +31,14 @@ import org.controlsfx.control.Notifications;
 import sn.socialnetwork.MainApp;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class UserController {
     @FXML
@@ -313,7 +317,11 @@ public class UserController {
         if(Objects.equals(pageObject.getLoggedUser().getNotificationSubscription(), "yes")) {
             notificationImage.setImage(new Image("imgs/notification.png"));
             List<RoseEvent> events = pageObject.getService().getEventService().eventsUserParticipates(pageObject.getLoggedUser().getId());
-            int eventsNumber = events.size(); //numarul de evenimente la care participa si pt care trebuie notificari
+
+            Predicate<RoseEvent> testIsComingIn7 = ev -> DAYS.between(LocalDate.now(), ev.getDate()) <= 7;
+            List<RoseEvent> eventsIn7Days = events.stream().filter(testIsComingIn7).toList();
+
+            int eventsNumber = eventsIn7Days.size();
             if (eventsNumber > 0) {
                 notifiesBkg.setVisible(true);
                 notifiesLabel.setVisible(true);
@@ -355,9 +363,10 @@ public class UserController {
 //                .map(Tuple::getE1)
 //                .collect(Collectors.toList());
        // searchList.setItems(FXCollections.observableArrayList(foundList));
-        //TODO functie care returneaza evenimentele din urmatoarele 7 zile
+
         List<RoseEvent> events = pageObject.getService().getEventService().eventsUserParticipates(pageObject.getLoggedUser().getId());
-        List<String> eventNames = events.stream().map(ev -> ev.getEventName()).toList();
+        Predicate<RoseEvent> testIsComingIn7 = ev -> DAYS.between(LocalDate.now(), ev.getDate()) <= 7;
+        List<String> eventNames = events.stream().filter(testIsComingIn7).map(ev -> ev.getEventName()).toList();
         notificationList.setItems(FXCollections.observableArrayList(eventNames));
         notificationList.setVisible(true);
         unsubscribeButton.setVisible(true);
