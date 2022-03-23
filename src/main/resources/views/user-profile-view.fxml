@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="root" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" styleClass="anchorPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserProfileController">
+   <children>
+      <Label fx:id="profileNameLabel" layoutX="155.0" layoutY="39.0" text="Username">
+         <font>
+            <Font name="Calibri" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="friendshipStatus" layoutX="28.0" layoutY="137.0" text="Friends since 1990-09-09">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font></Label>
+      <Button fx:id="friendshipButton" layoutX="21.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleFriendshipButton" style="-fx-background-color: ddbea9;" text="Cancel friend request" />
+      <Button fx:id="sendMessageButton" layoutX="21.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleMessagesButton" style="-fx-background-color: ddbea9;" text="Send message" />
+      <Circle fx:id="circleAvatar" fill="#f5f6f708" layoutX="88.0" layoutY="72.0" radius="57.0" stroke="BLACK" strokeType="INSIDE" />
+      <Label layoutX="170.0" layoutY="85.0" text="🏠 Address: ">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="170.0" layoutY="110.0" text="📅 Birth date:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="170.0" layoutY="160.0" text="📧 Email:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="friendshipStatus121" layoutX="170.0" layoutY="185.0" text="💘 Relationship status:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="friendshipStatus111" layoutX="170.0" layoutY="135.0" text="🎓 Completed studies:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="friendshipStatus1111" layoutX="170.0" layoutY="210.0" text="✨ Fun fact:">
+         <font>
+            <Font name="Calibri" size="14.0" />
+         </font>
+      </Label>
+      <Line endX="565.0" layoutX="101.0" layoutY="269.0" startX="-100.0" />
+      <Label fx:id="addressCompleted" layoutX="248.0" layoutY="85.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="dateCompleted" layoutX="256.0" layoutY="110.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="studiesCompleted" layoutX="307.0" layoutY="135.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="emailCompleted" layoutX="233.0" layoutY="160.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="funFactCompleted" layoutX="248.0" layoutY="210.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="relationshipCompleted" layoutX="307.0" layoutY="185.0" text="Label">
+         <font>
+            <Font name="Calibri Italic" size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="updateProfileButton" layoutX="483.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleUpdateProfileClicked" style="-fx-background-color: ddbea9;" text="Update profile picture" />
+      <Button fx:id="addPostButton" layoutX="483.0" layoutY="227.0" mnemonicParsing="false" onAction="#handleAddPostClicked" prefHeight="17.0" prefWidth="133.0" style="-fx-background-color: ddbea9;" text="Add new post" />
+   </children>
+</AnchorPane>

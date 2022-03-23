@@ -1,0 +1,4 @@
+.participate-btn {
+    -fx-background-radius: 70px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.5, 0.1, 0.1);
+}

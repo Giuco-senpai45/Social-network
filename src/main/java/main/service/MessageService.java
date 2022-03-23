@@ -1,14 +1,31 @@
 package main.service;
 
 import main.domain.*;
-import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.PageableImplementation;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.FindException;
+import main.utils.Observable;
+import main.utils.Observer;
+import main.utils.events.ChangeEventType;
+import main.utils.events.MessageEvent;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import java.sql.Timestamp;
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,24 +33,28 @@ import java.util.stream.Collectors;
 /**
  * Service class for Messages and Chat
  */
-public class MessageService {
+public class MessageService implements Observable<MessageEvent> {
 
     /**
      * repository for Friendship entities
      */
-    private Repository<Tuple<Long,Long>, Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long>, Friendship> repoFriends;
     /**
      * repository for User entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
     /**
      * repository for Message entities
      */
-    private Repository<Long, Message> repoMessages;
+    private PagingRepository<Long, Message> repoMessages;
     /**
      * repository for Chat entities
      */
-    private Repository<Long, Chat> repoChats;
+    private PagingRepository<Long, Chat> repoChats;
+
+    private String username;
+    private  String password;
+    private String url;
 
     /**
      * Overloaded constructor
@@ -42,11 +63,21 @@ public class MessageService {
      * @param messageRepository repository for Message entities
      * @param chatRepository repository for Chat entitites
      */
-    public MessageService(Repository<Tuple<Long, Long>, Friendship> repoFriends, Repository<Long, User> repoUsers, Repository<Long, Message> messageRepository, Repository<Long, Chat> chatRepository) {
+    public MessageService(PagingRepository<Tuple<Long, Long>, Friendship> repoFriends, PagingRepository<Long, User> repoUsers, PagingRepository<Long, Message> messageRepository, PagingRepository<Long, Chat> chatRepository) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
         this.repoMessages = messageRepository;
         this.repoChats = chatRepository;
+    }
+
+    public MessageService(PagingRepository<Tuple<Long, Long>, Friendship> repoFriends, PagingRepository<Long, User> repoUsers, PagingRepository<Long, Message> messageRepository, PagingRepository<Long, Chat> chatRepository,String url,String username,String password) {
+        this.repoFriends = repoFriends;
+        this.repoUsers = repoUsers;
+        this.repoMessages = messageRepository;
+        this.repoChats = chatRepository;
+        this.username = username;
+        this.password = password;
+        this.url = url;
     }
 
     /**
@@ -66,7 +97,6 @@ public class MessageService {
         if(!errors.equals(""))
             throw new FindException(errors);
 
-        chatters.add(id);
         Chat chat = null;
         for(Chat c: repoChats.findAll()){
             int count = 0;
@@ -74,8 +104,9 @@ public class MessageService {
                 if(c.getChatUsers().contains(chatterID))
                     count++;
             }
-            if(count == chatters.size() && chatters.size() == c.getChatUsers().size())
+            if(count == chatters.size() && chatters.size() == c.getChatUsers().size()){
                 chat = c;
+            }
         }
 
         if(chat == null) {
@@ -91,6 +122,7 @@ public class MessageService {
         Message msg = new Message(id, message, Timestamp.valueOf(LocalDateTime.now()), -1L, chat.getId());
         msg.setId(nextID);
         repoMessages.save(msg);
+        notifyObservers(new MessageEvent(ChangeEventType.ADD, msg));
     }
 
     /**
@@ -132,6 +164,7 @@ public class MessageService {
         Message msg = new Message(userID, message, Timestamp.valueOf(LocalDateTime.now()), messageIDforReply, m.getChatID());
         msg.setId(nextID);
         repoMessages.save(msg);
+        notifyObservers(new MessageEvent(ChangeEventType.ADD, msg));
     }
 
     /**
@@ -210,11 +243,261 @@ public class MessageService {
                 return user.getFirstName() + " " + user.getLastName();
         };
 
+        Function<Long, String> getRepliedMessage = x ->{
+            Message msg = repoMessages.findOne(x);
+            if(msg == null){
+                return "Message doesn't exist";
+            }
+            else {
+                return msg.getMessage();
+            }
+        };
+
         return messagesList.stream()
                 .filter(testIsInChat)
-                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getReplyId()))
+                .map(m-> new ChatDTO(getName.apply(m.getUser()) , m.getMessage(), m.getTimeOfMessage(), m.getId(), m.getReplyId(),m.getUser(),getRepliedMessage.apply(m.getReplyId())))
                 .sorted(MessageService::compareTime)
                 .collect(Collectors.toList());
+    }
+
+    private static int compareByLastMessage(List<ChatDTO> a, List<ChatDTO> b){
+        return (int) a.get(a.size()-1).getTimestamp().compareTo(b.get(b.size()-1).getTimestamp());
+    }
+
+    public List<Chat> getChatsForUser(Long id){
+        Iterable<Chat> chats = repoChats.findAll();
+        List<Chat> chatsList = new ArrayList<>();
+        chats.forEach(chatsList::add);
+
+        List<Chat> userChats = new ArrayList<>();
+
+        for(Chat c : chatsList){
+            List<Long> users = c.getChatUsers();
+            boolean found = false;
+            for(Long u : users){
+                if (u.equals(id)) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found){
+                userChats.add(c);
+            }
+        }
+
+        Predicate<Chat> testIfChatNotEmpty = x -> getConversation(x.getId()).size() != 0;
+
+        return userChats.stream()
+                .filter(testIfChatNotEmpty)
+                .sorted((y, x) -> compareByLastMessage(getConversation(x.getId()), getConversation(y.getId())))
+                .toList();
+    }
+
+    public List<Chat> getAllChatsForUser(Long id, Long chatID){
+        List<Chat> userChats = new ArrayList<>(getChatsForUser(id));
+        Chat emptyChat = repoChats.findOne(chatID);
+        userChats.add(0, emptyChat);
+        return userChats;
+    }
+
+    public boolean testIfChatEmpty(Long userID, Long chatID){
+        Chat checkEmptyChat = repoChats.findOne(chatID);
+        if(getChatsForUser(userID).contains(checkEmptyChat))
+            return false;
+        return true;
+    }
+
+
+
+    public Tuple<String,String> getPrivateChatData(Long loggedUser,Chat chat){
+        if(chat.getChatUsers().size() !=2){
+            return null;
+        }
+        for(Long id : chat.getChatUsers()){
+            if(!id.equals(loggedUser)){
+                User otherUser = repoUsers.findOne(id);
+                return new Tuple<>(otherUser.getFirstName() + " " + otherUser.getLastName(),
+                        otherUser.getImageURL());
+            }
+        }
+        return null;
+    }
+
+    public void updateChat(Chat chat){
+        Chat updatedChat = repoChats.update(chat);
+        if(updatedChat!=null){
+            throw new FindException("Failed to update the chat");
+        }
+    }
+
+    public void updateChatForUser(Chat chat, Long otherUser){
+        String sql = "update chats set url = ?, name = ? where chat_id = ? and user_id = ?";
+
+        try(Connection connection = DriverManager.getConnection(url,username,password);
+            PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setString(1, chat.getUrl());
+            ps.setString(2, chat.getName());
+            ps.setLong(3, chat.getId());
+            ps.setLong(4, otherUser);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Long createPrivateChatWithUser(Long loggedUser,Long otherUser){
+        Iterable<Chat> chatsIterable = repoChats.findAll();
+        List<Chat> chatsList = new ArrayList<>();
+        chatsIterable.forEach(chatsList::add);
+        Predicate<Chat> testIsPrivateChat = c -> c.getChatUsers().size() == 2;
+        Predicate<Chat> testIsPrivateChatForUsers = c-> c.getChatUsers().contains(loggedUser) &&c.getChatUsers().contains(otherUser);
+        Predicate<Chat> testChatExists =c -> testIsPrivateChat.and(testIsPrivateChatForUsers).test(c);
+        chatsList =  chatsList.stream()
+                .filter(testChatExists)
+                .collect(Collectors.toList());
+        if(chatsList.size() == 0){
+            System.out.println("Creating new chat");
+            Chat newChat = new Chat();
+            newChat.setId(maximChatId() + 1);
+            newChat.addUserToChat(loggedUser);
+            newChat.addUserToChat(otherUser);
+            newChat.setName("Rose");
+            newChat.setUrl("/imgs/rose3.jpg");
+            repoChats.save(newChat);
+            return newChat.getId();
+        }
+        else {
+            return chatsList.get(0).getId();
+        }
+    }
+
+    public Chat createNewChatGroup(List<Long> chatters){
+        Chat chat = null;
+        for(Chat c: repoChats.findAll()){
+            int count = 0;
+            for(Long chatterID: chatters) {
+                if(c.getChatUsers().contains(chatterID))
+                    count++;
+            }
+            if(count == chatters.size() && chatters.size() == c.getChatUsers().size()){
+                chat = c;
+            }
+        }
+/*
+select * from messages
+where messages.chat_id = 1
+order by messages.date_time;
+ */
+        if(chat == null) {
+            chat = new Chat();
+            chat.setId(maximChatId() + 1);
+        }
+        for(Long chatterID: chatters) {
+            chat.addUserToChat(chatterID);
+        }
+        chat.setName("RoseGroup");
+        chat.setUrl("/imgs/rose3.jpg");
+        repoChats.save(chat);
+        return chat;
+    }
+
+    public void deleteMessage(Long messageID){
+        Message deletedMessage = repoMessages.delete(messageID);
+        if(deletedMessage != null)
+            notifyObservers(new MessageEvent(ChangeEventType.DELETE, deletedMessage));
+    }
+
+    public Message findOneMessage(Long messageID){
+        return repoMessages.findOne(messageID);
+    }
+
+    /* Activitatile unui utilizator dintr-o perioada calendaristica, referitor la
+    prietenii noi creati si mesajele primite in acea perioada*/
+
+     public List<ChatDTO> report12(Long loggedUser, LocalDateTime beginningDate, LocalDateTime endDate){
+         Iterable<Message> messgs = repoMessages.findAll();
+         List<Message> messageList = new ArrayList<>();
+         messgs.forEach(messageList::add);
+         List<Chat> chats = getChatsForUser(loggedUser);
+         List<ChatDTO> messages = new ArrayList<>();
+         for(Chat chat: chats){
+             for(ChatDTO chatDTO: getConversation(chat.getId())){
+                 if((chatDTO.getTimestamp().compareTo(Timestamp.valueOf(beginningDate)))>0 && (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(endDate)))<0 && !Objects.equals(chatDTO.getUserID(), loggedUser))
+                    messages.add(chatDTO);
+             }
+         }
+         return messages;
+    }
+
+    public List<ChatDTO> report2(Long loggedUser, Long fromID, LocalDateTime beginningDate, LocalDateTime endDate){
+         Iterable<Message> messgs = repoMessages.findAll();
+         List<Message> messageList = new ArrayList<>();
+         messgs.forEach(messageList::add);
+         List<Chat> chats = getChatsForUser(loggedUser);
+         List<ChatDTO> messages = new ArrayList<>();
+         for(Chat chat: chats){
+            for(ChatDTO chatDTO: getConversation(chat.getId())){
+                if(Objects.equals(chatDTO.getUserID(), fromID) && ( (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(beginningDate)))>0 && (chatDTO.getTimestamp().compareTo(Timestamp.valueOf(endDate)))<0))
+                    messages.add(chatDTO);
+            }
+         }
+         return messages;
+    }
+
+    public Iterable<Message> getMessages(){
+        return repoMessages.findAll();
+    }
+
+    private List<Observer<MessageEvent>> observers=new ArrayList<>();
+
+    @Override
+    public void addObserver(Observer<MessageEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<MessageEvent> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(MessageEvent t) {
+        observers.stream().forEach(x -> x.update(t));
+    }
+
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<Message> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getMessagesOnPage(this.page);
+    }
+
+    public Set<Message> getMessagesOnPage(int page) {
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<Message> messagesPage = repoMessages.findAll(pageable);
+        return messagesPage.getContent().collect(Collectors.toSet());
+    }
+
+    public Chat findOneChat(Long chatID){
+        return repoChats.findOne(chatID);
     }
 
 }

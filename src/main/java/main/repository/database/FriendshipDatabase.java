@@ -4,6 +4,10 @@ import main.domain.Friendship;
 import main.domain.Tuple;
 import main.domain.validators.Validator;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.Paginator;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 
 import java.sql.*;
@@ -14,7 +18,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
-public class FriendshipDatabase implements Repository<Tuple<Long,Long>, Friendship> {
+public class FriendshipDatabase implements PagingRepository<Tuple<Long,Long>, Friendship> {
     private String url;
     private String username;
     private String password;
@@ -122,5 +126,11 @@ public class FriendshipDatabase implements Repository<Tuple<Long,Long>, Friendsh
             e.printStackTrace();
         }
         return friendship;
+    }
+
+    @Override
+    public Page<Friendship> findAll(Pageable pageable) {
+        Paginator<Friendship> paginator = new Paginator<Friendship>(pageable, this.findAll());
+        return paginator.paginate();
     }
 }

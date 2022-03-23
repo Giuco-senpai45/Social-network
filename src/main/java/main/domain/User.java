@@ -1,5 +1,6 @@
 package main.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,13 +23,72 @@ public class User extends Entity<Long>{
      */
     private List<User> friends;
 
+    private String address;
+    private String email;
+    private String gender;
+    private LocalDate birthDate;
+    private String lastGraduatedSchool;
+    private String relationshipStatus;
+    private String funFact;
+    private String imageURL;
+    private String notificationSubscription;
+
     /**
      * @param firstName String representing the firstname of the user
      * @param lastName String representing the lastname of the user
      */
-    public User(String firstName, String lastName) {
+    public User(String firstName, String lastName, LocalDate birthDate, String address, String gender, String email, String lastGraduatedSchool, String relationshipStatus, String funFact, String imageURL, String notificationSubscription) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.address = address;
+        this.email = email;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.relationshipStatus = relationshipStatus;
+        this.imageURL = imageURL;
+        this.funFact = funFact;
+        this.lastGraduatedSchool = lastGraduatedSchool;
+        this.notificationSubscription = notificationSubscription;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public String getLastGraduatedSchool() {
+        return lastGraduatedSchool;
+    }
+
+    public String getRelationshipStatus() {
+        return relationshipStatus;
+    }
+
+    public String getFunFact() {
+        return funFact;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public String getNotificationSubscription() {
+        return notificationSubscription;
+    }
+
+    public void setNotificationSubscription(String notificationSubscription) {
+        this.notificationSubscription = notificationSubscription;
     }
 
     /**

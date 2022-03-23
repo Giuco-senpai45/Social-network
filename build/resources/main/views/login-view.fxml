@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="377.0" prefWidth="746.0" style="-fx-background-color: b7b7a4;" stylesheets="/css/login.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+   <left>
+      <AnchorPane prefHeight="378.0" prefWidth="338.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="377.0" fitWidth="376.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/StaticRoseLogo.gif" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </left>
+   <right>
+      <AnchorPane prefHeight="378.0" prefWidth="373.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="58.0" fitWidth="64.0" layoutX="158.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/roselogin.png" />
+               </image>
+            </ImageView>
+            <TextField fx:id="textUsername" layoutX="123.0" layoutY="108.0" promptText="Username" style="-fx-background-color: ffe8d6;" />
+            <PasswordField fx:id="textPassword" layoutX="123.0" layoutY="176.0" onAction="#loginButtonAction" promptText="Password" style="-fx-background-color: ffe8d6;" />
+            <Button fx:id="loginButton" layoutX="79.0" layoutY="244.0" mnemonicParsing="false" onAction="#loginButtonAction" onKeyPressed="#loginButtonAction" prefHeight="38.0" prefWidth="205.0" style="-fx-background-color: #6b705c;" styleClass="loginbutton" stylesheets="@../css/login.css" text="Login" textFill="#ffe8d6" />
+            <Button fx:id="registerButton" layoutX="270.0" layoutY="328.0" mnemonicParsing="false" onMousePressed="#registerButtonPressed" prefHeight="36.0" prefWidth="74.0" style="-fx-background-color: #6b705c;" text="Register" textFill="#ffe8d6" visible="false" />
+            <Label fx:id="loginErrorLabel" layoutX="76.0" layoutY="282.0" textFill="#ed3939">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="54.0" fitWidth="47.0" layoutX="70.0" layoutY="97.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/user.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="54.0" fitWidth="47.0" layoutX="70.0" layoutY="165.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../imgs/lock.png" />
+               </image>
+            </ImageView>
+            <Hyperlink layoutX="204.0" layoutY="212.0" onAction="#forgotPasswordAction" style="-fx-text-fill: black;" text="Forgot password?">
+               <font>
+                  <Font name="System Bold Italic" size="12.0" />
+               </font></Hyperlink>
+            <Label layoutX="10.0" layoutY="319.0" text="Don't have an account?">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+            <Hyperlink fx:id="registerButton" layoutX="48.0" layoutY="334.0" onMousePressed="#registerButtonPressed" style="-fx-text-fill: black;" text="Sign up">
+               <font>
+                  <Font name="System Bold Italic" size="13.0" />
+               </font></Hyperlink>
+         </children>
+      </AnchorPane>
+   </right>
+</BorderPane>

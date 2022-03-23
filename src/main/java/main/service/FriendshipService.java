@@ -5,25 +5,37 @@ import main.domain.Tuple;
 import main.domain.User;
 import main.graph.Graph;
 import main.repository.Repository;
+import main.repository.paging.Page;
+import main.repository.paging.Pageable;
+import main.repository.paging.PageableImplementation;
+import main.repository.paging.PagingRepository;
 import main.service.serviceExceptions.AddException;
 import main.service.serviceExceptions.FindException;
 import main.service.serviceExceptions.RemoveException;
+import main.utils.Observable;
+import main.utils.Observer;
+import main.utils.events.ChangeEventType;
+import main.utils.events.FriendDeletionEvent;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
  *  Service class for the Friendship entities.
  */
-public class FriendshipService {
+public class FriendshipService implements Observable<FriendDeletionEvent> {
     /**
      * Repository for friendship entities
      */
-    private Repository<Tuple<Long,Long> , Friendship> repoFriends;
+    private PagingRepository<Tuple<Long,Long> , Friendship> repoFriends;
 
     /**
      * Repository for user entities
      */
-    private Repository<Long, User> repoUsers;
+    private PagingRepository<Long, User> repoUsers;
 
     /**
      * Instance of the Graph class
@@ -35,7 +47,7 @@ public class FriendshipService {
      * @param repoFriends repository for friendship entities
      * @param repoUsers repository for user entities
      */
-    public FriendshipService(Repository<Tuple<Long,Long>, Friendship> repoFriends, Repository<Long, User> repoUsers) {
+    public FriendshipService(PagingRepository<Tuple<Long,Long>, Friendship> repoFriends, PagingRepository<Long, User> repoUsers) {
         this.repoFriends = repoFriends;
         this.repoUsers = repoUsers;
         updateFriendList();
@@ -72,6 +84,8 @@ public class FriendshipService {
             if (addedFriendship != null) {
                 throw new AddException("This friendship already exists");
             }
+            else
+                notifyObservers(new FriendDeletionEvent(ChangeEventType.ADD, friendship));
             updateFriendList();
         }
         else {
@@ -86,10 +100,19 @@ public class FriendshipService {
      */
     public void removeFriendship(Tuple<Long,Long> id){
         Friendship friendship = repoFriends.delete(id);
+        Tuple<Long,Long> idreversed = new Tuple<>(id.getE2(),id.getE1());
+        Friendship friendshipreversed = null;
         if(friendship == null){
-            throw new RemoveException("This friendship doesn't exist");
+            friendshipreversed = repoFriends.delete(idreversed);
+            if(friendshipreversed == null) {
+                throw new RemoveException("This friendship doesn't exist");
+            }
         }
-        System.out.println(friendship.toString() + " removed");
+        if(friendship != null)
+            notifyObservers(new FriendDeletionEvent(ChangeEventType.DELETE, friendship));
+        else if (friendshipreversed != null){
+            notifyObservers(new FriendDeletionEvent(ChangeEventType.DELETE, friendshipreversed));
+        }
         updateFriendList();
     }
 
@@ -171,4 +194,53 @@ public class FriendshipService {
     public Iterable<User> getUsers(){
         return repoUsers.findAll();
     }
+
+
+    private List<Observer<FriendDeletionEvent>> observers=new ArrayList<>();
+
+    @Override
+    public void addObserver(Observer<FriendDeletionEvent> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<FriendDeletionEvent> e) {
+
+    }
+
+    @Override
+    public void notifyObservers(FriendDeletionEvent t) {
+        observers.stream().forEach(x->x.update(t));
+    }
+
+
+    private int page = 0;
+    private int size = 1;
+
+    private Pageable pageable;
+
+    public void setPageSize(int size) {
+        this.size = size;
+    }
+
+//    public void setPageable(Pageable pageable) {
+//        this.pageable = pageable;
+//    }
+
+    public Set<Friendship> getNextUsers() {
+//        Pageable pageable = new PageableImplementation(this.page, this.size);
+//        Page<MessageTask> studentPage = repo.findAll(pageable);
+//        this.page++;
+//        return studentPage.getContent().collect(Collectors.toSet());
+        this.page++;
+        return getFriendshipsOnPage(this.page);
+    }
+
+    public Set<Friendship> getFriendshipsOnPage(int page) {
+        this.page = page;
+        Pageable pageable = new PageableImplementation(page, this.size);
+        Page<Friendship> friendsPage = repoFriends.findAll(pageable);
+        return friendsPage.getContent().collect(Collectors.toSet());
+    }
+
 }

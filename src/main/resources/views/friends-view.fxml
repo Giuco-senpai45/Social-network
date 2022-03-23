@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="604.0" prefWidth="659.0" style="-fx-background-color: a5a58d;" stylesheets="@../css/friends.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendsController">
+   <children>
+      <TableView fx:id="friendsList" fixedCellSize="0.0" layoutX="21.0" layoutY="31.0" prefHeight="476.0" prefWidth="619.0" style="-fx-background-color: b7b7a4; -fx-control-inner-background: b7b7a4;" stylesheets="@../css/friends.css">
+        <columns>
+          <TableColumn fx:id="avatar" prefWidth="101.0" style="-fx-background-color: a5a58d;" text="Profile picture" />
+          <TableColumn fx:id="fullName" prefWidth="230.0" style="-fx-background-color: a5a58d;" text="User Full Name" />
+            <TableColumn fx:id="friendshipDate" prefWidth="155.0" style="-fx-background-color: a5a58d;" text="Date" />
+            <TableColumn fx:id="action" prefWidth="132.0" style="-fx-background-color: a5a58d;" text="Action" />
+        </columns>
+      </TableView>
+      </children>
+</AnchorPane>

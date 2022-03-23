@@ -1,0 +1,7 @@
+.list-view .list-cell:filled:hover {
+    -fx-background-color: #cb997e;
+}
+
+.list-view .scroll-bar {
+    -fx-background-color: #ffe8d6;
+}

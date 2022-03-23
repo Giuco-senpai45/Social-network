@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="600.0" style="-fx-background-color: a5a58d;" stylesheets="@../css/event-mini.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EventMiniController">
+   <children>
+      <ImageView fx:id="eventImage" fitHeight="150.0" fitWidth="224.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="eventNameLabel" layoutX="327.0" layoutY="-1.0" prefHeight="30.0" prefWidth="205.0" text="EventName" textAlignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="organiserLabel" layoutX="237.0" layoutY="29.0" prefHeight="30.0" prefWidth="205.0" text="👤Organiser: Organiser Name" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="locationlabel" layoutX="237.0" layoutY="60.0" prefHeight="30.0" prefWidth="205.0" text="📍Location: Location Name" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="participateButton" layoutX="496.0" layoutY="121.0" mnemonicParsing="false" onAction="#btnParticipateAction" prefHeight="25.0" prefWidth="95.0" style="-fx-background-color: #6b705c;" styleClass="participate-btn" stylesheets="@../css/event-mini.css" text="Stop going" textFill="#ffe8d6" />
+      <TextArea fx:id="txtDescription" layoutX="442.0" layoutY="34.0" prefHeight="83.0" prefWidth="153.0" style="-fx-background-color: b7b7a4; -fx-control-inner-background: b7b7a4;" />
+      <Label fx:id="dateLabel" layoutX="237.0" layoutY="92.0" prefHeight="30.0" prefWidth="205.0" text="📅 Date:" textAlignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="participatingImage" fitHeight="30.0" fitWidth="30.0" layoutX="466.0" layoutY="118.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../imgs/participating.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="stopGoingImg" fitHeight="30.0" fitWidth="30.0" layoutX="466.0" layoutY="118.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../imgs/cancel-participating.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="organisingImage" fitHeight="36.0" fitWidth="36.0" layoutX="460.0" layoutY="112.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../imgs/recruitment.png" />
+         </image>
+      </ImageView>
+   </children>
+</Pane>

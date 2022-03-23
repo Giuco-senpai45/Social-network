@@ -60,4 +60,9 @@ public class Tuple <E1 , E2>{
     public int hashCode() {
         return Objects.hash(e1, e2);
     }
+
+    @Override
+    public String toString() {
+        return e1 + " " + e2;
+    }
 }
